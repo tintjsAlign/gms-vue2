@@ -58,7 +58,7 @@ export const constantRoutes = [
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import('@/views/dashboard/index'),
-        meta: { title: 'Dashboard', icon: 'dashboard' }
+        meta: { title: '密评工具平台', icon: 'dashboard' }
       }
     ]
   },
@@ -194,7 +194,7 @@ export const asyncRoutes = [
         name: 'tested',
         meta: {
           title: '被测信息',
-          icon: 'link',
+          icon: 'list',
           roles: ['router_ready']
         } //页面需要的权限
       }
