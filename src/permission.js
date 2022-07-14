@@ -41,13 +41,14 @@ export function resetRouter(resetRoles) {
             const { roles } = await store.dispatch('user/getInfo')
             // let roles2 = store.getters.roles
             console.log('resetRoles:', resetRoles)
-            // console.log('roles2:', roles2)
+            let thisRoles = resetRoles ? resetRoles : roles
+            console.log('thisRoles:', thisRoles)
             // let roles3 = JSON.parse(window.localStorage.getItem('storageRoles'))
             // console.log('roles3:', roles3)
             // generate accessible routes map based on roles
             const accessRoutes = await store.dispatch(
               'permission/generateRoutes',
-              resetRoles
+              thisRoles
             )
             // window.localStorage.removeItem('storageRoles')
             // dynamically add accessible routes

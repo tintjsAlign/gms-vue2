@@ -87,8 +87,8 @@ export default {
     },
     reqPermission(role) {
       //   const rolePer = require('@/permission')
-      console.log('home new/roles: ', this.role)
-      resetRouter(this.role)
+      console.log('home new/roles: ', [role])
+      resetRouter([role])
       this.$router.push(`/?${role}`)
     }
   }
