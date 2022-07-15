@@ -51,10 +51,8 @@ const actions = {
     return new Promise((resolve) => {
       let accessedRoutes
       if (roles.includes('admin')) {
-        console.log('管理员')
         accessedRoutes = asyncRoutes || []
       } else {
-        console.log('非管理员', roles)
         accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
       }
       commit('SET_ROUTES', accessedRoutes)

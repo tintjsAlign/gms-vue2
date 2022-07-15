@@ -1,29 +1,49 @@
 <template>
-  <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
-    <div class="dashboard-text">roles: {{ roles }}</div>
+  <div class="app-container">
+    <switch-roles @change="handleRolesChange" />
+    <div></div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import permission from '@/directive/permission/index.js' // 权限判断指令
+import checkPermission from '@/utils/permission' // 权限判断函数
+import SwitchRoles from './components/SwitchRoles'
 
 export default {
-  name: 'Dashboard',
-  computed: {
-    ...mapGetters(['name', 'roles'])
+  name: 'DirectivePermission',
+  components: { SwitchRoles },
+  directives: { permission },
+  data() {
+    return {
+      key: 1 // 为了能每次切换权限的时候重新初始化指令
+    }
+  },
+  methods: {
+    checkPermission,
+    handleRolesChange() {
+      this.key++
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.dashboard {
-  &-container {
-    margin: 30px;
+.app-container {
+  ::v-deep .permission-alert {
+    width: 320px;
+    margin-top: 15px;
+    background-color: #f0f9eb;
+    color: #67c23a;
+    padding: 8px 16px;
+    border-radius: 4px;
+    display: inline-block;
   }
-  &-text {
-    font-size: 30px;
-    line-height: 46px;
+  ::v-deep .permission-sourceCode {
+    margin-left: 15px;
+  }
+  ::v-deep .permission-tag {
+    background-color: #ecf5ff;
   }
 }
 </style>

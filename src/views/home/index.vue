@@ -62,7 +62,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { resetRouter } from '@/permission'
+// import { resetRouter } from '@/permission'
 
 export default {
   name: 'home',
@@ -74,22 +74,12 @@ export default {
   mounted() {},
   methods: {
     toDashboard(role) {
-      console.log('home old/roles: ', this.roles)
-      // 根据点击的按钮，赋予不同的权限,加入this.roles中
-      // let newRoles = []
-      // newRoles = this.roles.concat(role)
-      // this.$store.commit('user/SET_ROLES', newRoles)
+      // 根据点击的按钮，赋予不同的权限,加入this.roles中,并打开浏览器新窗口
       this.$store.commit('user/SET_ROLES', [role])
-
-      // window.localStorage.setItem('storageRoles', JSON.stringify([role]))
-
-      this.reqPermission(role)
-    },
-    reqPermission(role) {
-      //   const rolePer = require('@/permission')
-      console.log('home new/roles: ', [role])
-      resetRouter([role])
-      this.$router.push(`/?${role}`)
+      this.$store.dispatch('user/changeRoles', role).then(() => {
+        this.$emit('change')
+        this.$router.push(`/?${role}`)
+      })
     }
   }
 }
@@ -112,17 +102,24 @@ export default {
     top: 50px;
     bottom: 30px;
     text-align: center;
+    margin-bottom: 150px;
   }
 }
 .el-row {
-  margin-top: 80px;
+  margin-top: 50px;
   &:last-child {
     margin-bottom: 0;
   }
 }
 .el-col {
+  width: 360px;
+  height: 210px;
   border-radius: 4px;
-  margin: 20px;
+  margin: 0px 50px;
+  background-image: url('borderBg.png');
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-size: cover;
   /* 鼠标悬浮时 */
   :hover {
     // box-shadow: 1px 3px 10px #d3dce6;
@@ -134,9 +131,10 @@ export default {
   background: #99a9bf;
 }
 .bg-purple {
-  padding: 20px;
+  padding: 30px 20px;
   // border: 1px solid #99a9bf;
   // background: #d3dce6;
+
   text-align: center;
 
   .titleName {
