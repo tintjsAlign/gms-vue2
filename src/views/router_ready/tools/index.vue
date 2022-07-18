@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import AddTool from './components/AddPersonnel.vue'
+import AddTool from './components/AddTool.vue'
 export default {
   name: 'testTools',
   components: {
