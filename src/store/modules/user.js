@@ -52,7 +52,7 @@ const actions = {
         .then((response) => {
           console.log(response)
           const { data } = response
-          console.log('login成功:', data)
+          // console.log('login成功:', data)
           // commit('SET_TOKEN', data.token)
           // setToken(data.token)
           resolve()
