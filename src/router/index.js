@@ -222,6 +222,23 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/tools',
+    component: Layout,
+    meta: { roles: ['router_ready'] }, //页面需要的权限
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/router_ready/tools'),
+        name: 'tools',
+        meta: {
+          title: '现场测试工具',
+          icon: 'tools',
+          roles: ['router_ready']
+        } //页面需要的权限
+      }
+    ]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
