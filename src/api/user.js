@@ -7,6 +7,13 @@ export function login(data) {
     data
   })
 }
+export function loginOfTass(data) {
+  return request({
+    url: 'http://www.paytunnel.cn/secretassessment/loginEvlation',
+    method: 'post',
+    data
+  })
+}
 
 export function getInfo(token) {
   return request({

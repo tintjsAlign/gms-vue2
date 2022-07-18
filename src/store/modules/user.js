@@ -1,4 +1,4 @@
-import { login, logout, getInfo } from '@/api/user'
+import { login, loginOfTass, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
@@ -40,17 +40,38 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password })
+      let data = {
+        userID: username.trim(),
+        password: password,
+        keySvrName: 'SevaluationManagement_TASS',
+        svrName: '密评辅助工具',
+        svrMainMenuName: 'Splenwise密评工具平台主工作界面',
+        useMenuItemButton: '2'
+      }
+      loginOfTass(data)
         .then((response) => {
+          console.log(response)
           const { data } = response
-          commit('SET_TOKEN', data.token)
-          setToken(data.token)
+          console.log('login成功:', data)
+          // commit('SET_TOKEN', data.token)
+          // setToken(data.token)
           resolve()
         })
         .catch((error) => {
           reject(error)
         })
     })
+    //   login({ username: username.trim(), password: password })
+    //     .then((response) => {
+    //       const { data } = response
+    //       commit('SET_TOKEN', data.token)
+    //       setToken(data.token)
+    //       resolve()
+    //     })
+    //     .catch((error) => {
+    //       reject(error)
+    //     })
+    // })
   },
 
   // get user info

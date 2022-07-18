@@ -74,11 +74,11 @@ export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
+      // if (!validUsername(value)) {
+      //   callback(new Error('Please enter the correct user name'))
+      // } else {
+      callback()
+      // }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
@@ -89,8 +89,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: 'mpAdmin',
+        password: '123456'
       },
       loginRules: {
         username: [
@@ -133,6 +133,10 @@ export default {
             .then(() => {
               // this.$router.push({ path: this.redirect || '/' })
               this.$router.push({ path: '/home' })
+              this.$message({
+                message: '登录成功',
+                type: 'success'
+              })
               this.loading = false
             })
             .catch(() => {

@@ -58,16 +58,16 @@
       </div>
     </div>
 
-    <add-personnel ref="addPersonnelRef"></add-personnel>
+    <add-tool ref="addToolRef"></add-tool>
   </div>
 </template>
 
 <script>
-import AddPersonnel from './components/AddPersonnel.vue'
+import AddTool from './components/AddPersonnel.vue'
 export default {
   name: 'testTools',
   components: {
-    AddPersonnel
+    AddTool
   },
   props: {},
   data() {
@@ -139,7 +139,7 @@ export default {
     },
     addPersonnel() {
       console.log('新增系统测评人员')
-      this.$refs.addPersonnelRef.show()
+      this.$refs.addToolRef.show()
     },
     handleEdit(index, row) {
       this.dialog = true
