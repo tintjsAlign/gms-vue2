@@ -192,7 +192,6 @@ export const asyncRoutes = [
     component: Layout,
     // name: 'system',
     meta: { roles: ['router_ready'] }, //页面需要的权限
-    // hidden: true,
     children: [
       {
         path: '',
@@ -201,6 +200,23 @@ export const asyncRoutes = [
         meta: {
           title: '被测信息系统',
           icon: 'list',
+          roles: ['router_ready']
+        } //页面需要的权限
+      }
+    ]
+  },
+  {
+    path: '/personnel',
+    component: Layout,
+    meta: { roles: ['router_ready'] }, //页面需要的权限
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/router_ready/personnel'),
+        name: 'personnel',
+        meta: {
+          title: '系统测评人员',
+          icon: 'user',
           roles: ['router_ready']
         } //页面需要的权限
       }

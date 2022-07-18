@@ -23,13 +23,49 @@
       <div class="cardBox" v-for="item in cardForm">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <span>{{ item.unitName }}</span>
-            <!-- <el-button
-              style="float: right; padding: 3px 0"
-              type="text"
-              @click="checkSystem(item)"
-              >展开</el-button
-            > -->
+            <div class="cardHeader">
+              <div>
+                <span>{{ item.unitName }}</span>
+              </div>
+              <div>
+                <el-dropdown style="padding: 0px 10px" @command="handleCommand">
+                  <el-button type="primary" size="small" plain>
+                    密码应用方案<i
+                      class="el-icon-arrow-down el-icon--right"
+                    ></i>
+                  </el-button>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="uploadPlan"
+                      >上传密码应用方案</el-dropdown-item
+                    >
+                    <el-dropdown-item command="downloadPlan"
+                      >下载密码应用方案</el-dropdown-item
+                    >
+                    <el-dropdown-item command="managePlan" divided
+                      >管理密码应用方案</el-dropdown-item
+                    >
+                  </el-dropdown-menu>
+                </el-dropdown>
+                <el-dropdown @command="handleCommand">
+                  <el-button type="primary" size="small" plain>
+                    专家评审意见<i
+                      class="el-icon-arrow-down el-icon--right"
+                    ></i>
+                  </el-button>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="uploadOpinion"
+                      >上传专家评审意见</el-dropdown-item
+                    >
+                    <el-dropdown-item command="downloadOpinion"
+                      >下载专家评审意见</el-dropdown-item
+                    >
+                    <el-dropdown-item command="manageOpinion" divided
+                      >管理专家评审意见</el-dropdown-item
+                    >
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </div>
+            </div>
           </div>
           <div class="card-body">
             <div class="table-container">
@@ -56,7 +92,7 @@
                       >新增</el-button
                     >
                   </template> -->
-                  <template slot-scope="scope">
+                  <template slot-scope="scope" class="btnBox">
                     <el-button
                       @click.native.prevent="
                         reviewToPrepare(scope.$index, item.gridData)
@@ -75,6 +111,41 @@
                     >
                       预览评测准备
                     </el-button>
+
+                    <el-popover
+                      placement="left"
+                      width="700"
+                      trigger="click"
+                      title="系统标准等级"
+                    >
+                      <el-table :data="sysLvData">
+                        <el-table-column
+                          width="250"
+                          property="unit"
+                          label="标准制定单位"
+                        ></el-table-column>
+                        <el-table-column
+                          width="500"
+                          property="standard"
+                          label="评测标准"
+                        ></el-table-column>
+                        <el-table-column
+                          width="200"
+                          property="lv"
+                          label="安全要求等级"
+                        ></el-table-column>
+                      </el-table>
+                      <el-button
+                        slot="reference"
+                        @click.native.prevent="
+                          systemStandardLevel(scope.$index, item.gridData)
+                        "
+                        type="text"
+                        size="small"
+                      >
+                        系统标准等级
+                      </el-button>
+                    </el-popover>
                   </template>
                 </el-table-column>
               </el-table>
@@ -126,6 +197,13 @@ export default {
           ]
         }
       ],
+      sysLvData: [
+        {
+          unit: '中国国家标准化管理委员会',
+          standard: 'GB/T 39786-2021 信息安全技术 信息系统密码应用基本要求',
+          lv: '第二级'
+        }
+      ],
       show: false
     }
   },
@@ -143,6 +221,12 @@ export default {
       console.log('新增被测信息系统')
     },
     reviewToPrepare(index, data) {
+      console.log(index, data)
+    },
+    handleCommand(command) {
+      this.$message('click on item ' + command)
+    },
+    systemStandardLevel(index, data) {
       console.log(index, data)
     }
   }
@@ -167,5 +251,18 @@ export default {
   .cardBox {
     margin-top: 20px;
   }
+  .cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .collapseTitle {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 50px;
+  }
+}
+.el-button {
+  margin-left: 10px;
 }
 </style>
