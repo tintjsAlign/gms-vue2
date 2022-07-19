@@ -5,6 +5,8 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
+/* Router Modules */
+import planNestedRouter from './modules/plan'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -84,7 +86,6 @@ export const constantRoutes = [
   //     }
   //   ]
   // },
-
   // {
   //   path: '/nested',
   //   component: Layout,
@@ -181,25 +182,24 @@ export const asyncRoutes = [
         name: 'tested',
         meta: {
           title: '被测单位',
-          icon: 'list',
+          icon: 'unit',
           roles: ['router_ready']
         } //页面需要的权限
       }
     ]
   },
   {
-    path: '/system',
+    path: '/readySystem',
     component: Layout,
-    // name: 'system',
     meta: { roles: ['router_ready'] }, //页面需要的权限
     children: [
       {
         path: '',
         component: () => import('@/views/router_ready/system'),
-        name: 'system',
+        name: 'readySystem',
         meta: {
           title: '被测信息系统',
-          icon: 'list',
+          icon: 'system',
           roles: ['router_ready']
         } //页面需要的权限
       }
@@ -239,6 +239,24 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/planSystem',
+    component: Layout,
+    meta: { roles: ['router_plan'] }, //页面需要的权限
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/router_plan/system'),
+        name: 'planSystem',
+        meta: {
+          title: '信息系统',
+          icon: 'system',
+          roles: ['router_plan']
+        } //页面需要的权限
+      }
+    ]
+  },
+  planNestedRouter,
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

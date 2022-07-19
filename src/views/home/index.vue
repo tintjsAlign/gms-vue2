@@ -15,7 +15,7 @@
             :src="require('@/assets/img/pczb.png')"
             fit="fit"
           ></el-image>
-          <div class="titleName">评测准备</div>
+          <div class="titleName">测评准备</div>
         </div>
       </el-col>
       <el-col :span="5">
@@ -40,7 +40,7 @@
             :src="require('@/assets/img/xcpc.png')"
             fit="fit"
           ></el-image>
-          <div class="titleName">现场评测</div>
+          <div class="titleName">现场测评</div>
         </div>
       </el-col>
       <el-col :span="5">
@@ -53,7 +53,7 @@
             :src="require('@/assets/img/pcjg.png')"
             fit="fit"
           ></el-image>
-          <div class="titleName">评测结果</div>
+          <div class="titleName">结果分析</div>
         </div>
       </el-col>
     </el-row>
