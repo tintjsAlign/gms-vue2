@@ -1,7 +1,23 @@
 <template>
-  <div style="padding: 30px">
-    <el-alert :closable="false" title="管理要求" type="success">
-      <router-view />
-    </el-alert>
+  <div class="container">
+    <router-view></router-view>
   </div>
 </template>
+
+<script>
+export default {
+  name: '',
+  components: {},
+  props: {},
+  data() {
+    return {}
+  },
+  computed: {},
+  watch: {},
+  created() {},
+  mounted() {},
+  methods: {}
+}
+</script>
+
+<style scoped lang="scss"></style>
