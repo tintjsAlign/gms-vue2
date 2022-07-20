@@ -157,6 +157,12 @@ export default {
       //   this.tableData = this.stashList
       // }
       // this.afreshTableList()
+      // select 为空时候 提示选择搜索项
+      if (this.select === '') {
+        this.$message.error('请选择搜索项')
+        return
+      }
+
       if (this.searchContent) {
         this.tableList = this.tableData
         this.tableList = this.tableList.filter((item) => {

@@ -42,7 +42,9 @@ const actions = {
     return new Promise((resolve, reject) => {
       let data = {
         userID: username.trim(),
-        password: password,
+        // password: password,
+        password:
+          '0d566b8160e9fd8ccc2d1f3e19ccad9e6dd37b8b8ddfe5a49ff83db0d768d2530c813676c47a54c5ce092e582db1a5b3e7214edfe202b757285bf396109a7655653b63b40bf7ebe7c7d4f8d2e7a8a0b8076f47a3feedaf56c579e8dbc6228d9b667bbb33f70ef7706b161239ba9a13f67195d0a94f1cb49774653039546144ac',
         keySvrName: 'SevaluationManagement_TASS',
         svrName: '密评辅助工具',
         svrMainMenuName: 'Splenwise密评工具平台主工作界面',
@@ -51,7 +53,9 @@ const actions = {
       loginOfTass(data)
         .then((response) => {
           console.log(response)
-          const { data } = response
+          window.localStorage.setItem('SYSTEMKEYNAME', response.SYSTEMKEYNAME)
+          window.localStorage.setItem('SYSTEMTELLERNO', response.SYSTEMTELLERNO)
+          // const { data } = response
           // console.log('login成功:', data)
           // commit('SET_TOKEN', data.token)
           // setToken(data.token)

@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { queryMain } from '@/api/main'
 import dynamicTable from '@/components/dynamicTable/index.vue'
 export default {
   name: 'planSystem',
@@ -196,9 +197,26 @@ export default {
   },
   computed: {},
   watch: {},
-  created() {},
+  created() {
+    this.init()
+  },
   mounted() {},
-  methods: {}
+  methods: {
+    init() {
+      let queryMainData = {
+        operationID: '51',
+        resId: '1469',
+        rel: '被测单位',
+        tblAlias: '被测单位管理界面',
+        isOperatorSingleRec: '0',
+        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+      }
+      queryMain(queryMainData).then((res) => {
+        console.log('queryMain:', res)
+      })
+    }
+  }
 }
 </script>
 

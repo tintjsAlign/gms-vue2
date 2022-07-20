@@ -2,10 +2,10 @@
 
 import Layout from '@/layout'
 
-const planNestedRouter = {
+const planObjRouter = {
   path: '/object',
   component: Layout,
-  redirect: '/object/menu1/menu1-1',
+  redirect: '/object/technology/securityLevel',
   name: 'object',
   meta: {
     title: '测评对象',
@@ -84,4 +84,4 @@ const planNestedRouter = {
   ]
 }
 
-export default planNestedRouter
+export default planObjRouter

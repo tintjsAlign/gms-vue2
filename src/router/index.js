@@ -6,7 +6,8 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/layout'
 /* Router Modules */
-import planNestedRouter from './modules/plan'
+import planObjRouter from './modules/plan_obj'
+import planPlanRouter from './modules/plan_plan'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -256,7 +257,8 @@ export const asyncRoutes = [
       }
     ]
   },
-  planNestedRouter,
+  planObjRouter,
+  planPlanRouter,
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
