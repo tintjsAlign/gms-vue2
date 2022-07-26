@@ -66,99 +66,6 @@ export const constantRoutes = [
     ]
   },
 
-  // {
-  //   path: '/example',
-  //   component: Layout,
-  //   redirect: '/example/table',
-  //   name: 'Example',
-  //   meta: { title: 'Example', icon: 'el-icon-s-help' },
-  //   children: [
-  //     {
-  //       path: 'table',
-  //       name: 'Table',
-  //       component: () => import('@/views/table/index'),
-  //       meta: { title: 'Table', icon: 'table' }
-  //     },
-  //     {
-  //       path: 'tree',
-  //       name: 'Tree',
-  //       component: () => import('@/views/tree/index'),
-  //       meta: { title: 'Tree', icon: 'tree' }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/nested',
-  //   component: Layout,
-  //   redirect: '/nested/menu1',
-  //   name: 'Nested',
-  //   meta: {
-  //     title: 'Nested',
-  //     icon: 'nested'
-  //   },
-  //   children: [
-  //     {
-  //       path: 'menu1',
-  //       component: () => import('@/views/nested/menu1/index'), // Parent router-view
-  //       name: 'Menu1',
-  //       meta: { title: 'Menu1' },
-  //       children: [
-  //         {
-  //           path: 'menu1-1',
-  //           component: () => import('@/views/nested/menu1/menu1-1'),
-  //           name: 'Menu1-1',
-  //           meta: { title: 'Menu1-1' }
-  //         },
-  //         {
-  //           path: 'menu1-2',
-  //           component: () => import('@/views/nested/menu1/menu1-2'),
-  //           name: 'Menu1-2',
-  //           meta: { title: 'Menu1-2' },
-  //           children: [
-  //             {
-  //               path: 'menu1-2-1',
-  //               component: () =>
-  //                 import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-  //               name: 'Menu1-2-1',
-  //               meta: { title: 'Menu1-2-1' }
-  //             },
-  //             {
-  //               path: 'menu1-2-2',
-  //               component: () =>
-  //                 import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-  //               name: 'Menu1-2-2',
-  //               meta: { title: 'Menu1-2-2' }
-  //             }
-  //           ]
-  //         },
-  //         {
-  //           path: 'menu1-3',
-  //           component: () => import('@/views/nested/menu1/menu1-3'),
-  //           name: 'Menu1-3',
-  //           meta: { title: 'Menu1-3' }
-  //         }
-  //       ]
-  //     },
-  //     {
-  //       path: 'menu2',
-  //       component: () => import('@/views/nested/menu2/index'),
-  //       name: 'Menu2',
-  //       meta: { title: 'menu2' }
-  //     }
-  //   ]
-  // },
-
-  // {
-  //   path: 'external-link',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-  //       meta: { title: 'External Link', icon: 'link' }
-  //     }
-  //   ]
-  // },
-
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
@@ -167,102 +74,123 @@ export const constantRoutes = [
  * asyncRoutes
  * the routes that need to be dynamically loaded based on user roles
  */
+export const routerMap = {
+  //  login:require('login/index').default // 同步的方式
+  main: () => import('@/views/main'), // 异步的方式
+  drawer: () => import('@/views/drawer'),
+  layout: () => import('@/layout')
+}
+//之后遍历这个map 并将 component 替换为map[component]
+// const asyncRoutes = []
+
 //异步挂载的路由
 //动态需要根据权限加载的路由表
-export const asyncRoutes = [
-  {
-    path: '/tested',
-    component: Layout,
-    // name: 'tested',
-    meta: { roles: ['router_ready'] }, //页面需要的权限
-    // hidden: true,
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/router_ready/tested'),
-        name: 'tested',
-        meta: {
-          title: '被测单位',
-          icon: 'unit',
-          roles: ['router_ready']
-        } //页面需要的权限
-      }
-    ]
-  },
-  {
-    path: '/readySystem',
-    component: Layout,
-    meta: { roles: ['router_ready'] }, //页面需要的权限
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/router_ready/system'),
-        name: 'readySystem',
-        meta: {
-          title: '被测信息系统',
-          icon: 'system',
-          roles: ['router_ready']
-        } //页面需要的权限
-      }
-    ]
-  },
-  {
-    path: '/personnel',
-    component: Layout,
-    meta: { roles: ['router_ready'] }, //页面需要的权限
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/router_ready/personnel'),
-        name: 'personnel',
-        meta: {
-          title: '系统测评人员',
-          icon: 'user',
-          roles: ['router_ready']
-        } //页面需要的权限
-      }
-    ]
-  },
-  {
-    path: '/tools',
-    component: Layout,
-    meta: { roles: ['router_ready'] }, //页面需要的权限
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/router_ready/tools'),
-        name: 'tools',
-        meta: {
-          title: '现场测试工具',
-          icon: 'tools',
-          roles: ['router_ready']
-        } //页面需要的权限
-      }
-    ]
-  },
-  {
-    path: '/planSystem',
-    component: Layout,
-    meta: { roles: ['router_plan'] }, //页面需要的权限
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/router_plan/system'),
-        name: 'planSystem',
-        meta: {
-          title: '信息系统',
-          icon: 'system',
-          roles: ['router_plan']
-        } //页面需要的权限
-      }
-    ]
-  },
-  planObjRouter,
-  planPlanRouter,
+// export const asyncRoutes = []
 
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
-]
+// export const asyncRoutes = [
+//   {
+//     path: '/tested',
+//     component: Layout,
+//     // name: 'tested',
+//     meta: { roles: ['router_ready'] }, //页面需要的权限
+//     // hidden: true,
+//     children: [
+//       {
+//         path: '',
+//         // component: () => import('@/views/router_ready/tested'),
+//         component: () => import('@/views/currency'),
+//         name: 'tested',
+//         meta: {
+//           title: '被测单位',
+//           icon: 'unit',
+//           roles: ['router_ready'],
+//           itemName: '被测单位',
+//           tblAlias: '被测单位管理界面',
+//           operationID: '51',
+//           resId: '1469'
+//         } //页面需要的权限
+//       }
+//     ]
+//   },
+//   {
+//     path: '/readySystem',
+//     component: Layout,
+//     meta: { roles: ['router_ready'] }, //页面需要的权限
+//     children: [
+//       {
+//         path: '',
+//         // component: () => import('@/views/router_ready/system'),
+//         component: () => import('@/views/currency'),
+//         name: 'readySystem',
+//         meta: {
+//           title: '被测信息系统',
+//           icon: 'system',
+//           roles: ['router_ready'],
+//           itemName: '被测信息系统',
+//           tblAlias: '等级测评项目管理界面',
+//           operationID: '51',
+//           resId: '3002'
+//         } //页面需要的权限
+//       }
+//     ]
+//   },
+//   {
+//     path: '/personnel',
+//     component: Layout,
+//     meta: { roles: ['router_ready'] }, //页面需要的权限
+//     children: [
+//       {
+//         path: '',
+//         component: () => import('@/views/router_ready/personnel'),
+//         name: 'personnel',
+//         meta: {
+//           title: '系统测评人员',
+//           icon: 'user',
+//           roles: ['router_ready']
+//         } //页面需要的权限
+//       }
+//     ]
+//   },
+//   {
+//     path: '/tools',
+//     component: Layout,
+//     meta: { roles: ['router_ready'] }, //页面需要的权限
+//     children: [
+//       {
+//         path: '',
+//         component: () => import('@/views/router_ready/tools'),
+//         name: 'tools',
+//         meta: {
+//           title: '现场测试工具',
+//           icon: 'tools',
+//           roles: ['router_ready']
+//         } //页面需要的权限
+//       }
+//     ]
+//   },
+//   {
+//     path: '/planSystem',
+//     component: Layout,
+//     meta: { roles: ['router_plan'] }, //页面需要的权限
+//     children: [
+//       {
+//         path: '',
+//         component: () => import('@/views/router_plan/system'),
+//         name: 'planSystem',
+//         meta: {
+//           title: '信息系统',
+//           icon: 'system',
+//           roles: ['router_plan']
+//         } //页面需要的权限
+//       }
+//     ]
+//   },
+//   planObjRouter,
+//   planPlanRouter,
+
+//   // 404 page must be placed at the end !!!
+//   { path: '*', redirect: '/404', hidden: true }
+// ]
 
 const createRouter = () =>
   new Router({

@@ -42,7 +42,7 @@ router.beforeEach(async (to, from, next) => {
             'permission/generateRoutes',
             roles
           )
-
+          console.log('accessRoutes:', accessRoutes)
           // dynamically add accessible routes
           router.addRoutes(accessRoutes)
 

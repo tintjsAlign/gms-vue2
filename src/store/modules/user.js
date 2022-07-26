@@ -150,7 +150,7 @@ const actions = {
   },
 
   // dynamically modify permissions
-  async changeRoles({ commit, dispatch }, role) {
+  async changeRoles({ commit, dispatch }, { role, tree }) {
     const token = role + '-token'
 
     commit('SET_TOKEN', token)
@@ -163,11 +163,20 @@ const actions = {
     resetRouter()
 
     // generate accessible routes map based on roles
-    const accessRoutes = await dispatch('permission/generateRoutes', roles, {
-      root: true
-    })
+    const accessRoutes = await dispatch(
+      'permission/generateRoutes',
+      { roles, tree },
+      {
+        root: true
+      }
+    )
+    console.log('changeRoles accessRoutes:', accessRoutes)
+
+    // 处理tree
+    console.log('changeRoles tree:', tree)
     // dynamically add accessible routes
-    router.addRoutes(accessRoutes)
+    // router.addRoutes(accessRoutes)
+    router.addRoutes(tree)
 
     // reset visited views and cached views
     dispatch('tagsView/delAllViews', null, { root: true })

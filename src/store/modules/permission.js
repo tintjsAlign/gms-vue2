@@ -1,4 +1,4 @@
-import { asyncRoutes, constantRoutes } from '@/router'
+import { asyncRoutes, constantRoutes, routerMap } from '@/router'
 
 /**
  * Use meta.role to determine if the current user has permission
@@ -47,18 +47,50 @@ const mutations = {
 }
 
 const actions = {
-  generateRoutes({ commit }, roles) {
+  generateRoutes({ commit }, { roles, tree }) {
     return new Promise((resolve) => {
+      console.log('generateRoutes:tree', tree)
+      console.log(JSON.stringify(tree))
       let accessedRoutes
-      if (roles.includes('admin')) {
-        accessedRoutes = asyncRoutes || []
+      //然后在actions中GenerateRoutes方法合适的地方将后端请求的路由表映射到routerMap,并筛选出可访问的路由,serverRouterMap是我定义的从后台请求路由表的方法
+      // serverRouterMap().then((response) => {
+      var asyncRouterMap = generateAsyncRouter(routerMap, tree)
+      console.log('generateRoutes:asyncRouterMap', asyncRouterMap)
+      if (roles.indexOf('admin') >= 0) {
+        accessedRoutes = asyncRouterMap
       } else {
-        accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
+        accessedRoutes = filterAsyncRoutes(asyncRouterMap, roles)
       }
+      console.log('generateRoutes:accessedRoutes', accessedRoutes)
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
+      // })
+
+      // let accessedRoutes
+      // if (roles.includes('admin')) {
+      //   accessedRoutes = asyncRoutes || []
+      // } else {
+      //   accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
+      // }
+      // commit('SET_ROUTES', accessedRoutes)
+      // resolve(accessedRoutes)
     })
   }
+}
+
+// 将本地routerMap映射到ajax获取到的serverRouterMap;
+function generateAsyncRouter(routerMap, serverRouterMap) {
+  console.log('generateAsyncRouter:routerMap', routerMap)
+  console.log('generateAsyncRouter:serverRouterMap', serverRouterMap)
+  console.log(JSON.stringify(serverRouterMap))
+  serverRouterMap.forEach((item) => {
+    console.log('遍历serverRouterMap:', item)
+    item.component = routerMap[item.component]
+    if (item.children && item.children.length > 0) {
+      generateAsyncRouter(routerMap, item.children)
+    }
+  })
+  return serverRouterMap
 }
 
 export default {
