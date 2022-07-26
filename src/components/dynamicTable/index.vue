@@ -32,7 +32,7 @@
     </div>
     <div class="dynamic-table">
       <el-table
-        :data="paginationData"
+        :data="tableData"
         border
         fit
         highlight-current-row
@@ -141,6 +141,7 @@ export default {
   watch: {},
   created() {
     this.tableList = this.tableData
+    console.log('tableList', this.tableList)
     this.handleCurrentChange(this.currentPage)
     this.stashList = this.tableData //暂存数组  当搜索为空时候  数组展示所有数据
   },

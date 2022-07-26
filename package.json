@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "vue-cli-service serve",
     "commit": "cz",
+    "deployment": "vue-cli-service build && rm -rf ~/tomcat7/webapps/passwordEvaluationTool/* && cp -rf ./dist/* ~/tomcat7/webapps/passwordEvaluationTool/ && echo '--部署完成-- [http://www.paytunnel.cn/passwordEvaluationTool]'",
     "build:prod": "vue-cli-service build",
     "build:stage": "vue-cli-service build --mode staging",
-    "deployment": "vue-cli-service build && rm -rf ~/tomcat7/webapps/passwordEvaluationTool/* && cp -rf ./dist/* ~/tomcat7/webapps/passwordEvaluationTool/ && echo '--部署完成-- [http://www.paytunnel.cn/passwordEvaluationTool]'",
     "preview": "node build/index.js --preview",
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
     "lint": "eslint --ext .js,.vue src",

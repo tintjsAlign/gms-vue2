@@ -1,5 +1,5 @@
 <template>
-  <div class="planSystem">
+  <div class="globalPageTemplate">
     <dynamic-table
       :tableData="tableData"
       :formThead="formThead"
@@ -12,13 +12,14 @@
 import { requestMain } from '@/api/main'
 import dynamicTable from '@/components/dynamicTable/index.vue'
 export default {
-  name: 'planSystem',
+  name: 'globalPageTemplate',
   components: {
     dynamicTable
   },
   props: {},
   data() {
     return {
+      routeParams: {},
       formThead: [],
       tableData: [],
       moreButton: [
@@ -37,18 +38,18 @@ export default {
   watch: {},
   created() {
     // 获取路由的参数
-    let routeParams = this.$route
-    console.log('routeParams:', routeParams)
+    this.routeParams = this.$route.meta
+    console.log('routeParams:', this.routeParams)
     this.init()
   },
   mounted() {},
   methods: {
     init() {
       let requestMainData = {
-        operationID: '51',
-        resId: '3004',
-        rel: '信息系统',
-        tblAlias: '定级对象的测评标准-方案编制界面',
+        operationID: this.routeParams.operationID,
+        resId: this.routeParams.resId,
+        rel: this.routeParams.rel,
+        tblAlias: this.routeParams.tblAlias,
         isOperatorSingleRec: '0',
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
