@@ -1,12 +1,6 @@
 <template>
   <div class="app-container">
-    <dynamic-drawer
-      :drawerData="drawerData"
-      :drawerTitle="drawerTitle"
-      :preCondition="condition"
-      :requestData="routeParams"
-      :moreButton="moreButton"
-    ></dynamic-drawer>
+    <dynamic-drawer ref="drawerRef"></dynamic-drawer>
   </div>
 </template>
 
@@ -21,11 +15,7 @@ export default {
   props: {},
   data() {
     return {
-      routeParams: {},
-      drawerData: [],
-      drawerTitle: '',
-      moreButton: [],
-      condition: '',
+
     }
   },
   computed: {},
@@ -34,63 +24,67 @@ export default {
     // 获取路由的参数
     this.routeParams = this.$route.meta
     console.log('routeParams:', this.routeParams)
-    this.init()
   },
-  mounted() {},
+  mounted() {
+    this.$nextTick(() => {
+      this.init()
+    })
+  },
   methods: {
     init() {
-      let tblAlias
-      if (
-        (this.routeParams.resId === 1128 && this,
-        this.routeParams.operationID === 216)
-      ) {
-        let url = this.routeParams.otherProperties.urlParam
-        // url中以&分割，每个参数都是key=value的形式
-        let urlParam = url.split('&')
-        console.log('urlParam:', urlParam)
-        // 获取condition
-        urlParam.forEach((element) => {
-          if (element.indexOf('condition=') > -1) {
-            this.condition = element
-              .replace('condition=', '')
-              .split(',appendFld')[0]
-          }
-        })
-        console.log('condition:', this.condition)
-        // 将urlParam中的每个参数都拆分成key和value，并存入对象中
+      this.$refs.drawerRef.show(this.routeParams)
+      // let tblAlias
+      // if (
+      //   (this.routeParams.resId === 1128 && this,
+      //   this.routeParams.operationID === 216)
+      // ) {
+      //   let url = this.routeParams.otherProperties.urlParam
+      //   // url中以&分割，每个参数都是key=value的形式
+      //   let urlParam = url.split('&')
+      //   // console.log('urlParam:', urlParam)
+      //   // 获取condition
+      //   urlParam.forEach((element) => {
+      //     if (element.indexOf('condition=') > -1) {
+      //       this.condition = element
+      //         .replace('condition=', '')
+      //         .split(',appendFld')[0]
+      //     }
+      //   })
+      //   // console.log('condition:', this.condition)
+      //   // 将urlParam中的每个参数都拆分成key和value，并存入对象中
 
-        // 截取url中以'appendFld=append.'开头和';'结尾的字符串(掐头去尾)
-        let appendFld = url
-          .match(/appendFld=append.[^&]+/g)[0]
-          .replace('appendFld=append.', '')
-        // 截取appendFld中以';'分割的字符串
-        let appendFldArr = appendFld.split(';')
-        tblAlias = appendFldArr[0]
-        this.drawerTitle = appendFldArr[1]
-      } else {
-        tblAlias = this.routeParams.tblAlias
-      }
-      let requestMainData = {
-        // operationID: this.routeParams.operationID,
-        operationID: '1',
-        // resId: this.routeParams.resId,
-        resId: '1056',
-        rel: this.routeParams.rel,
-        tblAlias: tblAlias,
-        // isOperatorSingleRec: '0',
-        queryOnlyFlag: '1',
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
-      }
-      requestMain(requestMainData).then((res) => {
-        console.log('requestMain:', res)
-        this.drawerData = res
-        console.log('drawerData:', this.drawerData)
+      //   // 截取url中以'appendFld=append.'开头和';'结尾的字符串(掐头去尾)
+      //   let appendFld = url
+      //     .match(/appendFld=append.[^&]+/g)[0]
+      //     .replace('appendFld=append.', '')
+      //   // 截取appendFld中以';'分割的字符串
+      //   let appendFldArr = appendFld.split(';')
+      //   tblAlias = appendFldArr[0]
+      //   this.drawerTitle = appendFldArr[1]
+      // } else {
+      //   tblAlias = this.routeParams.tblAlias
+      // }
+      // let requestMainData = {
+      //   // operationID: this.routeParams.operationID,
+      //   operationID: '1',
+      //   // resId: this.routeParams.resId,
+      //   resId: '1056',
+      //   rel: this.routeParams.rel,
+      //   tblAlias: tblAlias,
+      //   // isOperatorSingleRec: '0',
+      //   queryOnlyFlag: '1',
+      //   SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
+      //   SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+      // }
+      // requestMain(requestMainData).then((res) => {
+      //   console.log('requestMain:', res)
+      //   this.drawerData = res
+      //   console.log('drawerData:', this.drawerData)
 
-        // this.thead.forEach((item) => {
-        //   this[item.key] = item.value
-        // })
-      })
+      //   // this.thead.forEach((item) => {
+      //   //   this[item.key] = item.value
+      //   // })
+      // })
     }
   }
 }

@@ -42,7 +42,7 @@ service.interceptors.request.use(
     }
     // 取到本地存储中的用户信息 getItem
     // 再还原成 JSON格式，就可用点方法调用
-    var user = JSON.parse(window.localStorage.getItem('user'))
+    // var user = JSON.parse(window.localStorage.getItem('user'))
     // 如果有登录用户信息（不为空），则统一设置 token
 
     // 属性名和值一般看接口的要求
@@ -51,14 +51,14 @@ service.interceptors.request.use(
     // 属性值：'Bearer空格token数据'  （这里为测试，暂时写死）
     // `Bearer ${user.token}`  反引号里面${}  ES6里面的字符串拼接
 
-    if (user) {
-      // config.headers.Authorization = `Bearer ${user.token}`
-      config.headers.res_token = `${user.res_token}`
-      config.headers['X-CSRF-TOKEN'] = `${user.token.token}`
-    } else {
-      // 暂时使用通用res_token
-      // config.headers.res_token = 'adeebd32-5f54-4a88-9821-f38c44538dca'
-    }
+    // if (user) {
+    //   // config.headers.Authorization = `Bearer ${user.token}`
+    //   config.headers.res_token = `${user.res_token}`
+    //   config.headers['X-CSRF-TOKEN'] = `${user.token.token}`
+    // } else {
+    //   // 暂时使用通用res_token
+    //   // config.headers.res_token = 'adeebd32-5f54-4a88-9821-f38c44538dca'
+    // }
     return config
   },
   (error) => {

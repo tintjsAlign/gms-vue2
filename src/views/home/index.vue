@@ -11,7 +11,7 @@
           @click="toDashboard('测评准备', 'router_ready')"
         >
           <el-image
-            style="width: 100px; height: 100px"
+            style="width: 60px; height: 60px"
             :src="require('@/assets/img/pczb.png')"
             fit="fit"
           ></el-image>
@@ -24,7 +24,7 @@
           @click="toDashboard('方案编制', 'router_plan')"
         >
           <el-image
-            style="width: 100px; height: 100px"
+            style="width: 60px; height: 60px"
             :src="require('@/assets/img/fabz.png')"
             fit="fit"
           ></el-image>
@@ -39,7 +39,7 @@
           @click="toDashboard('现场测评', 'router_scene')"
         >
           <el-image
-            style="width: 100px; height: 100px"
+            style="width: 60px; height: 60px"
             :src="require('@/assets/img/xcpc.png')"
             fit="fit"
           ></el-image>
@@ -52,7 +52,7 @@
           @click="toDashboard('结果分析', 'router_result')"
         >
           <el-image
-            style="width: 100px; height: 100px"
+            style="width: 60px; height: 60px"
             :src="require('@/assets/img/pcjg.png')"
             fit="fit"
           ></el-image>
@@ -104,7 +104,7 @@ export default {
       console.log('menuLv1Name:', this.menuLv1Name)
       // this.getMenu(this.menuLv1Name)
       // let tree = menuTreeRouter(this.menuLv1Name)
-      this.menuTreeRouter(this.menuLv1Name, role)
+      this.menuTreeRouter(this.menuLv1Name, role, name)
       // tree.forEach((item) => {
       //   console.log('item:', item)
       // })
@@ -124,9 +124,23 @@ export default {
         })
     },
 
-    menuTreeRouter(menuLv1Name, role) {
+    menuTreeRouter(menuLv1Name, role, name) {
       let menuTree = []
-      let menuRouterLists = []
+      let menuRouterLists = [
+        {
+          path: '/',
+          component: 'layout',
+          redirect: '/dashboard',
+          children: [
+            {
+              path: 'dashboard',
+              name: 'Dashboard',
+              component: 'dashboard',
+              meta: { title: name, icon: 'dashboard' }
+            }
+          ]
+        }
+      ]
       getMenuLv2({
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
@@ -136,14 +150,24 @@ export default {
         let menuLv2 = res
         // 生成菜单树
         menuLv2.forEach((item) => {
-          menuTree.push({
-            itemName: item.itemName,
-            tblAlias: item.tblAlias,
-            operationID: item.operationID,
-            resId: item.resId,
-            otherProperties: item.otherProperties,
-            children: []
-          })
+          // menuTree.push({
+          //   itemName: item.itemName,
+          //   tblAlias: item.tblAlias,
+          //   operationID: item.operationID,
+          //   resId: item.resId,
+          //   otherProperties: item.otherProperties,
+          //   children: []
+          // })
+          let componentOf
+          if (item.itemName === '登记被测系统') {
+            componentOf = 'drawer'
+          } else {
+            if (item.resId === 990) {
+              componentOf = 'children'
+            } else {
+              componentOf = 'main'
+            }
+          }
           menuRouterLists.push({
             path: `/${item.itemName}`,
             component: 'layout',
@@ -152,11 +176,8 @@ export default {
               {
                 path: '',
                 // component: `() => import('@/views/currency')`,
-                //如果menuRouterLists中resId为1128和operationID为216,则component为drawer
-                component:
-                  item.resId === 1128 && item.operationID === 216
-                    ? 'drawer'
-                    : 'main',
+                //如果menuRouterLists中itemName为登记被测系统,则component为drawer
+                component: componentOf,
                 name: item.itemName,
                 meta: {
                   title: item.itemName,
@@ -176,7 +197,7 @@ export default {
           //如果menuRouterLists中resId为1128和operationID为216,则component为drawer
         })
 
-        console.log('*****menuTree*****1级:', menuTree)
+        // console.log('*****menuTree*****1级:', menuTree)
         console.log('*****menuRouterLists*****1级:', menuRouterLists)
         this.routerListsss = menuRouterLists
 
@@ -204,10 +225,11 @@ export default {
 .home {
   &-container {
     height: 100%;
+    background-color: #202a3c;
     background-image: url('bg.png');
-    background-repeat: no-repeat;
+    background-repeat: repeat;
     background-position: left top;
-    background-size: cover;
+    background-size: auto;
   }
   &-text {
     font-size: 30px;
@@ -222,15 +244,20 @@ export default {
 }
 .el-row {
   margin-top: 50px;
+  // 上下左右居中
+
+  justify-content: center;
+  align-items: center;
+
   &:last-child {
     margin-bottom: 0;
   }
 }
 .el-col {
-  width: 360px;
-  height: 210px;
+  width: 280px;
+  height: 164px;
   border-radius: 4px;
-  margin: 0px 50px;
+  margin: 30px 50px;
   background-image: url('borderBg.png');
   background-repeat: no-repeat;
   background-position: left top;
@@ -253,7 +280,7 @@ export default {
   text-align: center;
 
   .titleName {
-    font-size: 20px;
+    font-size: 16px;
     line-height: 30px;
     color: #fff;
     margin-bottom: 10px;
