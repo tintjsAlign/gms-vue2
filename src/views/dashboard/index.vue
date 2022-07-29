@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
-    <switch-roles @change="handleRolesChange" />
-    <div></div>
+    <!-- <switch-roles @change="handleRolesChange" /> -->
+    <h1>{{ routeParams.title }}</h1>
   </div>
 </template>
 
@@ -18,6 +18,11 @@ export default {
     return {
       key: 1 // 为了能每次切换权限的时候重新初始化指令
     }
+  },
+  created() {
+    // 获取路由的参数
+    this.routeParams = this.$route.meta
+    console.log('routeParams:', this.routeParams)
   },
   methods: {
     checkPermission,

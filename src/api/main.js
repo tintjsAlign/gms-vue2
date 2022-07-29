@@ -44,3 +44,14 @@ export function getMenuLvAfter(data) {
     data
   })
 }
+
+// 点击记录获取操作按钮
+export function getRecordMenuGrp(data) {
+  return request({
+    url: '/getRecordMenuGrp',
+    method: 'post',
+    data
+  })
+}
+
+

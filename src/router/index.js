@@ -51,20 +51,25 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-
   {
-    path: '/',
-    component: Layout,
-    redirect: '/dashboard',
-    children: [
-      {
-        path: 'dashboard',
-        name: 'Dashboard',
-        component: () => import('@/views/dashboard/index'),
-        meta: { title: '工作台', icon: 'dashboard' }
-      }
-    ]
+    path: '/test',
+    component: () => import('@/components/dynamicSearch'),
+    hidden: true
   },
+
+  // {
+  //   path: '/',
+  //   component: Layout,
+  //   redirect: '/dashboard',
+  //   children: [
+  //     {
+  //       path: 'dashboard',
+  //       name: 'Dashboard',
+  //       component: () => import('@/views/dashboard/index'),
+  //       meta: { title: '工作台', icon: 'dashboard' }
+  //     }
+  //   ]
+  // },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
@@ -76,9 +81,11 @@ export const constantRoutes = [
  */
 export const routerMap = {
   //  login:require('login/index').default // 同步的方式
+  dashboard: () => import('@/views/dashboard/index'),
   main: () => import('@/views/main'), // 异步的方式
   drawer: () => import('@/views/drawer'),
-  layout: () => import('@/layout')
+  layout: () => import('@/layout'),
+  children: () => import('@/views/nested/menu1')
 }
 //之后遍历这个map 并将 component 替换为map[component]
 // const asyncRoutes = []

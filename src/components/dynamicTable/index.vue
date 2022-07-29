@@ -1,49 +1,37 @@
 <template>
   <div class="table-container">
     <!-- <el-card class="box-card"> -->
-    <div class="dynamic-search">
-      <div style="width: 500px">
-        <el-input
-          v-model="searchContent"
-          placeholder="请输入搜索内容"
-          class="input-with-select"
-          @keyup.enter.native="search"
-        >
-          <el-select
-            v-model="select"
-            slot="prepend"
-            placeholder="请选择搜索项"
-            filterable
-          >
-            <el-option
-              v-for="(item, index) in formThead"
-              :key="index"
-              :label="item.fldAlais"
-              :value="item.queryFldName"
-            ></el-option>
-          </el-select>
-          <el-button
-            slot="append"
-            icon="el-icon-search"
-            @click="search"
-          ></el-button>
-        </el-input>
-      </div>
+    <!-- 按钮组 -->
+    <div class="button-group">
+      <dynamic-button
+        ref="dynamicButton"
+        :requestData="requestData"
+        @openDrawer="openDrawer"
+        @queryAllData="queryAllData"
+        @getRecordBtn="getRecordBtn"
+      ></dynamic-button>
     </div>
     <div class="dynamic-table">
       <el-table
+        v-click-outside="clickOutSide"
+        v-fit-columns
         :data="tableData"
+        ref="dynamicTable"
         border
         fit
         highlight-current-row
         style="width: 100%"
+        size="mini"
+        @current-change="handleCurrentChange"
+        @selection-change="handleSelectionChange"
       >
-        <!-- <el-table-column prop="name" label="fruitName" width="180" /> -->
+        <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column
           v-for="(fruit, index) in formThead"
           :key="index"
           :label="fruit.fldAlais"
           :prop="fruit.queryFldName"
+          min-width="80px"
         >
           <template slot-scope="scope">
             {{ scope.row[fruit.queryFldName] }}
@@ -59,14 +47,18 @@
           <template slot-scope="scope">
             <span>
               <el-button
+                v-for="(btn, i) in recordBtnGroup"
+                :key="i"
                 size="mini"
-                type="text"
-                @click="handleDetails(scope.row)"
+                :type="btn.type"
+                :icon="btn.icon"
+                circle
+                @click.native="handleMain(scope.row, btn)"
               >
-                详情
+                <!-- {{ btn.itemName }} -->
               </el-button>
             </span>
-            <span>
+            <!-- <span>
               <el-dropdown
                 trigger="click"
                 @command="handleMoreCommand($event, scope.row)"
@@ -83,33 +75,29 @@
                   >
                 </el-dropdown-menu>
               </el-dropdown>
-            </span>
+            </span> -->
           </template>
         </el-table-column>
       </el-table>
     </div>
     <!-- </el-card> -->
-    <div class="pagination-container">
-      <el-pagination
-        background
-        layout="total, sizes, prev, pager, next, jumper"
-        :current-page="currentPage"
-        :page-sizes="[5, 10, 20, 50]"
-        :page-size="pageSize"
-        :total="total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        style="margin: 10px 0"
-      >
-      </el-pagination>
-    </div>
+
+    <dynamic-drawer ref="drawer" @refresh="refresh"></dynamic-drawer>
   </div>
 </template>
 
 <script>
+import dynamicButton from '@/components/dynamicButton/index.vue'
+import dynamicDrawer from '@/components/dynamicDrawer/index.vue'
+
+import { requestMain } from '@/api/main'
 export default {
   name: 'table-container',
-  components: {},
+  inject: ['reload'],
+  components: {
+    dynamicButton,
+    dynamicDrawer
+  },
   props: {
     tableData: {
       type: Array,
@@ -118,6 +106,10 @@ export default {
     formThead: {
       type: Array,
       default: () => []
+    },
+    requestData: {
+      type: Object,
+      default: () => {}
     },
     moreButton: {
       type: Array,
@@ -134,69 +126,138 @@ export default {
       total: this.tableData.length, //数组总数
       currentPage: 1, //当前页
       paginationData: [], //分页数组
-      pageSize: 5 //每页数据
+      pageSize: 5, //每页数据
+      currentRow: null, //当前行数据
+      multipleSelection: [], //多选数据
+      recordBtnGroup: [] //操作按钮组
     }
   },
-  computed: {},
-  watch: {},
-  created() {
-    this.tableList = this.tableData
-    console.log('tableList', this.tableList)
-    this.handleCurrentChange(this.currentPage)
-    this.stashList = this.tableData //暂存数组  当搜索为空时候  数组展示所有数据
+  computed: {
+    operationTarget() {
+      return this.$store.state.settings.operationTarget
+    }
   },
+  watch: {},
+  created() {},
   mounted() {},
   methods: {
-    search() {
-      // 配合watchSearch自动搜索
-      // if (this.watchSearch) {
-      //   this.tableData = this.stashList
-      //   this.tableData = this.tableData.filter((item) => {
-      //     return item[this.select].includes(this.watchSearch)
-      //   })
-      // } else {
-      //   this.tableData = this.stashList
-      // }
-      // this.afreshTableList()
-      // select 为空时候 提示选择搜索项
-      if (this.select === '') {
-        this.$message.error('请选择搜索项')
-        return
-      }
-
-      if (this.searchContent) {
-        this.tableList = this.tableData
-        this.tableList = this.tableList.filter((item) => {
-          return item[this.select].includes(this.searchContent)
-        })
-      } else {
-        this.tableList = this.stashList
-      }
-      this.afreshTableList()
+    refresh() {
+      this.reload()
     },
-    afreshTableList() {
-      this.paginationData = [] //分页数组  tableData 所有的数据
-      for (
-        var j = this.pageSize * (this.currentPage - 1);
-        j < this.pageSize * this.currentPage;
-        j++
-      ) {
-        if (this.tableList[j]) {
-          this.paginationData.push(this.tableList[j])
+    // 点击空白处时触发的事件
+    clickOutSide() {
+      console.log('点击空白处时触发的事件')
+      // 取消选中
+      this.$refs.dynamicTable.setCurrentRow()
+      // 替换回原来的按钮组
+      this.$refs.dynamicButton.replaceButtonGroup('')
+    },
+    getRecordBtn(data) {
+      console.log('记录管理 按钮 父', data)
+      // 数组中添加对应的icon
+      data.forEach((item) => {
+        // 根据按钮名字,自定义按钮图标和按钮状态
+        switch (item.itemName) {
+          case '查看':
+            item.icon = 'el-icon-view'
+            item.type = 'primary'
+            break
+          case '修改':
+            item.icon = 'el-icon-edit'
+            item.type = 'success'
+            break
+          case '删除':
+            item.icon = 'el-icon-delete'
+            item.type = 'danger'
+            break
+          case '添加':
+            item.icon = 'el-icon-plus'
+            item.type = 'success'
+            break
+          case '提交':
+            item.icon = 'el-icon-check'
+            item.type = 'success'
+            break
+          case '审核':
+            item.icon = 'el-icon-check'
+            item.type = 'success'
+            break
+          case '取消':
+            item.icon = 'el-icon-close'
+            item.type = 'danger'
+            break
+          case '打印':
+            item.icon = 'el-icon-printer'
+            item.type = 'success'
+            break
+          case '导出':
+            item.icon = 'el-icon-download'
+            item.type = 'success'
+            break
+          case '导入':
+            item.icon = 'el-icon-upload'
+            item.type = 'success'
+            break
+          case '刷新':
+            item.icon = 'el-icon-refresh'
+            item.type = 'success'
+            break
+          case '查询':
+            item.icon = 'el-icon-view'
+            item.type = 'primary'
+            break
+          case '重置':
+            item.icon = 'el-icon-refresh'
+            item.type = 'success'
+            break
+          case '新增':
+            item.icon = 'el-icon-plus'
+            item.type = 'success'
+            break
+          case '保存':
+            item.icon = 'el-icon-save'
+            item.type = 'success'
+            break
+          case '复制':
+            item.icon = 'el-icon-document-copy'
+            item.type = 'info'
+            break
+          default:
+            item.icon = 'el-icon-view'
+            item.type = 'primary'
+            break
         }
+      })
+      // 替换表格操作按钮组
+      this.recordBtnGroup = data
+    },
+    handleMain(row, btn) {
+      console.log('当前行数据:', row)
+      console.log('操作id对照:', this.operationTarget)
+      console.log('btn参数:', btn)
+      // 根据操作id对照,进行不同的操作
+      // 以btn.operationID对应this.operationTarget对象中的key,获取对应的值
+      // 如果没有对应的key,则默认为空字符串
+      let key = this.operationTarget[btn.operationID] || ''
+      console.log('key:', key)
+      // 处理btn参数,全部加入row中
+      for (let i in btn) {
+        row[i] = btn[i]
       }
-      this.total = this.tableList.length
-    },
-    handleSizeChange(val) {
-      this.pageSize = val
-      this.afreshTableList()
-    },
-    handleCurrentChange(val) {
-      this.currentPage = val
-      this.afreshTableList()
-    },
-    handleDetails(row) {
-      console.log(row)
+      btn.objectID = row.objectID
+      switch (key) {
+        case 'ajaxTodo': // ajaxTodo 删除?
+          // 删除操作
+          this.deleteRow(row)
+          break
+        case 'dialog': // dialog 弹框
+          // 打开抽屉
+          console.log('打开抽屉')
+          this.openDrawer(row)
+          break
+        default: // 默认操作
+          break
+      }
     },
     handleMoreCommand(command, row) {
       console.log(command, row)
@@ -205,6 +266,73 @@ export default {
         message: '点击了按钮' + command,
         type: 'success'
       })
+    },
+    queryAllData(btn) {
+      let data = {
+        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+      }
+      // 合并参数
+      Object.assign(data, btn)
+      data.pageNum = 1
+      data.numPerPage = 5
+      requestMain(data).then(res => {
+        console.log('查询所有数据', res)
+        this.tableData = res.list
+      })
+    },
+    handleCurrentChange(val) {
+      this.currentRow = val
+      // if (val) {
+      //   console.log('单选数据', this.currentRow)
+      this.$refs.dynamicButton.replaceButtonGroup(val)
+      // }
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+      console.log('多选数据multipleSelection', this.multipleSelection)
+    },
+    openDrawer(row) {
+      this.$refs.drawer.show(row)
+    },
+    deleteRow(row) {
+      this.$confirm(`${row.otherProperties.operationTitle}`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          // 删除操作
+          let data = {
+            SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
+            SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+          }
+          // 合并data和row
+          Object.assign(data, row)
+          console.log('删除数据:', data)
+          requestMain(data)
+            .then((res) => {
+              console.log('删除结果:', res)
+              this.$message({
+                message: '删除成功',
+                type: 'success'
+              })
+              this.reload()
+            })
+            .catch((err) => {
+              console.log('删除错误:', err)
+              this.$message({
+                message: err,
+                type: 'error'
+              })
+            })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     }
   }
 }
@@ -212,30 +340,19 @@ export default {
 
 <style scoped lang="scss">
 .table-container {
-  padding: 20px;
+  padding: 0 20px 20px;
 
   .dynamic-table {
-    margin-top: 20px;
+    margin-top: 10px;
     margin-bottom: 20px;
   }
-  .pagination-container {
-    // 固定在右侧底部
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    // width: 100%;
-    margin-right: 10px;
-    margin-bottom: 5px;
-    height: 50px;
-    background: #fff;
-    // border-top: 1px solid #ebeef5;
-    .el-pagination {
-      margin: 0;
-    }
+
+  .button-group {
+    margin-top: 20px;
+    margin-bottom: 0px;
+    display: flex;
+    justify-content: flex-start;
   }
-}
-::v-deep .el-select .el-input {
-  width: 130px;
 }
 ::v-deep .el-dropdown-link {
   cursor: pointer;
