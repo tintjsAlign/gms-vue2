@@ -50,7 +50,7 @@ const actions = {
   generateRoutes({ commit }, { roles, tree }) {
     return new Promise((resolve) => {
       console.log('generateRoutes:tree', tree)
-      console.log(JSON.stringify(tree))
+      // console.log(JSON.stringify(tree))
       let accessedRoutes
       //然后在actions中GenerateRoutes方法合适的地方将后端请求的路由表映射到routerMap,并筛选出可访问的路由,serverRouterMap是我定义的从后台请求路由表的方法
       // serverRouterMap().then((response) => {
@@ -82,9 +82,8 @@ const actions = {
 function generateAsyncRouter(routerMap, serverRouterMap) {
   console.log('generateAsyncRouter:routerMap', routerMap)
   console.log('generateAsyncRouter:serverRouterMap', serverRouterMap)
-  console.log(JSON.stringify(serverRouterMap))
+  // console.log(JSON.stringify(serverRouterMap))
   serverRouterMap.forEach((item) => {
-    console.log('遍历serverRouterMap:', item)
     item.component = routerMap[item.component]
     if (item.children && item.children.length > 0) {
       generateAsyncRouter(routerMap, item.children)

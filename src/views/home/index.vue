@@ -67,7 +67,6 @@
 import { mapGetters } from 'vuex'
 import { getMenuLv1, getMenuLv2, getMenuLvAfter } from '@/api/main'
 
-import { menuTreeRouter } from '@/utils/menuTreeRouter'
 export default {
   name: 'home',
   data() {
@@ -112,7 +111,7 @@ export default {
     },
     routerGo(role) {
       // 根据点击的按钮，赋予不同的权限
-      this.$store.commit('user/SET_ROLES', [role])
+      // this.$store.commit('user/SET_ROLES', [role])
       this.$store
         .dispatch('user/changeRoles', {
           role: role,
@@ -163,35 +162,59 @@ export default {
             componentOf = 'drawer'
           } else {
             if (item.resId === 990) {
-              componentOf = 'children'
+              componentOf = ''
             } else {
               componentOf = 'main'
             }
           }
-          menuRouterLists.push({
-            path: `/${item.itemName}`,
-            component: 'layout',
-            meta: { roles: [role] },
-            children: [
-              {
-                path: '',
-                // component: `() => import('@/views/currency')`,
-                //如果menuRouterLists中itemName为登记被测系统,则component为drawer
-                component: componentOf,
-                name: item.itemName,
-                meta: {
-                  title: item.itemName,
-                  icon: item.itemName,
-                  roles: [role],
-                  itemName: item.itemName,
-                  tblAlias: item.tblAlias,
-                  operationID: item.operationID,
-                  resId: item.resId,
-                  otherProperties: item.otherProperties
-                }
+          let children = [
+            {
+              path: '',
+              // component: `() => import('@/views/currency')`,
+              //如果menuRouterLists中itemName为登记被测系统,则component为drawer
+              component: componentOf,
+              name: item.itemName,
+              meta: {
+                title: item.itemName,
+                icon: item.itemName,
+                roles: [role],
+                itemName: item.itemName,
+                tblAlias: item.tblAlias,
+                operationID: item.operationID,
+                resId: item.resId,
+                otherProperties: item.otherProperties
               }
-            ]
-          })
+            }
+          ]
+          if (item.resId === 990) {
+            menuRouterLists.push({
+              path: `/${item.itemName}`,
+              component: 'layout',
+              alwaysShow: true,
+              meta: {
+                title: item.itemName,
+                icon: item.itemName,
+                roles: [role],
+                itemName: item.itemName,
+                tblAlias: item.tblAlias,
+                operationID: item.operationID,
+                resId: item.resId,
+                otherProperties: item.otherProperties
+              }
+            })
+          } else {
+            menuRouterLists.push({
+              path: `/${item.itemName}`,
+              component: 'layout',
+              meta: {
+                title: item.itemName,
+                icon: item.itemName,
+                roles: [role]
+              },
+              children: children
+            })
+          }
+
           // 如果有子菜单，则生成子菜单树
 
           //如果menuRouterLists中resId为1128和operationID为216,则component为drawer
@@ -200,6 +223,8 @@ export default {
         // console.log('*****menuTree*****1级:', menuTree)
         console.log('*****menuRouterLists*****1级:', menuRouterLists)
         this.routerListsss = menuRouterLists
+
+        this.$store.commit('user/SET_ROUTERS', JSON.parse(JSON.stringify(menuRouterLists)))
 
         // 跳转界面
         this.routerGo(role)
@@ -214,7 +239,6 @@ export default {
         //   }
         // })
       })
-      console.log('*****RETURN*****:', menuRouterLists)
       return menuRouterLists
     }
   }

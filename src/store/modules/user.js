@@ -8,7 +8,8 @@ const getDefaultState = () => {
     name: '',
     avatar: '',
     introduction: '',
-    roles: []
+    roles: [],
+    routers: [],
   }
 }
 
@@ -32,6 +33,9 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_ROUTERS: (state, routers) => {
+    state.routers = routers
   }
 }
 
@@ -159,6 +163,7 @@ const actions = {
     // const { roles } = await dispatch('getInfo')
     let roles = [role]
     commit('SET_ROLES', roles)
+    // commit('SET_ROUTERS', tree)
 
     resetRouter()
 
@@ -173,10 +178,9 @@ const actions = {
     console.log('changeRoles accessRoutes:', accessRoutes)
 
     // 处理tree
-    console.log('changeRoles tree:', tree)
     // dynamically add accessible routes
-    // router.addRoutes(accessRoutes)
-    router.addRoutes(tree)
+    router.addRoutes(accessRoutes)
+    // router.addRoutes(tree)
 
     // reset visited views and cached views
     dispatch('tagsView/delAllViews', null, { root: true })

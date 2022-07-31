@@ -84,8 +84,7 @@ export const routerMap = {
   dashboard: () => import('@/views/dashboard/index'),
   main: () => import('@/views/main'), // 异步的方式
   drawer: () => import('@/views/drawer'),
-  layout: () => import('@/layout'),
-  children: () => import('@/views/nested/menu1')
+  layout: () => import('@/layout')
 }
 //之后遍历这个map 并将 component 替换为map[component]
 // const asyncRoutes = []
