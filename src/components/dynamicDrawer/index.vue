@@ -31,7 +31,7 @@
                       placeholder="请选择"
                       style="display: block"
                       @focus="queryOption(item)"
-                      @change="getChange(item, index)"
+                      @change="getChange($event, item, index)"
                     >
                       <el-option
                         v-for="item in options"
@@ -60,7 +60,7 @@
                       allow-create
                       default-first-option
                       @focus="queryOption(item)"
-                      @change="getChange(item, index)"
+                      @change="getChange($event, item, index)"
                     >
                       <el-option
                         v-for="item in options"
@@ -92,7 +92,7 @@
                 <!-- enum类型--枚举选择框 ↓↓↓-->
                 <el-col
                   span="12"
-                  v-else-if="item.otherProperties.textType === 'enum'"
+                  v-else-if="item.otherProperties.textType.match(/enum/g)"
                 >
                   <el-form-item :label="item.fldAlais">
                     <el-select
@@ -100,7 +100,7 @@
                       placeholder="请选择"
                       style="width: 100%"
                       @focus="queryOption(item)"
-                      @change="getChange(item, index)"
+                      @change="getChange($event, item, index)"
                     >
                       <el-option
                         v-for="item in options"
@@ -123,7 +123,7 @@
                       placeholder="请选择"
                       style="width: 100%"
                       @focus="queryOption(item)"
-                      @change="getChange(item, index)"
+                      @change="getChange($event, item, index)"
                     >
                       <el-option
                         v-for="item in options"
@@ -160,17 +160,17 @@
                 </el-col>
                 <!-- multirow 类型--多行输入框 end ↑↑↑-->
 
-                <!-- readOnlyQuery 类型--只读不可修改框 ↓↓↓-->
+                <!-- readOnly 类型--只读不可修改框 ↓↓↓-->
                 <el-col
                   span="12"
                   v-else-if="
-                    item.otherProperties.textType === 'readOnlyQuery' &&
+                    item.otherProperties.textType.match(/readOnly/g) &&
                     item.otherProperties.otherCon === 'readonly'
                   "
                 >
                   <el-form-item :label="item.fldAlais">
                     <el-input
-                      v-model="item.otherProperties.fldRemark"
+                      v-model="form[item.valueFldName]"
                       autocomplete="off"
                       type="text"
                       :disabled="true"
@@ -178,7 +178,7 @@
                     ></el-input>
                   </el-form-item>
                 </el-col>
-                <!-- multirow 类型--多行输入框 end ↑↑↑-->
+                <!-- readOnly 类型--只读不可修改框 end ↑↑↑-->
 
                 <!-- 普通类型--输入框 ↓↓↓-->
                 <el-col span="12" v-else>
@@ -243,10 +243,10 @@ export default {
       this.isTextarea = false
       this.form = {}
 
-      this.loadingInstance = this.$loading({
-        target: '.drawerBox',
-        fullscreen: true
-      })
+      // this.loadingInstance = this.$loading({
+      //   target: '.drawerBox',
+      //   fullscreen: true
+      // })
       console.log('openDrawer####', data)
       this.requestData = data
 
@@ -309,8 +309,21 @@ export default {
 
       requestMain(requestMainData).then((res) => {
         console.log('抽屉requestMain:', res)
+        if (this.requestData.itemName === '登记被测系统') {
+          this.trueRes = res
+        } else {
+          // ###########暂时测试用####
+          if (this.requestData.operationID === 1) {
+            this.trueRes = res
+          } else {
+            this.trueRes = res.showfield
+            this.resMap = res.resMap
+            // 去除res.showfield最后一个字段
+            this.trueRes = this.trueRes.slice(0, -1)
+          }
+        }
         // 过滤 类型为notshow的字段
-        let drawerData = res.filter(
+        let drawerData = this.trueRes.filter(
           (item) => item.otherProperties.textType !== 'notshow'
         )
         this.drawerData = drawerData
@@ -318,20 +331,27 @@ export default {
 
         // 根据来源数据,给表单赋初始值(深拷贝)
         // key=this.drawerData.valueFldName  value=this.drawerData.otherProperties.fldRemark
-        let form = {}
-        this.drawerData.forEach((item) => {
-          if (item.otherProperties.textType === 'enum') {
-            // 枚举类型特殊处理
-            form[item.valueFldName] = item.otherProperties.fldRemark
-            form[item.valueFldName + '_enum'] = item.otherProperties.fldValue
-          } else {
-            form[item.valueFldName] = item.otherProperties.fldRemark
-          }
-        })
-        this.form = JSON.parse(JSON.stringify(form))
+        if (
+          this.requestData.itemName !== '登记被测系统' &&
+          this.requestData.operationID !== 1
+        ) {
+          let form = {}
+          this.drawerData.forEach((item) => {
+            if (item.otherProperties.textType === 'enum') {
+              // 枚举类型特殊处理
+              form[item.valueFldName] = item.otherProperties.fldRemark
+              form[item.valueFldName + '_enum'] = item.otherProperties.fldValue
+            } else {
+              // 其它默认值,与resMap对应
+              form[item.valueFldName] = this.resMap[item.valueFldName]
+              // form[item.valueFldName] = item.otherProperties.fldRemark
+            }
+          })
+          this.form = JSON.parse(JSON.stringify(form))
+        }
 
         this.dialog = true
-        this.loadingInstance.close()
+        // this.loadingInstance.close()
         // this.thead.forEach((item) => {
         //   this[item.key] = item.value
         // })
@@ -420,7 +440,10 @@ export default {
         this.options = options
       })
     },
-    getChange(item, index) {},
+    getChange(e, item, index) {
+      console.log('选择框变化', item)
+      console.log('选择框变化值', e)
+    },
     dateChange(date) {
       console.log('dateChange:', date)
     },
@@ -450,7 +473,9 @@ export default {
             }
             if (this.requestData.itemName === '登记被测系统') {
               data.condition = encodeURI(this.condition)
-              data.operationID = '216'
+              ;(data.operationID = '216'),
+                (data.resId = '1128'),
+                (data.tblAlias = '业务功能执行过程管理界面-运行')
             } else {
               // this.form和this.requestData的值合并放入到data中
 
@@ -511,7 +536,7 @@ export default {
                 this.loading = false
                 this.dialog = false
                 if (this.requestData.itemName === '登记被测系统') {
-                  this.$router.go(-1)
+                  this.$router.push('/被测信息系统')
                 } else {
                   this.$emit('refresh')
                 }
@@ -581,6 +606,6 @@ export default {
   font-size: 12px;
 }
 ::v-deep .el-input.is-disabled .el-input__inner {
-    color: #81827b;
+  color: #81827b;
 }
 </style>

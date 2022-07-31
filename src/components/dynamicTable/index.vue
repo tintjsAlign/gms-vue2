@@ -1,5 +1,5 @@
 <template>
-  <div class="table-container">
+  <div class="table-container" v-click-outside="clickOutSide">
     <!-- <el-card class="box-card"> -->
     <!-- 按钮组 -->
     <div class="button-group">
@@ -13,7 +13,7 @@
     </div>
     <div class="dynamic-table">
       <el-table
-        v-click-outside="clickOutSide"
+        
         v-fit-columns
         :data="tableData"
         ref="dynamicTable"
@@ -110,10 +110,6 @@ export default {
     requestData: {
       type: Object,
       default: () => {}
-    },
-    moreButton: {
-      type: Array,
-      default: () => []
     }
   },
   data() {
@@ -278,7 +274,9 @@ export default {
       data.numPerPage = 5
       requestMain(data).then(res => {
         console.log('查询所有数据', res)
-        this.tableData = res.list
+        this.tableData = res[0].list
+        this.searchLists = res[1].queryFlag
+        this.$emit('formatEnum',this.searchLists)
       })
     },
     handleCurrentChange(val) {

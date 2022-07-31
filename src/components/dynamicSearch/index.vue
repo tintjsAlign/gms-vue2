@@ -65,10 +65,9 @@
 
 <script>
 import { requestMain } from '@/api/main'
-import DropdownMenu from '@/components/Share/DropdownMenu'
 export default {
   name: '',
-  components: { DropdownMenu },
+  components: {  },
   props: {
     searchData: {
       type: Object,
