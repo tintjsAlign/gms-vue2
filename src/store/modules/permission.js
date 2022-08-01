@@ -49,13 +49,13 @@ const mutations = {
 const actions = {
   generateRoutes({ commit }, { roles, tree }) {
     return new Promise((resolve) => {
-      console.log('generateRoutes:tree', tree)
+      // console.log('generateRoutes:tree', tree)
       // console.log(JSON.stringify(tree))
       let accessedRoutes
       //然后在actions中GenerateRoutes方法合适的地方将后端请求的路由表映射到routerMap,并筛选出可访问的路由,serverRouterMap是我定义的从后台请求路由表的方法
       // serverRouterMap().then((response) => {
       var asyncRouterMap = generateAsyncRouter(routerMap, tree)
-      console.log('generateRoutes:asyncRouterMap', asyncRouterMap)
+      // console.log('generateRoutes:asyncRouterMap', asyncRouterMap)
       if (roles.indexOf('admin') >= 0) {
         accessedRoutes = asyncRouterMap
       } else {

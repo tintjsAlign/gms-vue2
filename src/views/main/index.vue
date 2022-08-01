@@ -1,13 +1,18 @@
 <template>
   <div class="globalPageTemplate">
     <div class="dynamic-search">
-      <dynamic-search :searchData="searchLists" @searchResult="searchResult"></dynamic-search>
+      <dynamic-search
+        :searchData="searchLists"
+        :currentPage="currentPage"
+        :pageSize="pageSize"
+        @searchResult="searchResult"
+      ></dynamic-search>
     </div>
     <dynamic-table
-      :tableData="tableData"
+      :tableData="tableDataFinal"
       :formThead="formThead"
-      :moreButton="moreButton"
       :requestData="routeParams"
+      @searchResult="searchResult"
     ></dynamic-table>
     <div class="pagination-container">
       <el-pagination
@@ -43,16 +48,6 @@ export default {
       routeParams: {},
       formThead: [],
       tableData: [],
-      moreButton: [
-        {
-          buttonValue: '管理',
-          buttonID: 'manage'
-        },
-        {
-          buttonValue: '其它',
-          buttonID: 'other'
-        }
-      ],
       total: 0, //数组总数
       currentPage: 1, //当前页
       pageSize: 5, //每页数据
@@ -76,7 +71,7 @@ export default {
   },
   mounted() {},
   methods: {
-    init() {
+    init(searchReqData) {
       let requestMainData = {
         pageNum: this.currentPage,
         numPerPage: this.pageSize,
@@ -88,50 +83,97 @@ export default {
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
       }
+      if (searchReqData) {
+        // 合并requestMainData
+        requestMainData = Object.assign(requestMainData, searchReqData)
+        requestMainData.pageNum = this.currentPage
+        requestMainData.numPerPage = this.pageSize
+      }
       requestMain(requestMainData).then((res) => {
         console.log('requestMain:', res)
-        if (res.list.length > this.pageSize) {
+        if (res[0].list.length > this.pageSize) {
           this.init()
         } else {
-          this.tableData = res.list
-          this.thead = res.sqlFlag
-          this.searchLists = res.queryFlag
-          this.total = Number(res.totalRecNum)
-          console.log('tableData:', this.tableData)
-          // console.log('thead:', this.thead)
+          this.tableData = res[0].list
+          this.formThead = res[1].sqlFlag
+          this.searchLists = res[1].queryFlag
+          this.total = Number(res[0].totalRecNum)
+          console.log('初始tableData:', this.tableData)
+          console.log('searchLists:', this.searchLists)
           console.log('total:', this.total)
+          let originSearchLists = JSON.parse(JSON.stringify(this.searchLists))
+          this.formatEnum(originSearchLists)
 
-          this.formThead = this.formatThead(this.thead)
+          this.searchLists = this.formatSearchLists(this.searchLists)
 
-          console.log('formThead:', this.formThead)
+          console.log('searchLists:', this.searchLists)
+          this.tableDataFinal = this.tableData
         }
         // this.thead.forEach((item) => {
         //   this[item.key] = item.value
         // })
       })
     },
-    formatThead(theadPending) {
-      // 处理表头数据格式,改键名
-      let thead = []
-      theadPending.forEach((item) => {
-        thead.push({
-          fldAlais: item.remark,
-          queryFldName: item.FldName
-        })
+    formatSearchLists(list) {
+      // 处理搜索列表,去掉remark的冒号
+      list.forEach((item) => {
+        if (item.remark) {
+          item.remark = item.remark.replace(':', '')
+        }
       })
-      return thead
+      return list
+    },
+    formatEnum(data) {
+      console.log('formatEnum data:', data)
+
+      data.forEach((item) => {
+        if (item.otherProperties.textType === 'enum') {
+          // console.log('item value:', value)
+          requestMain({
+            SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
+            SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+            operationID: item.otherProperties.operationIDForSuggest,
+            condition: item.condition
+          }).then((res) => {
+            console.log('queryEnum枚举:', res)
+            this.enumRes = res
+            this.queryEnum(item)
+          })
+        }
+      })
+    },
+    queryEnum(item) {
+      // 对枚举数据进行处理
+      this.tableData.forEach((table) => {
+        let value
+        value = table[item.fldName]
+        this.enumRes.forEach((item2) => {
+          if (value === item2.value) {
+            this.text = item2.remark
+          }
+        })
+        // 替换tableData中的值
+        table[item.fldName] = this.text
+      })
     },
     handleSizeChange(val) {
       this.pageSize = val
-      this.init()
+      this.init(this.searchReqData)
     },
     handleCurrentChange(val) {
       this.currentPage = val
-      this.init()
+      this.init(this.searchReqData)
     },
-    searchResult(searchData) {
-      this.tableData = searchData.list
-      this.total = Number(searchData.totalRecNum)
+    searchResult(searchData, data) {
+      this.tableDataFinal = []
+      if (data) {
+        this.searchReqData = data
+      }
+      console.log('查询结果:', searchData)
+      this.tableData = searchData[0].list
+      this.formatEnum(searchData[1].queryFlag)
+      this.tableDataFinal = this.tableData
+      this.total = Number(searchData[0].totalRecNum)
     }
   }
 }

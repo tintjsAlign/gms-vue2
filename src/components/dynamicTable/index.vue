@@ -13,7 +13,6 @@
     </div>
     <div class="dynamic-table">
       <el-table
-        
         v-fit-columns
         :data="tableData"
         ref="dynamicTable"
@@ -142,7 +141,6 @@ export default {
     },
     // 点击空白处时触发的事件
     clickOutSide() {
-      console.log('点击空白处时触发的事件')
       // 取消选中
       this.$refs.dynamicTable.setCurrentRow()
       // 替换回原来的按钮组
@@ -266,17 +264,15 @@ export default {
     queryAllData(btn) {
       let data = {
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
       }
       // 合并参数
       Object.assign(data, btn)
       data.pageNum = 1
       data.numPerPage = 5
-      requestMain(data).then(res => {
+      requestMain(data).then((res) => {
         console.log('查询所有数据', res)
-        this.tableData = res[0].list
-        this.searchLists = res[1].queryFlag
-        this.$emit('formatEnum',this.searchLists)
+        this.$emit('searchResult', res)
       })
     },
     handleCurrentChange(val) {

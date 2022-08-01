@@ -3,7 +3,7 @@
     <el-row :gutter="10" type="flex">
       <el-col v-for="(item, index) in btnLists" :key="index">
         <el-button
-          type="primary"
+          :type="!typeChange ? 'primary' : 'success'"
           plain
           size="small"
           @click="mainEnter(item)"
@@ -12,7 +12,7 @@
         >
         <el-dropdown trigger="click" v-else @command="mainCommand">
           <el-button
-            type="primary"
+            :type="!typeChange ? 'primary' : 'success'"
             @click="getDropdownBtn(item)"
             plain
             size="small"
@@ -47,7 +47,8 @@ export default {
   data() {
     return {
       btnLists: [],
-      dropdownBtnList: []
+      dropdownBtnList: [],
+      typeChange: false
     }
   },
   computed: {
@@ -142,11 +143,14 @@ export default {
     },
     replaceButtonGroup(flag) {
       if (flag) {
-        console.log('以选中,替换按钮组')
+        // console.log('以选中,替换按钮组')
+        // 改变按钮颜色
+        this.typeChange = true
         this.btnLists = [...new Set(this.recordMenuGrp)]
       } else {
-        console.log('取消选中,替换按钮组')
+        // console.log('取消选中,替换按钮组')
         this.$emit('replaceButtonGroup')
+        this.typeChange = false
         this.btnLists = [...new Set(this.mainBtnLists)]
       }
     },

@@ -8,23 +8,36 @@
         style="margin-top: 10px"
       >
         <el-tooltip class="item" effect="dark" :content="input.remark" placement="top-start">
+        
+         <!-- enum类型--枚举选择框 ↓↓↓-->
+
+          <el-select
+            v-model="form[input.fldName]"
+            :placeholder="input.remark"
+            style="width: 100%"
+            size="mini"
+            @focus="queryOption(input)"
+            @change="getChange($event, input, index)"
+            v-if="input.otherProperties.textType.match(/enum/g)"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+              ></el-option>
+            </el-select>
+        <!-- enum类型--枚举选择框 end ↑↑↑-->
+        <!-- 普通类型--输入框 ↓↓↓-->
         <el-input
-          v-model="form[input.FldName]"
+          v-model="form[input.fldName]"
           :placeholder="input.remark"
           size="mini"
           clearable
+          v-else
         >
-        <!-- <el-input
-          v-model="form[input.FldName]"
-          :placeholder="input.remark"
-          size="mini"
-          @focus="onFocus(input,index)"
-          @blur="onBlur(input,index)"
-        > -->
-          <!-- <template slot="prepend" v-if="showInputName[index]">{{
-            input.remark
-          }}</template> -->
         </el-input>
+        <!-- 普通类型--输入框 end ↑↑↑-->
       </el-col>
     </el-row>
     <el-row :gutter="5" style="margin: 10px" class="bottonBox">
@@ -72,13 +85,22 @@ export default {
     searchData: {
       type: Object,
       default: () => {}
-    }
+    },
+    currentPage: {
+      type: Number,
+      default: 1
+    },
+    pageSize: {
+      type: Number,
+      default: 5
+    },
   },
   data() {
     return {
       searchLists: [],
       form: {},
       showInputName: [],
+      options: [],
     }
   },
   computed: {},
@@ -119,8 +141,9 @@ export default {
       Object.assign(data, this.form)
       // 合并路由参数
       Object.assign(data, this.routeParams)
-      data.pageNum = 1
-      data.numPerPage = 5
+      // data.pageNum = 1
+      data.pageNum = this.currentPage
+      data.numPerPage = this.pageSize
       data.operationID = 51
       data.isBlur= '1'
       if (command === 'accurate') {
@@ -131,7 +154,7 @@ export default {
       // 发送请求
       requestMain(data).then(res => {
         console.log('search:', res)
-        this.$emit('searchResult', res)
+        this.$emit('searchResult', res, data)
       })
     },
     handleCommand(command) {
@@ -141,7 +164,59 @@ export default {
     },
     reset() {
       this.form = {}
-    }
+    },
+    queryOption(item) {
+      this.options = []
+      // console.log('查询选择框参数', item)
+      this.readName = item.otherProperties.fldName
+      let data = {
+        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        // operationID: item.otherProperties.operationIDForSuggest,
+        // readName: item.otherProperties.readFld,
+        // condition:
+      }
+      // 如果this.form有值,则加入到data中
+      if (this.form) {
+        for (let key in this.form) {
+          data[key] = this.form[key]
+        }
+      }
+      data.operationID = item.otherProperties.operationIDForSuggest
+      data.condition = encodeURI(item.condition)
+      data.readName = item.otherProperties.fldName
+      requestMain(data).then((res) => {
+        if (res === []) {
+          // 清空选择框和输入框
+          this.options = []
+          this.form[item.fldName] = ''
+        }
+        console.log('查询选择框数据', res)
+        let options = []
+        if (item.otherProperties.textType === 'enum') {
+          // 拼装枚举options
+          res.forEach((item) => {
+            options.push({
+              value: item.value,
+              label: item.remark
+            })
+          })
+        } else {
+          // 拼装options
+          res.forEach((item) => {
+            options.push({
+              value: item[this.readName],
+              label: item[this.readName]
+            })
+          })
+        }
+        this.options = options
+      })
+    },
+    getChange(e, item, index) {
+      console.log('选择框变化', item)
+      console.log('选择框变化值', e)
+    },
   }
 }
 </script>
