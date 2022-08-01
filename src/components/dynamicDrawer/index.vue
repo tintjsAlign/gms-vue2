@@ -12,7 +12,12 @@
       <div class="demo-drawer__content">
         <el-row gutter="20">
           <el-col span="24">
-            <el-form :model="form" label-position="top" size="small">
+            <el-form
+              :model="form"
+              ref="dynamicTableRef"
+              label-position="top"
+              size="small"
+            >
               <!-- el-row 每行最多两个输入框 -->
 
               <div v-for="(item, index) in drawerData" :key="index">
@@ -25,7 +30,10 @@
                     item.otherProperties.otherCon === 'readonly'
                   "
                 >
-                  <el-form-item :label="item.fldAlais">
+                  <el-form-item
+                    :required="isRequired(item)"
+                    :label="item.fldAlais"
+                  >
                     <el-select
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
@@ -51,7 +59,10 @@
                     item.otherProperties.otherCon === ''
                   "
                 >
-                  <el-form-item :label="item.fldAlais">
+                  <el-form-item
+                    :required="isRequired(item)"
+                    :label="item.fldAlais"
+                  >
                     <el-select
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
@@ -77,7 +88,10 @@
                   span="12"
                   v-else-if="item.otherProperties.textType === 'dateTime'"
                 >
-                  <el-form-item :label="item.fldAlais">
+                  <el-form-item
+                    :required="isRequired(item)"
+                    :label="item.fldAlais"
+                  >
                     <el-date-picker
                       v-model="form[item.valueFldName]"
                       :value-format="item.otherProperties.dateFmt"
@@ -94,7 +108,10 @@
                   span="12"
                   v-else-if="item.otherProperties.textType.match(/enum/g)"
                 >
-                  <el-form-item :label="item.fldAlais">
+                  <el-form-item
+                    :required="isRequired(item)"
+                    :label="item.fldAlais"
+                  >
                     <el-select
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
@@ -117,7 +134,10 @@
                   span="12"
                   v-else-if="item.otherProperties.textType === 'queryArea'"
                 >
-                  <el-form-item :label="item.fldAlais">
+                  <el-form-item
+                    :required="isRequired(item)"
+                    :label="item.fldAlais"
+                  >
                     <el-select
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
@@ -140,7 +160,10 @@
                   span="12"
                   v-else-if="item.otherProperties.textType === 'multirow'"
                 >
-                  <el-form-item :label="item.fldAlais">
+                  <el-form-item
+                    :required="isRequired(item)"
+                    :label="item.fldAlais"
+                  >
                     <el-input
                       v-model="form[item.valueFldName]"
                       autocomplete="off"
@@ -168,7 +191,10 @@
                     item.otherProperties.otherCon === 'readonly'
                   "
                 >
-                  <el-form-item :label="item.fldAlais">
+                  <el-form-item
+                    :required="isRequired(item)"
+                    :label="item.fldAlais"
+                  >
                     <el-input
                       v-model="form[item.valueFldName]"
                       autocomplete="off"
@@ -182,7 +208,10 @@
 
                 <!-- 普通类型--输入框 ↓↓↓-->
                 <el-col span="12" v-else>
-                  <el-form-item :label="item.fldAlais">
+                  <el-form-item
+                    :required="isRequired(item)"
+                    :label="item.fldAlais"
+                  >
                     <el-input
                       v-model="form[item.valueFldName]"
                       autocomplete="off"
@@ -348,6 +377,22 @@ export default {
             }
           })
           this.form = JSON.parse(JSON.stringify(form))
+        } else {
+          let form = {}
+          this.drawerData.forEach((item) => {
+            if (item.otherProperties.textType) {
+              if (item.otherProperties.textType === 'enum') {
+                // 枚举类型特殊处理
+                form[item.valueFldName] = item.otherProperties.fldRemark
+                form[item.valueFldName + '_enum'] =
+                  item.otherProperties.fldValue
+              } else {
+                // 其它默认值
+                form[item.valueFldName] = item.otherProperties.defaultValue
+              }
+            }
+          })
+          this.form = JSON.parse(JSON.stringify(form))
         }
 
         this.dialog = true
@@ -356,6 +401,14 @@ export default {
         //   this[item.key] = item.value
         // })
       })
+    },
+    isRequired(item) {
+      console.log('isRequired:', item)
+      if (item.otherProperties.checkClass.includes('required')) {
+        return true
+      } else {
+        return false
+      }
     },
     handleClose(done) {
       if (this.loading) {
@@ -393,6 +446,15 @@ export default {
       this.isTextarea = !this.isTextarea
     },
     queryOption(item) {
+      // 过滤掉this.form对象中的含有'_enum'的字段
+      let form = JSON.parse(JSON.stringify(this.form))
+      for (let key in form) {
+        if (key.indexOf('_enum') !== -1) {
+          delete form[key]
+        }
+      }
+      this.form = form
+
       this.options = []
       // console.log('查询选择框参数', item)
       this.readName = item.otherProperties.readFld
@@ -448,113 +510,127 @@ export default {
       console.log('dateChange:', date)
     },
     submitForm() {
-      this.$confirm('确定要提交表单吗？')
-        .then((_) => {
-          this.loading = true
-          // this.timer = setTimeout(() => {
-          // 动画关闭需要一定的时间
-          setTimeout(() => {
-            if (this.requestData.itemName === '登记被测系统') {
-              // 拼接form数据为字符串
-              let formData = ''
-              for (let key in this.form) {
-                formData += `${key}=${this.form[key]},`
-              }
-              formData = formData.substring(0, formData.length - 1)
-              // 拼接preCondition和formData
-              this.condition = `${this.preCondition},${formData}`
-              console.log('true condition:', this.condition)
-            }
-
-            // 发送请求
-            let data = {
-              SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-              SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
-            }
-            if (this.requestData.itemName === '登记被测系统') {
-              data.condition = encodeURI(this.condition)
-              ;(data.operationID = '216'),
-                (data.resId = '1128'),
-                (data.tblAlias = '业务功能执行过程管理界面-运行')
-            } else {
-              // this.form和this.requestData的值合并放入到data中
-
-              // this.requestData
-              for (let key in this.requestData) {
-                data[key] = this.requestData[key]
-              }
-              // 处理this.form中的枚举类型
-              for (let key in this.form) {
-                if (this.form[key + '_enum']) {
-                  data[key] = this.form[key + '_enum']
-                } else {
-                  data[key] = this.form[key]
-                }
-              }
-              // for (let key in this.form) {
-              //   data[key] = this.form[key]
-              // }
-
-              data.condition = encodeURI(this.preCondition)
-              // operationID
-              if (
-                this.requestData.operationID === 1 ||
-                this.requestData.itemName.indexOf('新增') > -1
-              ) {
-                data.operationID = '1001'
-              } else if (
-                this.requestData.operationID === 50 ||
-                this.requestData.itemName.indexOf('修改') > -1
-              ) {
-                data.operationID = '1003'
-              } else if (
-                this.requestData.operationID === 49 ||
-                this.requestData.itemName.indexOf('复制') > -1
-              ) {
-                data.operationID = '1001'
-              }
-
-              // 把所有的值拼接成字符串,以#START开头,以#ENDFLAG结尾,以|分割
-
-              let formData = ''
-              for (let key in data) {
-                formData += `${key}=${data[key]}|`
-              }
-              data.allResponseFields = `#START${formData}#ENDFLAG`
-            }
-            requestMain(data).then((res) => {
-              console.log(res)
-              if (res === 'statusCode:200') {
-                // 提交成功后关闭dialog,并刷新页面
-
-                this.$notify({
-                  title: '成功',
-                  message: '提交成功',
-                  type: 'success',
-                  duration: 2000
-                })
-                this.loading = false
-                this.dialog = false
+      this.$refs.dynamicTableRef.validate((valid) => {
+        if (!valid) {
+          console.log('error submit!!')
+          return false
+        } else {
+          this.$confirm('确定要提交表单吗？')
+            .then((_) => {
+              this.loading = true
+              // this.timer = setTimeout(() => {
+              // 动画关闭需要一定的时间
+              setTimeout(() => {
                 if (this.requestData.itemName === '登记被测系统') {
-                  this.$router.push('/被测信息系统')
-                } else {
-                  this.$emit('refresh')
+                  // 拼接form数据为字符串
+                  let formData = ''
+                  for (let key in this.form) {
+                    if (this.form[key + '_enum']) {
+                      this.form[key] = this.form[key + '_enum']
+                    } else {
+                      this.form[key] = this.form[key]
+                    }
+                  }
+                  for (let key in this.form) {
+                    formData += `${key}=${this.form[key]},`
+                  }
+                  formData = formData.substring(0, formData.length - 1)
+                  // 拼接preCondition和formData
+                  this.condition = `${this.preCondition},${formData}`
+                  console.log('true condition:', this.condition)
                 }
-              } else {
-                // 截取错误信息
-                // reference to view with name 'template/main'; model is {message=错误原因=被测单位的名称不能为空|SERVICELOGSSN=202207261031511220210016|, statusCode=300}
-                let error = res.split('|')[0].split('message=')[1]
-                this.$message.error(error)
-                this.loading = false
-              }
-              // clearTimeout(this.timer)
+
+                // 发送请求
+                let data = {
+                  SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
+                  SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+                }
+                if (this.requestData.itemName === '登记被测系统') {
+                  data.condition = encodeURI(this.condition)
+                  data.operationID = '216'
+                  data.resId = '1128'
+                  data.tblAlias = '业务功能执行过程管理界面-运行'
+                } else {
+                  // this.form和this.requestData的值合并放入到data中
+
+                  // this.requestData
+                  for (let key in this.requestData) {
+                    data[key] = this.requestData[key]
+                  }
+                  // 处理this.form中的枚举类型
+                  for (let key in this.form) {
+                    if (this.form[key + '_enum']) {
+                      data[key] = this.form[key + '_enum']
+                    } else {
+                      data[key] = this.form[key]
+                    }
+                  }
+                  // for (let key in this.form) {
+                  //   data[key] = this.form[key]
+                  // }
+
+                  data.condition = encodeURI(this.preCondition)
+                  // operationID
+                  if (
+                    this.requestData.operationID === 1 ||
+                    this.requestData.itemName.indexOf('新增') > -1
+                  ) {
+                    data.operationID = '1001'
+                  } else if (
+                    this.requestData.operationID === 50 ||
+                    this.requestData.itemName.indexOf('修改') > -1
+                  ) {
+                    data.operationID = '1003'
+                  } else if (
+                    this.requestData.operationID === 49 ||
+                    this.requestData.itemName.indexOf('复制') > -1
+                  ) {
+                    data.operationID = '1001'
+                  }
+
+                  // 把所有的值拼接成字符串,以#START开头,以#ENDFLAG结尾,以|分割
+
+                  let formData = ''
+                  for (let key in data) {
+                    formData += `${key}=${data[key]}|`
+                  }
+                  data.allResponseFields = `#START${formData}#ENDFLAG`
+                }
+                requestMain(data).then((res) => {
+                  console.log(res)
+                  if (res === 'statusCode:200') {
+                    // 提交成功后关闭dialog,并刷新页面
+
+                    this.$notify({
+                      title: '成功',
+                      message: '提交成功',
+                      type: 'success',
+                      duration: 2000
+                    })
+                    this.loading = false
+                    this.dialog = false
+                    if (this.requestData.itemName === '登记被测系统') {
+                      this.$router.push('/被测信息系统')
+                    } else {
+                      this.$emit('refresh')
+                    }
+                  } else {
+                    // 截取错误信息
+                    // reference to view with name 'template/main'; model is {message=错误原因=被测单位的名称不能为空|SERVICELOGSSN=202207261031511220210016|, statusCode=300}
+                    let error = res.split('|')[0].split('message=')[1]
+                    this.$message.error(error)
+                    this.loading = false
+                  }
+                  // clearTimeout(this.timer)
+                })
+                // this.$refs.drawer.closeDrawer()
+              }, 400)
+              // }, 1000)
             })
-            // this.$refs.drawer.closeDrawer()
-          }, 400)
-          // }, 1000)
-        })
-        .catch((_) => {})
-      // clearTimeout(this.timer)
+            .catch((_) => {})
+          // clearTimeout(this.timer)
+        }
+      })
     }
   }
 }

@@ -7,7 +7,7 @@
         :key="index"
         style="margin-top: 10px"
       >
-        <el-tooltip class="item" effect="dark" :content="input.remark" placement="top-start">
+        <el-tooltip class="item" effect="dark" :content="input.remark" open-delay="500" placement="top-start">
         
          <!-- enum类型--枚举选择框 ↓↓↓-->
 

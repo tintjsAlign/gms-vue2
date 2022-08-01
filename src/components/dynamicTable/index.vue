@@ -44,10 +44,9 @@
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span>
+            <span v-for="(btn, i) in recordBtnGroup" :key="i" class="btnsClass">
+              <el-tooltip class="item" effect="dark" :content="btn.itemName" open-delay="700" placement="top-start">
               <el-button
-                v-for="(btn, i) in recordBtnGroup"
-                :key="i"
                 size="mini"
                 :type="btn.type"
                 :icon="btn.icon"
@@ -355,5 +354,8 @@ export default {
 }
 ::v-deep .el-icon-arrow-down {
   font-size: 12px;
+}
+.btnsClass {
+  margin-left: 10px;
 }
 </style>
