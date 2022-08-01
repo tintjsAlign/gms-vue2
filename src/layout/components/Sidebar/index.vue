@@ -105,8 +105,10 @@ export default {
             }
           }
           menuRouterLists.push({
-            path: `/${item.itemName}`,
+            path: `/${route.itemName}_${item.itemName}`,
             component: componentOf,
+            // name:`${route.itemName}_${item.itemName}`,
+            name: item.tblAlias,
             meta: {
               title: item.itemName,
               icon: item.itemName,
