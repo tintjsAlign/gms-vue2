@@ -51,22 +51,16 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-  {
-    path: '/test',
-    component: () => import('@/components/dynamicSearch'),
-    hidden: true
-  },
-
   // {
-  //   path: '/',
+  //   path: '/iframe',
   //   component: Layout,
-  //   redirect: '/dashboard',
+  //   redirect: '/iframe',
   //   children: [
   //     {
-  //       path: 'dashboard',
-  //       name: 'Dashboard',
-  //       component: () => import('@/views/dashboard/index'),
-  //       meta: { title: '工作台', icon: 'dashboard' }
+  //       path: 'iframe',
+  //       name: 'iframe',
+  //       component: () => import('@/views/iframe/'),
+  //       meta: { title: 'iframe', icon: 'iframe' }
   //     }
   //   ]
   // },

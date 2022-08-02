@@ -6,56 +6,28 @@
 
     <el-row type="flex" justify="center">
       <el-col :span="5">
-        <div
-          class="grid-content bg-purple"
-          @click="toDashboard('测评准备', 'router_ready')"
-        >
-          <el-image
-            style="width: 60px; height: 60px"
-            :src="require('@/assets/img/pczb.png')"
-            fit="fit"
-          ></el-image>
+        <div class="grid-content bg-purple" @click="toDashboard('测评准备', 'router_ready')">
+          <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/pczb.png')" fit="fit"></el-image>
           <div class="titleName">测评准备</div>
         </div>
       </el-col>
       <el-col :span="5">
-        <div
-          class="grid-content bg-purple"
-          @click="toDashboard('方案编制', 'router_plan')"
-        >
-          <el-image
-            style="width: 60px; height: 60px"
-            :src="require('@/assets/img/fabz.png')"
-            fit="fit"
-          ></el-image>
+        <div class="grid-content bg-purple" @click="toDashboard('方案编制', 'router_plan')">
+          <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/fabz.png')" fit="fit"></el-image>
           <div class="titleName">方案编制</div>
         </div>
       </el-col>
     </el-row>
     <el-row type="flex" justify="center">
       <el-col :span="5">
-        <div
-          class="grid-content bg-purple"
-          @click="toDashboard('现场测评', 'router_scene')"
-        >
-          <el-image
-            style="width: 60px; height: 60px"
-            :src="require('@/assets/img/xcpc.png')"
-            fit="fit"
-          ></el-image>
+        <div class="grid-content bg-purple" @click="toDashboard('现场测评', 'router_scene')">
+          <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/xcpc.png')" fit="fit"></el-image>
           <div class="titleName">现场测评</div>
         </div>
       </el-col>
       <el-col :span="5">
-        <div
-          class="grid-content bg-purple"
-          @click="toDashboard('结果分析', 'router_result')"
-        >
-          <el-image
-            style="width: 60px; height: 60px"
-            :src="require('@/assets/img/pcjg.png')"
-            fit="fit"
-          ></el-image>
+        <div class="grid-content bg-purple" @click="toDashboard('结果分析', 'router_result')">
+          <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/pcjg.png')" fit="fit"></el-image>
           <div class="titleName">结果分析</div>
         </div>
       </el-col>
