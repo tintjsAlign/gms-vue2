@@ -17,6 +17,7 @@
     </el-row>
 
     <show-file-content ref="showFileContent"></show-file-content>
+    <upload-file ref="uploadFile"></upload-file>
   </div>
 </template>
 
@@ -24,10 +25,12 @@
 import { requestMain, getRecordMenuGrp, getMenuLvAfter } from '@/api/main'
 
 import showFileContent from '@/components/ShowFileContent'
+import uploadFile from '@/components/UploadFile'
 export default {
   name: '',
   components: {
-    showFileContent
+    showFileContent,
+    uploadFile
   },
   props: {
     requestData: {
@@ -161,24 +164,30 @@ export default {
           this.mainEnterConfirm(btn)
         })
       } else {
-        if (btn.operationID === 1 && btn.condition) {
+        if (btn.operationID === 1) {
           // 打开抽屉-填表单
           this.$emit('openDrawer', btn)
         } else if (btn.operationID === 51) {
           // 查询所有数据,重新渲染表格
           this.$emit('queryAllData', btn)
-        } else if (btn.operationID === 135) {
+        } else if (btn.operationID === 135 && btn.resId === '587') {
           // 打开报表
           // 合并this.currentRow和btn的数据
           Object.assign(btn, this.currentRow)
           this.$emit('openReport', btn)
         } else if (btn.operationID === 203) {
           // 下载文件
+          btn.queryFilePath = '1'
           this.mainEnterConfirm(btn)
         } else if (btn.operationID === 204) {
           // 上传文件
+          this.uploadFile(btn)
         } else if (btn.operationID === 16) {
           // 管理树界面
+        } else {
+          console.log('其它按钮功能')
+          // 其它普通操作
+          this.mainEnterConfirm(btn)
         }
       }
     },
@@ -242,6 +251,12 @@ export default {
         }
       })
     },
+    // 上传文件
+    uploadFile(row) {
+      // 弹出dialog
+      this.$refs.uploadFile.show(row)
+    },
+    // 下载文件
     downloadFile(res, file_Name) {
       let blob = new Blob([res])
       let fileName = file_Name
