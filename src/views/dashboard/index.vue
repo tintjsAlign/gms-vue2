@@ -1,7 +1,10 @@
 <template>
   <div class="app-container">
     <!-- <switch-roles @change="handleRolesChange" /> -->
-    <h1>{{ routeParams.title }}</h1>
+    <!-- <h1>{{ routeParams.title }}</h1> -->
+    <div class="imgBG">
+      <el-image style="width: 100%" :src="imageSrc" fit="fit"></el-image>
+    </div>
   </div>
 </template>
 
@@ -16,13 +19,23 @@ export default {
   directives: { permission },
   data() {
     return {
-      key: 1 // 为了能每次切换权限的时候重新初始化指令
+      key: 1, // 为了能每次切换权限的时候重新初始化指令
+      imageSrc: '' 
     }
   },
   created() {
     // 获取路由的参数
     this.routeParams = this.$route.meta
     console.log('routeParams:', this.routeParams)
+    if (this.routeParams.title === '测评准备') {
+      this.imageSrc = require('@/assets/img/ZPZB.png')
+    }else if (this.routeParams.title === '方案编制') {
+      this.imageSrc = require('@/assets/img/FABZ.png')
+    }else if (this.routeParams.title === '现场测评') {
+      this.imageSrc = require('@/assets/img/XCCP.png')
+    }else if (this.routeParams.title === '结果分析') {
+      this.imageSrc = require('@/assets/img/JGFX.png')
+    }
   },
   methods: {
     checkPermission,
@@ -35,20 +48,18 @@ export default {
 
 <style lang="scss" scoped>
 .app-container {
-  ::v-deep .permission-alert {
-    width: 320px;
-    margin-top: 15px;
-    background-color: #f0f9eb;
-    color: #67c23a;
-    padding: 8px 16px;
-    border-radius: 4px;
-    display: inline-block;
-  }
-  ::v-deep .permission-sourceCode {
-    margin-left: 15px;
-  }
-  ::v-deep .permission-tag {
-    background-color: #ecf5ff;
-  }
+  width: 100%;
+  height: 90vh;
+  // 上下左右居中
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+.imgBG {
+  width: 50%;
+  // height: 100%;
+  
+  // margin-top: 50px;
 }
 </style>
