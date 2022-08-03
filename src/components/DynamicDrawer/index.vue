@@ -65,7 +65,7 @@
                 </el-col>
                 <!-- dateTime类型--日期选择框 end ↑↑↑-->
                 <!-- enum类型--枚举选择框 ↓↓↓-->
-                <el-col span="12" v-else-if="item.otherProperties.textType.match(/enum/g)">
+                <el-col span="12" v-else-if="item.otherProperties.textType.match(/enum/gi)">
                   <el-form-item :required="isRequired(item)" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
@@ -117,7 +117,7 @@
                 <!-- multirow 类型--多行输入框 end ↑↑↑-->
 
                 <!-- readOnly 类型--只读不可修改框 ↓↓↓-->
-                <el-col span="12" v-else-if="item.otherProperties.textType.match(/readOnly/g) && item.otherProperties.otherCon === 'readonly'">
+                <el-col span="12" v-else-if="item.otherProperties.textType.match(/readOnly/gi)">
                   <el-form-item :required="isRequired(item)" :label="item.fldAlais">
                     <el-input v-model="form[item.valueFldName]" autocomplete="off" type="text" :disabled="true" autosize></el-input>
                   </el-form-item>
@@ -249,6 +249,7 @@ export default {
           } else {
             this.trueRes = res.showfield
             this.resMap = res.resMap
+            console.log('初始值对照:', this.resMap)
             // 去除res.showfield最后一个字段
             this.trueRes = this.trueRes.slice(0, -1)
           }
@@ -263,7 +264,7 @@ export default {
         if (this.requestData.itemName !== '登记被测系统' && this.requestData.operationID !== 1) {
           let form = {}
           this.drawerData.forEach((item) => {
-            if (item.otherProperties.textType === 'enum') {
+            if (item.otherProperties.textType.match(/enum/gi)) {
               // 枚举类型特殊处理
               form[item.valueFldName] = item.otherProperties.fldRemark
               form[item.valueFldName + '_enum'] = item.otherProperties.fldValue
@@ -278,7 +279,7 @@ export default {
           let form = {}
           this.drawerData.forEach((item) => {
             if (item.otherProperties.textType) {
-              if (item.otherProperties.textType === 'enum') {
+              if (item.otherProperties.textType.match(/enum/gi)) {
                 // 枚举类型特殊处理
                 form[item.valueFldName] = item.otherProperties.fldRemark
                 form[item.valueFldName + '_enum'] = item.otherProperties.fldValue
@@ -290,6 +291,7 @@ export default {
           })
           this.form = JSON.parse(JSON.stringify(form))
         }
+        console.log('抽屉form:', this.form)
 
         this.dialog = true
         // this.loadingInstance.close()
@@ -377,7 +379,7 @@ export default {
         }
         console.log('查询选择框数据', res)
         let options = []
-        if (item.otherProperties.textType === 'enum') {
+        if (item.otherProperties.textType.match(/enum/gi)) {
           // 拼装枚举options
           res.forEach((item) => {
             options.push({
