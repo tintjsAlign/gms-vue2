@@ -6,8 +6,6 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/layout'
 /* Router Modules */
-import planObjRouter from './modules/plan_obj'
-import planPlanRouter from './modules/plan_plan'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1

@@ -9,6 +9,8 @@
         @openDrawer="openDrawer"
         @queryAllData="queryAllData"
         @getRecordBtn="getRecordBtn"
+        @openReport="openReport"
+        @refresh="refresh"
       ></dynamic-button>
     </div>
     <div class="dynamic-table">
@@ -81,12 +83,15 @@
     <!-- </el-card> -->
 
     <dynamic-drawer ref="drawer" @refresh="refresh"></dynamic-drawer>
+    <app-iframe ref="iframe" ></app-iframe>
+
   </div>
 </template>
 
 <script>
-import dynamicButton from '@/components/dynamicButton/index.vue'
-import dynamicDrawer from '@/components/dynamicDrawer/index.vue'
+import dynamicButton from '@/components/DynamicButton/index.vue'
+import dynamicDrawer from '@/components/DynamicDrawer/index.vue'
+import appIframe from '@/views/iframe'
 
 import { requestMain } from '@/api/main'
 export default {
@@ -94,7 +99,8 @@ export default {
   inject: ['reload'],
   components: {
     dynamicButton,
-    dynamicDrawer
+    dynamicDrawer,
+    appIframe
   },
   props: {
     tableData: {
@@ -276,10 +282,8 @@ export default {
     },
     handleCurrentChange(val) {
       this.currentRow = val
-      // if (val) {
-      //   console.log('单选数据', this.currentRow)
+      console.log('单选数据', this.currentRow)
       this.$refs.dynamicButton.replaceButtonGroup(val)
-      // }
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
@@ -326,6 +330,9 @@ export default {
             message: '已取消删除'
           })
         })
+    },
+    openReport(row) {
+      this.$refs.iframe.show(row)
     }
   }
 }
@@ -341,7 +348,7 @@ export default {
   }
 
   .button-group {
-    margin-top: 20px;
+    height: 35px;
     margin-bottom: 0px;
     display: flex;
     justify-content: flex-start;

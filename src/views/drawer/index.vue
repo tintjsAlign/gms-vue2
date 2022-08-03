@@ -6,7 +6,7 @@
 
 <script>
 import { requestMain } from '@/api/main'
-import dynamicDrawer from '@/components/dynamicDrawer/index.vue'
+import dynamicDrawer from '@/components/DynamicDrawer/index.vue'
 export default {
   name: '',
   components: {
@@ -14,9 +14,7 @@ export default {
   },
   props: {},
   data() {
-    return {
-
-    }
+    return {}
   },
   computed: {},
   watch: {},

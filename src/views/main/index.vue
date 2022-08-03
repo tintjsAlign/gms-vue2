@@ -1,19 +1,9 @@
 <template>
   <div class="globalPageTemplate">
     <div class="dynamic-search">
-      <dynamic-search
-        :searchData="searchLists"
-        :currentPage="currentPage"
-        :pageSize="pageSize"
-        @searchResult="searchResult"
-      ></dynamic-search>
+      <dynamic-search :searchData="searchLists" :currentPage="currentPage" :pageSize="pageSize" @searchResult="searchResult"></dynamic-search>
     </div>
-    <dynamic-table
-      :tableData="tableDataFinal"
-      :formThead="formThead"
-      :requestData="routeParams"
-      @searchResult="searchResult"
-    ></dynamic-table>
+    <dynamic-table :tableData="tableDataFinal" :formThead="formThead" :requestData="routeParams" @searchResult="searchResult"></dynamic-table>
     <div class="pagination-container">
       <el-pagination
         background
@@ -33,8 +23,8 @@
 
 <script>
 import { requestMain } from '@/api/main'
-import dynamicTable from '@/components/dynamicTable/index.vue'
-import dynamicSearch from '@/components/dynamicSearch/index.vue'
+import dynamicTable from '@/components/DynamicTable/index.vue'
+import dynamicSearch from '@/components/DynamicSearch/index.vue'
 export default {
   name: 'globalPageTemplate',
   inject: ['reload'],
