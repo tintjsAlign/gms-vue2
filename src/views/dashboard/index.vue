@@ -57,7 +57,7 @@ export default {
   margin: 0 auto;
 }
 .imgBG {
-  width: 50%;
+  width: 70%;
   // height: 100%;
   
   // margin-top: 50px;
