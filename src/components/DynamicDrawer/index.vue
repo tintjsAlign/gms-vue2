@@ -65,7 +65,7 @@
                 </el-col>
                 <!-- dateTime类型--日期选择框 end ↑↑↑-->
                 <!-- enum类型--枚举选择框 ↓↓↓-->
-                <el-col span="12" v-else-if="item.otherProperties.textType.match(/enum/gi)">
+                <el-col span="12" v-else-if="item.otherProperties.textType === 'enum'">
                   <el-form-item :required="isRequired(item)" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
@@ -118,7 +118,7 @@
 
                 <!-- readOnly 类型--只读不可修改框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType.match(/readOnly/gi)">
-                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                  <el-form-item required :label="item.fldAlais">
                     <el-input v-model="form[item.valueFldName]" autocomplete="off" type="text" :disabled="true" autosize></el-input>
                   </el-form-item>
                 </el-col>
@@ -143,14 +143,17 @@
         </div>
       </div>
     </el-drawer>
+
+    <show-file-content ref="showFileContent"></show-file-content>
   </div>
 </template>
 
 <script>
 import { requestMain } from '@/api/main'
+import showFileContent from '@/components/ShowFileContent'
 export default {
   name: 'drawer-container',
-  components: {},
+  components: { showFileContent },
   props: {},
   data() {
     return {
@@ -184,9 +187,15 @@ export default {
       // })
       console.log('openDrawer####', data)
       this.requestData = data
+      if (data.otherProperties.urlParam.indexOf('=append.') > -1) {
+        this.specialInstructFlag = true
+      } else {
+        this.specialInstructFlag = false
+      }
 
       let tblAlias
-      if (this.requestData.itemName !== '登记被测系统') {
+      // if (this.requestData.itemName !== '登记被测系统') {
+      if (this.specialInstructFlag === false) {
         this.preCondition = this.requestData.condition
         this.drawerTitle = this.requestData.itemName
         tblAlias = this.requestData.tblAlias
@@ -198,19 +207,19 @@ export default {
         // 获取condition
         urlParam.forEach((element) => {
           if (element.indexOf('condition=') > -1) {
-            this.preCondition = element.replace('condition=', '').split(',appendFld')[0]
+            this.preCondition = element.replace('condition=', '').split(',append')[0]
           }
         })
         console.log('preCondition:', this.preCondition)
         // 将urlParam中的每个参数都拆分成key和value，并存入对象中
 
-        // 截取url中以'appendFld=append.'开头和';'结尾的字符串(掐头去尾)
-        let appendFld = url.match(/appendFld=append.[^&]+/g)[0].replace('appendFld=append.', '')
+        // 截取url中以'=append.'开头和';'结尾的字符串(掐头去尾)
+        let append = url.match(/=append.[^&]+/g)[0].replace('=append.', '')
         // 截取appendFld中以';'分割的字符串
-        let appendFldArr = appendFld.split(';')
+        let appendArr = append.split(';')
 
-        tblAlias = appendFldArr[0]
-        this.drawerTitle = appendFldArr[1]
+        tblAlias = appendArr[0]
+        this.drawerTitle = appendArr[1]
         // console.log('drawerTitle:', this.drawerTitle)
       }
 
@@ -227,20 +236,46 @@ export default {
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
         queryOnlyFlag: '1'
       }
-      if (this.requestData.itemName === '登记被测系统') {
+      // if (this.requestData.itemName === '登记被测系统') {
+      if (this.specialInstructFlag === true) {
         requestMainData.tblAlias = tblAlias
-        requestMainData.resId = '1056'
-        requestMainData.operationID = '1'
+        requestMainData.resId = this.requestData.resId
+
+        // 根据append特例化operationID
+        if (this.requestData.otherProperties.urlParam.indexOf('appendFld=') > -1) {
+          requestMainData.operationID = '1056'
+          Object.assign(requestMainData, this.requestData)
+          this.OPENREQMAINDATA = {
+            ...requestMainData,
+            tblAlias: tblAlias,
+            resId: this.requestData.resId,
+            operationID: '1056'
+          }
+        }else if (this.requestData.otherProperties.urlParam.indexOf('appendRec=') > -1) {
+          requestMainData.operationID = '1067'
+          Object.assign(requestMainData, this.requestData)
+          this.OPENREQMAINDATA = {
+            ...requestMainData,
+            tblAlias: tblAlias,
+            resId: this.requestData.resId,
+            operationID: '1067'
+          }
+          
+        }
       } else {
         // this.requestData的所以属性都存入requestMainData中
         for (let key in this.requestData) {
           requestMainData[key] = this.requestData[key]
         }
+        this.OPENREQMAINDATA = {
+          ...requestMainData
+        }
       }
 
-      requestMain(requestMainData).then((res) => {
+      requestMain(this.OPENREQMAINDATA).then((res) => {
         console.log('抽屉requestMain:', res)
-        if (this.requestData.itemName === '登记被测系统') {
+        // if (this.requestData.itemName === '登记被测系统') {
+        if (this.specialInstructFlag === true) {
           this.trueRes = res
         } else {
           // ###########暂时测试用####
@@ -261,7 +296,8 @@ export default {
 
         // 根据来源数据,给表单赋初始值(深拷贝)
         // key=this.drawerData.valueFldName  value=this.drawerData.otherProperties.fldRemark
-        if (this.requestData.itemName !== '登记被测系统' && this.requestData.operationID !== 1) {
+        // if (this.requestData.itemName !== '登记被测系统' && this.requestData.operationID !== 1) {
+        if (this.specialInstructFlag === false && this.requestData.operationID !== 1) {
           let form = {}
           this.drawerData.forEach((item) => {
             if (item.otherProperties.textType.match(/enum/gi)) {
@@ -343,14 +379,13 @@ export default {
       this.isTextarea = !this.isTextarea
     },
     queryOption(item) {
-      // 过滤掉this.form对象中的含有'_enum'的字段
-      let form = JSON.parse(JSON.stringify(this.form))
-      for (let key in form) {
-        if (key.indexOf('_enum') !== -1) {
-          delete form[key]
+      // 过滤掉this.form对象当前字段中的含有'_enum'的字段
+      if (item.otherProperties.textType === 'enum') {
+        let enumKey = item.valueFldName + '_enum'
+        if (this.form[enumKey]) {
+          delete this.form[enumKey]
         }
       }
-      this.form = form
 
       this.options = []
       // console.log('查询选择框参数', item)
@@ -418,7 +453,8 @@ export default {
               // this.timer = setTimeout(() => {
               // 动画关闭需要一定的时间
               setTimeout(() => {
-                if (this.requestData.itemName === '登记被测系统') {
+                // if (this.requestData.itemName === '登记被测系统') {
+                if (this.specialInstructFlag === true) {
                   // 拼接form数据为字符串
                   let formData = ''
                   for (let key in this.form) {
@@ -442,11 +478,16 @@ export default {
                   SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
                   SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
                 }
-                if (this.requestData.itemName === '登记被测系统') {
-                  data.condition = encodeURI(this.condition)
-                  data.operationID = '216'
-                  data.resId = '1128'
-                  data.tblAlias = '业务功能执行过程管理界面-运行'
+                // if (this.requestData.itemName === '登记被测系统') {
+                if (this.specialInstructFlag === true) {
+                  // 替换掉condition
+                  data.condition = this.condition
+                  data.queryFilePath = '1'
+                  Object.assign(data, this.requestData)
+                  this.REQMAINDATA = {
+                    ...data,
+                    condition: encodeURI(this.condition)
+                  }
                 } else {
                   // this.form和this.requestData的值合并放入到data中
 
@@ -483,15 +524,16 @@ export default {
                     formData += `${key}=${data[key]}|`
                   }
                   data.allResponseFields = `#START${formData}#ENDFLAG`
-                }
-                requestMain(data).then((res) => {
-                  console.log(res)
-                  if (res === 'statusCode:200') {
-                    // 提交成功后关闭dialog,并刷新页面
 
+                  this.REQMAINDATA = data
+                }
+                console.log('$$$$ REQMAINDATA:', this.REQMAINDATA)
+                requestMain(this.REQMAINDATA).then((res) => {
+                  console.log(res)
+                  if (typeof res === 'string' && res === 'statusCode:200') {
                     this.$notify({
                       title: '成功',
-                      message: '提交成功',
+                      message: '操作成功!',
                       type: 'success',
                       duration: 2000
                     })
@@ -500,14 +542,52 @@ export default {
                     if (this.requestData.itemName === '登记被测系统') {
                       this.$router.push('/被测信息系统')
                     } else {
+                      // 刷新
                       this.$emit('refresh')
                     }
-                  } else {
-                    // 截取错误信息
-                    // reference to view with name 'template/main'; model is {message=错误原因=被测单位的名称不能为空|SERVICELOGSSN=202207261031511220210016|, statusCode=300}
-                    let error = res.split('|')[0].split('message=')[1]
-                    this.$message.error(error)
+                  } else if (typeof res === 'string' && res.indexOf('错误原因') > -1) {
+                    // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
+                    // 提取错误原因
+                    let errorMsg = res.match(/错误原因=(.*?)\|/)[1]
+                    this.$message.error(errorMsg)
                     this.loading = false
+                  } else {
+                    // 处理res.fileMessage
+                    let name = res.fileMessage.split('&')[0].split('=')[0]
+                    let value = res.fileMessage.split('&')[0].split('=')[1]
+                    let typeName = res.fileMessage.split('&')[1].split('=')[0]
+                    let typeValue = res.fileMessage.split('&')[1].split('=')[1]
+
+                    this.REQMAINDATA[name] = value
+                    this.REQMAINDATA[typeName] = typeValue
+                    this.REQMAINDATA.queryOnlyFileData = '1'
+                    if (res.statusCode == '666') {
+                      // “666”后台返回statusCode为操作后有文件带回，并且下载该文件
+
+                      // value 中最后一个 / 后面的值
+                      let fileName = value.split('/')[value.split('/').length - 1]
+                      console.log('fileName:', fileName)
+
+                      if (typeValue === 'download') {
+                        // data[typeName] = typeValue
+                        data[typeName] = 'showFileContent'
+                      }
+                      requestMain(this.REQMAINDATA).then((res) => {
+                        // console.log('下载文件 res:', res)
+                        // 处理数据并下载
+                        // res数据中文乱码
+                        this.downloadFile(res, fileName)
+                      })
+                    } else if (res.statusCode === '555') {
+                      //“555”后台返回statusCode为操作后有文件带回，并且展示该文件内容；弹出dialog层
+                      requestMain(this.REQMAINDATA).then((res) => {
+                        console.log('展示文件 res:', res)
+                        // 弹出dialog层
+                        this.$refs.showFileContent.show(res, this.REQMAINDATA.itemName)
+                        this.loading = false
+                        this.dialog = false
+                      })
+                    }
                   }
                   // clearTimeout(this.timer)
                 })
@@ -519,6 +599,18 @@ export default {
           // clearTimeout(this.timer)
         }
       })
+    },
+    // 下载文件
+    downloadFile(res, file_Name) {
+      let blob = new Blob([res])
+      let fileName = file_Name
+      let link = document.createElement('a')
+      link.href = window.URL.createObjectURL(blob)
+      link.download = fileName
+      link.click()
+
+      this.loading = false
+      this.dialog = false
     }
   }
 }

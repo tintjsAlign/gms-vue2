@@ -167,10 +167,11 @@ export default {
         if (btn.operationID === 1) {
           // 打开抽屉-填表单
           this.$emit('openDrawer', btn)
-        } else if (btn.operationID === 51) {
+        }
+        else if (btn.operationID === 51) {
           // 查询所有数据,重新渲染表格
           this.$emit('queryAllData', btn)
-        } else if (btn.operationID === 135 && btn.resId === '587') {
+        } else if (btn.operationID === 135 && btn.resId === 587) {
           // 打开报表
           // 合并this.currentRow和btn的数据
           Object.assign(btn, this.currentRow)
@@ -186,6 +187,15 @@ export default {
           // 管理树界面
         } else {
           console.log('其它按钮功能')
+
+          if (btn.otherProperties.urlParam) {
+            // 判断urlParam字符串中是否有=append.
+            if (btn.otherProperties.urlParam.indexOf('=append.') > -1) {
+              // 若有, 打开抽屉-填表单
+              this.$emit('openDrawer', btn)
+              return
+            }
+          }
           // 其它普通操作
           this.mainEnterConfirm(btn)
         }
@@ -199,7 +209,7 @@ export default {
       }
       Object.assign(data, row)
       requestMain(data).then((res) => {
-        console.log('需要确认按钮 res:', res)
+        console.log('按钮通用请求 res:', res)
         if (typeof res === 'string' && res === 'statusCode:200') {
           this.$notify({
             title: '成功',
