@@ -251,7 +251,7 @@ export default {
             resId: this.requestData.resId,
             operationID: '1056'
           }
-        }else if (this.requestData.otherProperties.urlParam.indexOf('appendRec=') > -1) {
+        } else if (this.requestData.otherProperties.urlParam.indexOf('appendRec=') > -1) {
           requestMainData.operationID = '1067'
           Object.assign(requestMainData, this.requestData)
           this.OPENREQMAINDATA = {
@@ -260,7 +260,6 @@ export default {
             resId: this.requestData.resId,
             operationID: '1067'
           }
-          
         }
       } else {
         // this.requestData的所以属性都存入requestMainData中
@@ -379,14 +378,6 @@ export default {
       this.isTextarea = !this.isTextarea
     },
     queryOption(item) {
-      // 过滤掉this.form对象当前字段中的含有'_enum'的字段
-      if (item.otherProperties.textType === 'enum') {
-        let enumKey = item.valueFldName + '_enum'
-        if (this.form[enumKey]) {
-          delete this.form[enumKey]
-        }
-      }
-
       this.options = []
       // console.log('查询选择框参数', item)
       this.readName = item.otherProperties.readFld
@@ -435,8 +426,15 @@ export default {
       })
     },
     getChange(e, item, index) {
-      console.log('选择框变化', item)
-      console.log('选择框变化值', e)
+      // console.log('选择框变化', item)
+      // console.log('选择框变化值', e)
+      // 过滤掉this.form对象当前字段中的含有'_enum'的字段
+      if (item.otherProperties.textType === 'enum') {
+        let enumKey = item.valueFldName + '_enum'
+        if (this.form[enumKey]) {
+          delete this.form[enumKey]
+        }
+      }
     },
     dateChange(date) {
       console.log('dateChange:', date)
