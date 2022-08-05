@@ -97,7 +97,10 @@ export default {
           let componentOf
           if (item.itemName === '登记被测系统') {
             componentOf = 'drawer'
-          } else {
+          }else if (item.itemName === '编辑本视图') {
+            return
+          } 
+          else {
             if (item.resId === 990) {
               componentOf = ''
             } else {
