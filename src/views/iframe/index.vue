@@ -63,8 +63,10 @@ export default {
         // 找到res中的包含'<a href="main?'的全部字符串，并且替换
         this.requestTarget = process.env.VUE_APP_BASE_API
         let html = res.replace(/<a href="main\?/g, '<a href="' + this.requestTarget + '/main?')
+        html = html.replace(/body {background/g, '.main {background')
 
         this.html = html
+        // console.log('报表HTML html:', html)
       })
     },
     handleClose() {
