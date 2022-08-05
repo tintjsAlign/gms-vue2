@@ -40,7 +40,7 @@ export default {
       tableData: [],
       total: 0, //数组总数
       currentPage: 1, //当前页
-      pageSize: 5, //每页数据
+      pageSize: 10, //每页数据
       paginationData: [] //分页数组
     }
   },
@@ -56,7 +56,7 @@ export default {
     this.routeParams = this.$route.meta
     console.log('routeParams:', this.routeParams)
     this.currentPage = 1
-    this.pageSize = 5
+    this.pageSize = 10
     this.init()
   },
   mounted() {},

@@ -3,36 +3,52 @@
     <!-- <el-card class="box-card"> -->
     <!-- 按钮组 -->
     <div class="button-group">
-      <dynamic-button
-        ref="dynamicButton"
-        :requestData="requestData"
-        @openDrawer="openDrawer"
-        @queryAllData="queryAllData"
-        @getRecordBtn="getRecordBtn"
-        @openReport="openReport"
-        @refresh="refresh"
-      ></dynamic-button>
+      <div class="dynamic">
+        <dynamic-button
+          ref="dynamicButton"
+          :requestData="requestData"
+          @openDrawer="openDrawer"
+          @queryAllData="queryAllData"
+          @getRecordBtn="getRecordBtn"
+          @openReport="openReport"
+          @refresh="refresh"
+        ></dynamic-button>
+      </div>
+      <div class="otherBotton">
+        <el-row>
+          <el-tooltip class="item" effect="dark" content="清空选中" placement="top">
+            <el-button icon="el-icon-refresh-left" size="small" circle @click="clickOutSide"></el-button>
+          </el-tooltip>
+        </el-row>
+      </div>
     </div>
-    <div class="dynamic-table">
+    <div class="dynamic-table" >
       <el-table
-        v-fit-columns
         :data="tableData"
         ref="dynamicTable"
         border
+        stripe
         fit
         highlight-current-row
         style="width: 100%"
+        class="table-fixed"
         size="mini"
+        :max-height="elTableHeight"
+        :header-cell-style="{background:'#f5f7fa',color:'#606266'}"
         @current-change="handleCurrentChange"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column
           v-for="(fruit, index) in formThead"
+          align="center"
+          show-overflow-tooltip
+          sortable
           :key="index"
           :label="fruit.fldAlais"
           :prop="fruit.queryFldName"
           min-width="80px"
+          :width="formThead.length > 5 ? '180' : 'auto'"
         >
           <template slot-scope="scope">
             {{ scope.row[fruit.queryFldName] }}
@@ -43,39 +59,23 @@
           width="180"
           align="center"
           fixed="right"
+          v-if="tableData.length > 0"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
-            <span v-for="(btn, i) in recordBtnGroup" :key="i" class="btnsClass">
-              <el-tooltip class="item" effect="dark" :content="btn.itemName" open-delay="700" placement="top-start">
-              <el-button
-                size="mini"
-                :type="btn.type"
-                :icon="btn.icon"
-                circle
-                @click.native="handleMain(scope.row, btn)"
-              >
-                <!-- {{ btn.itemName }} -->
-              </el-button>
-            </span>
-            <!-- <span>
-              <el-dropdown
-                trigger="click"
-                @command="handleMoreCommand($event, scope.row)"
-              >
-                <span class="el-dropdown-link">
-                  更多<i class="el-icon-arrow-down el-icon--right"></i>
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item
-                    v-for="(item, index) in moreButton"
-                    :key="index"
-                    :command="item.buttonID"
-                    >{{ item.buttonValue }}</el-dropdown-item
-                  >
-                </el-dropdown-menu>
-              </el-dropdown>
-            </span> -->
+            <el-button-group>
+              <span v-for="(btn, i) in recordBtnGroup" :key="i" class="btnsClass">
+                <el-tooltip class="item" effect="dark" :content="btn.itemName" open-delay="700" placement="top-start">
+                  <el-button
+                  size="mini"
+                  :icon="btn.icon"
+                  circle
+                  @click.native="handleMain(scope.row, btn)"
+                >
+                  <!-- {{ btn.itemName }} -->
+                </el-button>
+              </span>
+            </el-button-group>
           </template>
         </el-table-column>
       </el-table>
@@ -129,7 +129,9 @@ export default {
       pageSize: 5, //每页数据
       currentRow: null, //当前行数据
       multipleSelection: [], //多选数据
-      recordBtnGroup: [] //操作按钮组
+      recordBtnGroup: [], //操作按钮组
+      // table 高度
+      elTableHeight: 450,
     }
   },
   computed: {
@@ -137,9 +139,26 @@ export default {
       return this.$store.state.settings.operationTarget
     }
   },
-  watch: {},
+  watch: {
+    'tableData': {
+      handler(){
+        this.$nextTick(() => {
+          this.$refs.dynamicTable.doLayout()
+        })
+      },
+      deep: true
+    }
+  },
   created() {},
-  mounted() {},
+  mounted() {
+    this.$nextTick(() => {
+      let mainHeight = document.querySelector('.app-main').offsetHeight
+      console.log('mainHeight高度:',mainHeight)
+      // 减去search-container高度和button-group高度和pagination-container高度
+      this.elTableHeight = mainHeight - document.querySelector('.button-group').offsetHeight - document.querySelector('.pagination-container').offsetHeight -180
+      console.log('elTableHeight高度:',this.elTableHeight)
+    })
+  },
   methods: {
     refresh() {
       this.reload()
@@ -288,6 +307,13 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val
       console.log('多选数据multipleSelection', this.multipleSelection)
+      // 所选数据只有一条时,
+      if (val.length === 1) {
+        this.currentRow = val[0]
+        this.$refs.dynamicButton.replaceButtonGroup(val[0])
+      } else {
+        this.$refs.dynamicButton.replaceButtonGroup(null)
+      }
     },
     openDrawer(row) {
       this.$refs.drawer.show(row)
@@ -351,7 +377,9 @@ export default {
     height: 35px;
     margin-bottom: 0px;
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
+    // align-items: center;
+
   }
 }
 ::v-deep .el-dropdown-link {
@@ -362,7 +390,21 @@ export default {
 ::v-deep .el-icon-arrow-down {
   font-size: 12px;
 }
+::v-deep .el-table__body tr.current-row>td {
+	background: #d5eafe!important;
+}
+
 .btnsClass {
   margin-left: 10px;
+}
+
+.table-fixed {
+  ::v-deep .el-table__fixed-right {
+    height: 100% !important;
+  }
+  ::v-deep .el-table__fixed {
+    height: 100% !important;
+  }
+
 }
 </style>

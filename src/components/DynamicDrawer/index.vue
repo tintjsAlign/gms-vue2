@@ -6,7 +6,7 @@
       :visible.sync="dialog"
       custom-class="drawerBox"
       direction="rtl"
-      size="50%"
+      size="720px"
       ref="drawer"
     >
       <div class="demo-drawer__content">
@@ -23,6 +23,7 @@
                     <el-select
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
+                      clearable
                       style="display: block"
                       @focus="queryOption(item)"
                       @change="getChange($event, item, index)"
@@ -39,6 +40,7 @@
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
                       style="width: 100%"
+                      clearable
                       filterable
                       allow-create
                       default-first-option
@@ -56,6 +58,7 @@
                     <el-date-picker
                       v-model="form[item.valueFldName]"
                       :value-format="item.otherProperties.dateFmt"
+                      clearable
                       type="date"
                       placeholder="选择日期"
                       @change="dateChange"
@@ -71,6 +74,7 @@
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
                       style="width: 100%"
+                      clearable
                       @focus="queryOption(item)"
                       @change="getChange($event, item, index)"
                     >
@@ -85,6 +89,7 @@
                     <el-select
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
+                      clearable
                       style="width: 100%"
                       @focus="queryOption(item)"
                       @change="getChange($event, item, index)"
@@ -97,21 +102,27 @@
                 <!-- multirow 类型--多行输入框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType === 'multirow'">
                   <el-form-item :required="isRequired(item)" :label="item.fldAlais">
-                    <el-input
+                    <el-popover placement="bottom" width="300" trigger="click">
+                      <el-input
                       v-model="form[item.valueFldName]"
                       autocomplete="off"
+                      :placeholder="item.fldAlais"
+                      clearable
+                      autofocus
+                      type="textarea"
+                      :autosize="{ minRows: 4, maxRows: 6 }"
+                    ></el-input>
+                      <!-- <el-button slot="reference">click 激活</el-button> -->
+                      <el-input
+                      slot="reference"
+                      v-model="form[item.valueFldName]"
+                      autocomplete="off"
+                      clearable
+                      suffix-icon="el-icon-full-screen"
                       type="text"
                       autosize
-                      @focus="changeType"
-                      v-if="!isTextarea"
                     ></el-input>
-                    <el-input
-                      v-model="form[item.valueFldName]"
-                      autocomplete="off"
-                      type="textarea"
-                      :autosize="{ minRows: 2, maxRows: 4 }"
-                      v-if="isTextarea"
-                    ></el-input>
+                    </el-popover>
                   </el-form-item>
                 </el-col>
                 <!-- multirow 类型--多行输入框 end ↑↑↑-->
@@ -119,7 +130,7 @@
                 <!-- readOnly 类型--只读不可修改框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType.match(/readOnly/gi)">
                   <el-form-item required :label="item.fldAlais">
-                    <el-input v-model="form[item.valueFldName]" autocomplete="off" type="text" :disabled="true" autosize></el-input>
+                    <el-input v-model="form[item.valueFldName]" autocomplete="off" clearable type="text" :disabled="true" autosize></el-input>
                   </el-form-item>
                 </el-col>
                 <!-- readOnly 类型--只读不可修改框 end ↑↑↑-->
@@ -127,7 +138,7 @@
                 <!-- 普通类型--输入框 ↓↓↓-->
                 <el-col span="12" v-else>
                   <el-form-item :required="isRequired(item)" :label="item.fldAlais">
-                    <el-input v-model="form[item.valueFldName]" autocomplete="off"></el-input>
+                    <el-input v-model="form[item.valueFldName]" autocomplete="off" clearable></el-input>
                   </el-form-item>
                 </el-col>
                 <!-- 普通类型--输入框 end ↑↑↑-->
@@ -270,7 +281,6 @@ export default {
           ...requestMainData
         }
       }
-
       requestMain(this.OPENREQMAINDATA).then((res) => {
         console.log('抽屉requestMain:', res)
         // if (this.requestData.itemName === '登记被测系统') {
@@ -568,7 +578,7 @@ export default {
 
                       if (typeValue === 'download') {
                         // data[typeName] = typeValue
-                        data[typeName] = 'showFileContent'
+                        this.REQMAINDATA[typeName] = 'showFileContent'
                       }
                       requestMain(this.REQMAINDATA).then((res) => {
                         // console.log('下载文件 res:', res)
@@ -643,6 +653,15 @@ export default {
       margin: 0;
     }
   }
+}
+::v-deep .el-form .el-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+::v-deep .el-form-item {
+  max-width: 290px;
+  min-width: 290px;
 }
 ::v-deep .el-input {
   width: 100%;
