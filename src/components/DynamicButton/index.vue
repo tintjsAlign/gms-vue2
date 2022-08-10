@@ -18,6 +18,7 @@
 
     <show-file-content ref="showFileContent"></show-file-content>
     <upload-file ref="uploadFile"></upload-file>
+    <!-- <app-tree ref="treeManage"></app-tree> -->
   </div>
 </template>
 
@@ -26,11 +27,13 @@ import { requestMain, getRecordMenuGrp, getMenuLvAfter } from '@/api/main'
 
 import showFileContent from '@/components/ShowFileContent'
 import uploadFile from '@/components/UploadFile'
+import appTree from '@/views/tree'
 export default {
   name: '',
   components: {
     showFileContent,
-    uploadFile
+    uploadFile,
+    appTree
   },
   props: {
     requestData: {
@@ -167,8 +170,7 @@ export default {
         if (btn.operationID === 1) {
           // 打开抽屉-填表单
           this.$emit('openDrawer', btn)
-        }
-        else if (btn.operationID === 51) {
+        } else if (btn.operationID === 51) {
           // 查询所有数据,重新渲染表格
           this.$emit('queryAllData', btn)
         } else if (btn.operationID === 135 && btn.resId === 587) {
@@ -185,6 +187,7 @@ export default {
           this.uploadFile(btn)
         } else if (btn.operationID === 16) {
           // 管理树界面
+          this.openTreeManage(btn)
         } else {
           console.log('其它按钮功能')
 
@@ -260,6 +263,16 @@ export default {
           }
         }
       })
+    },
+    openTreeManage(row) {
+      // 打开树管理界面
+      this.$router.push({
+        path: `/tree`,
+        query: {
+          row: row
+        }
+      })
+      // this.$refs.treeManage.show(row)
     },
     // 上传文件
     uploadFile(row) {

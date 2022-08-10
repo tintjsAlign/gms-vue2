@@ -1,5 +1,151 @@
 <template>
-  <div class="drawer-container">
+  <div class="drawer-container" v-if="showContainer">
+    <div v-if="levelFlag">
+      <div class="demo-drawer__content">
+        <el-row gutter="20">
+          <el-col span="24">
+            <el-form :model="form" ref="dynamicTableRef" label-position="top" size="small">
+              <!-- el-row 每行最多两个输入框 -->
+
+              <div v-for="(item, index) in drawerData" :key="index">
+                <!-- <el-row gutter="24" :key="index" v-if="index % 2 == 0"> -->
+                <!-- query类型(只可选择)--选择框 ↓↓↓-->
+                <el-col span="12" v-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === 'readonly'">
+                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                    <el-select
+                      v-model="form[item.valueFldName]"
+                      placeholder="请选择"
+                      clearable
+                      style="display: block"
+                      @focus="queryOption(item)"
+                      @change="getChange($event, item, index)"
+                    >
+                      <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <!-- query类型(只可选择)--选择框 end ↑↑↑-->
+                <!-- query类型（可创建）--选择框 ↓↓↓-->
+                <el-col span="12" v-else-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === ''">
+                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                    <el-select
+                      v-model="form[item.valueFldName]"
+                      placeholder="请选择"
+                      style="width: 100%"
+                      clearable
+                      filterable
+                      allow-create
+                      default-first-option
+                      @focus="queryOption(item)"
+                      @change="getChange($event, item, index)"
+                    >
+                      <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <!-- query类型（可创建）--选择框 end ↑↑↑-->
+                <!-- dateTime类型--日期选择框 ↓↓↓-->
+                <el-col span="12" v-else-if="item.otherProperties.textType === 'dateTime'">
+                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                    <el-date-picker
+                      v-model="form[item.valueFldName]"
+                      :value-format="item.otherProperties.dateFmt"
+                      clearable
+                      type="date"
+                      placeholder="选择日期"
+                      @change="dateChange"
+                    >
+                    </el-date-picker>
+                  </el-form-item>
+                </el-col>
+                <!-- dateTime类型--日期选择框 end ↑↑↑-->
+                <!-- enum类型--枚举选择框 ↓↓↓-->
+                <el-col span="12" v-else-if="item.otherProperties.textType === 'enum'">
+                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                    <el-select
+                      v-model="form[item.valueFldName]"
+                      placeholder="请选择"
+                      style="width: 100%"
+                      clearable
+                      @focus="queryOption(item)"
+                      @change="getChange($event, item, index)"
+                    >
+                      <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <!-- enum类型--枚举选择框 end ↑↑↑-->
+                <!-- queryArea 类型--地区选择框 ↓↓↓-->
+                <el-col span="12" v-else-if="item.otherProperties.textType === 'queryArea'">
+                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                    <el-select
+                      v-model="form[item.valueFldName]"
+                      placeholder="请选择"
+                      clearable
+                      style="width: 100%"
+                      @focus="queryOption(item)"
+                      @change="getChange($event, item, index)"
+                    >
+                      <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <!-- queryArea 类型--地区选择框 end ↑↑↑-->
+                <!-- multirow 类型--多行输入框 ↓↓↓-->
+                <el-col span="12" v-else-if="item.otherProperties.textType === 'multirow'">
+                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                    <el-popover placement="bottom" width="300" trigger="click">
+                      <el-input
+                        v-model="form[item.valueFldName]"
+                        autocomplete="off"
+                        :placeholder="item.fldAlais"
+                        clearable
+                        autofocus
+                        type="textarea"
+                        :autosize="{ minRows: 4, maxRows: 6 }"
+                      ></el-input>
+                      <!-- <el-button slot="reference">click 激活</el-button> -->
+                      <el-input
+                        slot="reference"
+                        v-model="form[item.valueFldName]"
+                        autocomplete="off"
+                        clearable
+                        suffix-icon="el-icon-full-screen"
+                        type="text"
+                        autosize
+                      ></el-input>
+                    </el-popover>
+                  </el-form-item>
+                </el-col>
+                <!-- multirow 类型--多行输入框 end ↑↑↑-->
+
+                <!-- readOnly 类型--只读不可修改框 ↓↓↓-->
+                <el-col span="12" v-else-if="item.otherProperties.textType.match(/readOnly/gi)">
+                  <el-form-item required :label="item.fldAlais">
+                    <el-input v-model="form[item.valueFldName]" autocomplete="off" clearable type="text" :disabled="true" autosize></el-input>
+                  </el-form-item>
+                </el-col>
+                <!-- readOnly 类型--只读不可修改框 end ↑↑↑-->
+
+                <!-- 普通类型--输入框 ↓↓↓-->
+                <el-col span="12" v-else>
+                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                    <el-input v-model="form[item.valueFldName]" autocomplete="off" clearable></el-input>
+                  </el-form-item>
+                </el-col>
+                <!-- 普通类型--输入框 end ↑↑↑-->
+              </div>
+            </el-form>
+          </el-col>
+        </el-row>
+        <div class="demo-drawer__footer">
+          <!-- <el-button @click="cancelForm">取 消</el-button> -->
+          <el-button type="primary" @click="submitForm" :loading="loading" v-if="requestData.itemName !== '查询' || requestData.operationID !== 48">{{
+            loading ? '提交中 ...' : '修 改'
+          }}</el-button>
+        </div>
+      </div>
+    </div>
     <el-drawer
       :title="drawerTitle"
       :before-close="handleClose"
@@ -8,6 +154,7 @@
       direction="rtl"
       size="720px"
       ref="drawer"
+      v-else
     >
       <div class="demo-drawer__content">
         <el-row gutter="20">
@@ -104,24 +251,24 @@
                   <el-form-item :required="isRequired(item)" :label="item.fldAlais">
                     <el-popover placement="bottom" width="300" trigger="click">
                       <el-input
-                      v-model="form[item.valueFldName]"
-                      autocomplete="off"
-                      :placeholder="item.fldAlais"
-                      clearable
-                      autofocus
-                      type="textarea"
-                      :autosize="{ minRows: 4, maxRows: 6 }"
-                    ></el-input>
+                        v-model="form[item.valueFldName]"
+                        autocomplete="off"
+                        :placeholder="item.fldAlais"
+                        clearable
+                        autofocus
+                        type="textarea"
+                        :autosize="{ minRows: 4, maxRows: 6 }"
+                      ></el-input>
                       <!-- <el-button slot="reference">click 激活</el-button> -->
                       <el-input
-                      slot="reference"
-                      v-model="form[item.valueFldName]"
-                      autocomplete="off"
-                      clearable
-                      suffix-icon="el-icon-full-screen"
-                      type="text"
-                      autosize
-                    ></el-input>
+                        slot="reference"
+                        v-model="form[item.valueFldName]"
+                        autocomplete="off"
+                        clearable
+                        suffix-icon="el-icon-full-screen"
+                        type="text"
+                        autosize
+                      ></el-input>
                     </el-popover>
                   </el-form-item>
                 </el-col>
@@ -168,6 +315,7 @@ export default {
   props: {},
   data() {
     return {
+      showContainer: true,
       dialog: false,
       loading: false,
       drawerData: [],
@@ -180,7 +328,8 @@ export default {
       timer: null,
       options: [],
       printerSelect: [],
-      isTextarea: false
+      isTextarea: false,
+      levelFlag: false
     }
   },
   computed: {},
@@ -188,9 +337,20 @@ export default {
   created() {},
   mounted() {},
   methods: {
-    show(data) {
-      this.isTextarea = false
+    show(data, level) {
+      if (!data) {
+        this.showContainer = false
+        return
+      }
+      this.showContainer = true
       this.form = {}
+      this.isTextarea = false
+
+      if (level) {
+        this.levelFlag = true
+      } else {
+        this.levelFlag = false
+      }
 
       // this.loadingInstance = this.$loading({
       //   target: '.drawerBox',
@@ -198,7 +358,7 @@ export default {
       // })
       console.log('openDrawer####', data)
       this.requestData = data
-      if (data.otherProperties.urlParam.indexOf('=append.') > -1) {
+      if (data.otherProperties && data.otherProperties.urlParam.indexOf('=append.') > -1) {
         this.specialInstructFlag = true
       } else {
         this.specialInstructFlag = false
@@ -338,7 +498,10 @@ export default {
         }
         console.log('抽屉form:', this.form)
 
-        this.dialog = true
+        if (this.levelFlag) {
+        } else {
+          this.dialog = true
+        }
         // this.loadingInstance.close()
         // this.thead.forEach((item) => {
         //   this[item.key] = item.value
@@ -517,11 +680,18 @@ export default {
 
                   data.condition = encodeURI(this.preCondition)
                   // operationID
-                  if (this.requestData.operationID === 1 || this.requestData.itemName.indexOf('新增') > -1) {
+                  // if ( this.requestData.operationID === 1 || this.requestData.itemName.indexOf('新增') > -1) {
+                  if ( this.requestData.operationID === 1) {
+                    // 新增
                     data.operationID = '1001'
-                  } else if (this.requestData.operationID === 50 || this.requestData.itemName.indexOf('修改') > -1) {
+                  // } else if ( this.requestData.operationID === 50 || this.requestData.itemName.indexOf('修改') > -1) {
+                  } else if ( this.requestData.operationID === 50) {
+                    // 修改
                     data.operationID = '1003'
-                  } else if (this.requestData.operationID === 49 || this.requestData.itemName.indexOf('复制') > -1) {
+                    data.operationType = 'update'
+                  // } else if ( this.requestData.operationID === 49 || this.requestData.itemName.indexOf('复制') > -1) {
+                  } else if ( this.requestData.operationID === 49) {
+                    // 复制
                     data.operationID = '1001'
                   }
 
@@ -553,10 +723,10 @@ export default {
                       // 刷新
                       this.$emit('refresh')
                     }
-                  } else if (typeof res === 'string' && res.indexOf('错误原因') > -1) {
+                  } else if (typeof res === 'string' && res.indexOf('message=') > -1) {
                     // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
                     // 提取错误原因
-                    let errorMsg = res.match(/错误原因=(.*?)\|/)[1]
+                    let errorMsg = res.match(/message=(.*?)\|/)[1]
                     this.$message.error(errorMsg)
                     this.loading = false
                   } else {

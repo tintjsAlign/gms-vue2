@@ -17,17 +17,23 @@
   },
   "dependencies": {
     "@vue/composition-api": "^1.7.0",
+    "@xunlei/vue-context-menu": "^1.0.2",
     "axios": "0.18.1",
     "core-js": "3.6.5",
     "element-china-area-data": "^5.0.2",
     "element-ui": "^2.15.9",
     "js-cookie": "2.2.0",
+    "lodash": "^4.17.21",
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
     "path-to-regexp": "2.4.0",
     "pinia": "^2.0.15",
+    "splitpanes": "^2.4.1",
+    "v-contextmenu": "^2.9.0",
     "vue": "2.6.14",
     "vue-router": "3.0.6",
+    "vue-runtime-helpers": "^1.1.2",
+    "vue-splitpane": "^1.0.6",
     "vuex": "3.1.0"
   },
   "devDependencies": {

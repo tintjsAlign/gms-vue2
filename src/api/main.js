@@ -53,3 +53,12 @@ export function getRecordMenuGrp(data) {
     data
   })
 }
+
+// 获取树形结构菜单
+export function getTreeMenu(data) {
+  return request({
+    url: '/getTreeMenu',
+    method: 'post',
+    data
+  })
+}

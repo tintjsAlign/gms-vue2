@@ -50,15 +50,15 @@ export const constantRoutes = [
     hidden: true
   },
   // {
-  //   path: '/iframe',
+  //   path: '/tree',
   //   component: Layout,
-  //   redirect: '/iframe',
+  //   redirect: '/tree',
   //   children: [
   //     {
-  //       path: 'iframe',
-  //       name: 'iframe',
-  //       component: () => import('@/views/iframe/'),
-  //       meta: { title: 'iframe', icon: 'iframe' }
+  //       path: 'tree',
+  //       name: 'tree',
+  //       component: () => import('@/views/tree/index'),
+  //       meta: { title: 'tree', icon: 'tree' }
   //     }
   //   ]
   // },
@@ -76,6 +76,7 @@ export const routerMap = {
   dashboard: () => import('@/views/dashboard/index'),
   main: () => import('@/views/main'), // 异步的方式
   drawer: () => import('@/views/drawer'),
+  tree: () => import('@/views/tree'),
   layout: () => import('@/layout')
 }
 //之后遍历这个map 并将 component 替换为map[component]

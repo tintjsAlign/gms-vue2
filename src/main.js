@@ -16,6 +16,12 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
+import contentmenu from 'v-contextmenu'
+import 'v-contextmenu/dist/index.css'
+import _ from 'lodash'
+
+Object.defineProperty(Vue.prototype, '$_', { value: _ })
+Vue.use(contentmenu)
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

@@ -194,6 +194,27 @@ export default {
         })
 
         // console.log('*****menuTree*****1级:', menuTree)
+        // menuRouterLists某一项中若有children的话，则children中加多一项
+        menuRouterLists.forEach((item) => {
+          if (item.children) {
+            item.children.push({
+              // path: `tree/:id(\\d+)`,
+              path: `tree`,
+              component: 'tree',
+              name: item.name + '_tree',
+              meta: {  noCache: true, activeMenu: item.path },
+              hidden: true
+            })
+          }
+        })
+        //   {
+        //   path: 'edit/:id(\\d+)',
+        //   component: () => import('@/views/example/edit'),
+        //   name: 'EditArticle',
+        //   meta: { title: 'Edit Article', noCache: true, activeMenu: '/example/list' },
+        //   hidden: true
+        // }
+
         console.log('*****menuRouterLists*****1级:', menuRouterLists)
         this.routerListsss = menuRouterLists
 
