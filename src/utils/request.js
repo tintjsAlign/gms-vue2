@@ -31,13 +31,18 @@ service.interceptors.request.use(
         config.headers['Content-Type'] = config.headers['myType']
         config.data = JSON.stringify(config.data)
       } else {
+        // 剔除掉config.data中的值是对象的字段
+        for (const key in config.data) {
+          if (typeof config.data[key] === 'object') {
+            delete config.data[key]
+          }
+        }
         // console.log('old config.data', config.data)
         // 设置请求头 发送的数据是x-www-form-urlencoded 格式
         config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
         // qs.stringify(object, [options]) 字符串化时，默认情况下，qs 对输出进行 URI 编码，以避免某些特殊字符对某些接口的调用造成请求失败。
         //encode: false 禁用encode编码
         config.data = qs.stringify(config.data, { encode: false })
-        // console.log('new config.data', config.data)
       }
     }
     // 取到本地存储中的用户信息 getItem
@@ -59,6 +64,7 @@ service.interceptors.request.use(
     //   // 暂时使用通用res_token
     //   // config.headers.res_token = 'adeebd32-5f54-4a88-9821-f38c44538dca'
     // }
+    
     return config
   },
   (error) => {
