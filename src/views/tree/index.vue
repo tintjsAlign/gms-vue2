@@ -11,31 +11,55 @@
       destroy-on-close
       :before-close="handleClose"
     > -->
-    <split-pane split="vertical" @resize="resize" style="height: 95vh" :min-percent="20" :default-percent="30">
+    <split-pane split="vertical" @resize="resize" style="height: 100vh" :min-percent="20" :default-percent="30">
       <template slot="paneL">
         <div class="left-container">
-          <el-tree ref="elTree" id="el-tree" :props="defaultProps" lazy :load="loadNode" highlight-current node-key="id" @node-click="nodeClick">
+          <el-tree
+            ref="elTree"
+            id="el-tree"
+            :props="defaultProps"
+            lazy
+            :load="loadNode"
+            highlight-current
+            node-key="id"
+            @node-click="nodeClick"
+            @node-contextmenu="nodeContextmenu"
+          >
             <span class="custom-tree-node" slot-scope="{ node, data }">
-              <svg-icon v-if="data.childNum === 0" icon-class="floder" />
+              <svg-icon v-if="data.childNum === 0" icon-class="file" />
               <svg-icon v-else-if="node.expanded" icon-class="floder_open" />
-              <svg-icon v-else icon-class="file" />
+              <svg-icon v-else icon-class="floder" />
               <span class="fontSize14" :title="node.label || '-'">{{ ' ' + node.label }}</span>
             </span>
           </el-tree>
-          <VueContextMenu
+          <recursion-contextmenu
+            ref="contextmenu"
+            :recordMenuGrp="recordMenuGrp"
+            @openDrawer="openDrawer"
+            @openReport="openReport"
+          ></recursion-contextmenu>
+          <!-- <v-contextmenu ref="contextmenu" @show="contextmenuShow">
+            <template v-for="(item, index) in recordMenuGrp">
+              <v-contextmenu-submenu :title="item.itemName" :key="index" v-if="item.resId === 990">
+                <v-contextmenu-item>子菜单1</v-contextmenu-item>
+              </v-contextmenu-submenu>
+              <v-contextmenu-item :key="index" v-else>{{ item.itemName }}</v-contextmenu-item>
+            </template>
+          </v-contextmenu> -->
+
+          <!-- <VueContextMenu
             class="right-menu"
             :target="contextMenuTarget"
             :show="contextMenuVisible"
             @update:show="(show) => (contextMenuVisible = show)"
           >
-            <el-cascader-panel :options="options" :props="{ expandTrigger: 'hover' }"></el-cascader-panel>
-          </VueContextMenu>
+            <el-cascader-panel :props="cascaderProps"></el-cascader-panel>
+          </VueContextMenu> -->
         </div>
       </template>
-      <template slot="paneR">
+      <template slot="paneR" style="height: 100%">
         <!-- <v-contextmenu ref="contextmenu">
-          <v-contextmenu-item>菜单1</v-contextmenu-item>
-          <v-contextmenu-item>菜单2</v-contextmenu-item>
+          <v-contextmenu-item v-for="(item,index) in recordMenuGrp" :key="index">{{item.itemName}}</v-contextmenu-item>
           <v-contextmenu-submenu title="菜单3">
             <v-contextmenu-item>子菜单1</v-contextmenu-item>
             <v-contextmenu-item>子菜单2</v-contextmenu-item>
@@ -47,6 +71,7 @@
       </template>
     </split-pane>
     <!-- </el-dialog> -->
+    <app-iframe ref="iframe"></app-iframe>
   </div>
 </template>
 
@@ -55,13 +80,15 @@
 import { component as VueContextMenu } from '@xunlei/vue-context-menu'
 import splitPane from 'vue-splitpane'
 
-import { requestMain, getTreeMenu } from '@/api/main'
+import { requestMain, getTreeMenu, getRecordMenuGrp, getMenuLvAfter } from '@/api/main'
 
 import dynamicDrawer from '@/components/DynamicDrawer/index.vue'
+import RecursionContextmenu from '@/components/RecursionContextmenu/index.vue'
+import appIframe from '@/views/iframe'
 
 export default {
   name: 'treeContainer',
-  components: { VueContextMenu, splitPane, dynamicDrawer },
+  components: { VueContextMenu, splitPane, dynamicDrawer, RecursionContextmenu, appIframe },
   props: {},
   data() {
     return {
@@ -74,277 +101,19 @@ export default {
         label: 'label',
         isLeaf: 'leaf'
       },
-      options: [
-        {
-          value: 'zhinan',
-          label: '指南',
-          children: [
-            {
-              value: 'shejiyuanze',
-              label: '设计原则',
-              children: [
-                {
-                  value: 'yizhi',
-                  label: '一致'
-                },
-                {
-                  value: 'fankui',
-                  label: '反馈'
-                },
-                {
-                  value: 'xiaolv',
-                  label: '效率'
-                },
-                {
-                  value: 'kekong',
-                  label: '可控'
-                }
-              ]
-            },
-            {
-              value: 'daohang',
-              label: '导航',
-              children: [
-                {
-                  value: 'cexiangdaohang',
-                  label: '侧向导航'
-                },
-                {
-                  value: 'dingbudaohang',
-                  label: '顶部导航'
-                }
-              ]
-            }
-          ]
-        },
-        {
-          value: 'zujian',
-          label: '组件',
-          children: [
-            {
-              value: 'basic',
-              label: 'Basic',
-              children: [
-                {
-                  value: 'layout',
-                  label: 'Layout 布局'
-                },
-                {
-                  value: 'color',
-                  label: 'Color 色彩'
-                },
-                {
-                  value: 'typography',
-                  label: 'Typography 字体'
-                },
-                {
-                  value: 'icon',
-                  label: 'Icon 图标'
-                },
-                {
-                  value: 'button',
-                  label: 'Button 按钮'
-                }
-              ]
-            },
-            {
-              value: 'form',
-              label: 'Form',
-              children: [
-                {
-                  value: 'radio',
-                  label: 'Radio 单选框'
-                },
-                {
-                  value: 'checkbox',
-                  label: 'Checkbox 多选框'
-                },
-                {
-                  value: 'input',
-                  label: 'Input 输入框'
-                },
-                {
-                  value: 'input-number',
-                  label: 'InputNumber 计数器'
-                },
-                {
-                  value: 'select',
-                  label: 'Select 选择器'
-                },
-                {
-                  value: 'cascader',
-                  label: 'Cascader 级联选择器'
-                },
-                {
-                  value: 'switch',
-                  label: 'Switch 开关'
-                },
-                {
-                  value: 'slider',
-                  label: 'Slider 滑块'
-                },
-                {
-                  value: 'time-picker',
-                  label: 'TimePicker 时间选择器'
-                },
-                {
-                  value: 'date-picker',
-                  label: 'DatePicker 日期选择器'
-                },
-                {
-                  value: 'datetime-picker',
-                  label: 'DateTimePicker 日期时间选择器'
-                },
-                {
-                  value: 'upload',
-                  label: 'Upload 上传'
-                },
-                {
-                  value: 'rate',
-                  label: 'Rate 评分'
-                },
-                {
-                  value: 'form',
-                  label: 'Form 表单'
-                }
-              ]
-            },
-            {
-              value: 'data',
-              label: 'Data',
-              children: [
-                {
-                  value: 'table',
-                  label: 'Table 表格'
-                },
-                {
-                  value: 'tag',
-                  label: 'Tag 标签'
-                },
-                {
-                  value: 'progress',
-                  label: 'Progress 进度条'
-                },
-                {
-                  value: 'tree',
-                  label: 'Tree 树形控件'
-                },
-                {
-                  value: 'pagination',
-                  label: 'Pagination 分页'
-                },
-                {
-                  value: 'badge',
-                  label: 'Badge 标记'
-                }
-              ]
-            },
-            {
-              value: 'notice',
-              label: 'Notice',
-              children: [
-                {
-                  value: 'alert',
-                  label: 'Alert 警告'
-                },
-                {
-                  value: 'loading',
-                  label: 'Loading 加载'
-                },
-                {
-                  value: 'message',
-                  label: 'Message 消息提示'
-                },
-                {
-                  value: 'message-box',
-                  label: 'MessageBox 弹框'
-                },
-                {
-                  value: 'notification',
-                  label: 'Notification 通知'
-                }
-              ]
-            },
-            {
-              value: 'navigation',
-              label: 'Navigation',
-              children: [
-                {
-                  value: 'menu',
-                  label: 'NavMenu 导航菜单'
-                },
-                {
-                  value: 'tabs',
-                  label: 'Tabs 标签页'
-                },
-                {
-                  value: 'breadcrumb',
-                  label: 'Breadcrumb 面包屑'
-                },
-                {
-                  value: 'dropdown',
-                  label: 'Dropdown 下拉菜单'
-                },
-                {
-                  value: 'steps',
-                  label: 'Steps 步骤条'
-                }
-              ]
-            },
-            {
-              value: 'others',
-              label: 'Others',
-              children: [
-                {
-                  value: 'dialog',
-                  label: 'Dialog 对话框'
-                },
-                {
-                  value: 'tooltip',
-                  label: 'Tooltip 文字提示'
-                },
-                {
-                  value: 'popover',
-                  label: 'Popover 弹出框'
-                },
-                {
-                  value: 'card',
-                  label: 'Card 卡片'
-                },
-                {
-                  value: 'carousel',
-                  label: 'Carousel 走马灯'
-                },
-                {
-                  value: 'collapse',
-                  label: 'Collapse 折叠面板'
-                }
-              ]
-            }
-          ]
-        },
-        {
-          value: 'ziyuan',
-          label: '资源',
-          children: [
-            {
-              value: 'axure',
-              label: 'Axure Components'
-            },
-            {
-              value: 'sketch',
-              label: 'Sketch Templates'
-            },
-            {
-              value: 'jiaohu',
-              label: '组件交互文档'
-            }
-          ]
-        }
-      ]
+      options: [],
+      recordMenuGrp: []
     }
   },
-  computed: {},
+  computed: {
+    cascaderProps() {
+      return {
+        lazy: true,
+        lazyLoad: this.lazyLoad,
+        expandTrigger: 'hover'
+      }
+    }
+  },
   watch: {},
   created() {
     // 获取路由的参数
@@ -376,8 +145,6 @@ export default {
     this.$nextTick(() => {
       // vue-context-menu 需要传入一个触发右键事件的元素，等页面 dom 渲染完毕后才可获取
       this.contextMenuTarget = document.querySelector('#el-tree')
-      // this.contextMenuTarget = this.$refs.elTree
-      console.log('tree refs:', this.contextMenuTarget)
       // 获取所有的 treeitem，循环监听右键事件
       const tree = document.querySelectorAll('#el-tree [role="treeitem"]')
       tree.forEach((i) => {
@@ -410,9 +177,10 @@ export default {
       }
       Object.assign(data, this.routeRow)
       const res = await getTreeMenu(data)
+      console.log('第一级节点res:', res)
       let list = res.records
-      this.NODEID = res.INNODEID
-      this.conofName = 'CONOF' + res.INNODEID
+      this.NODEID = res.tableName
+      this.conofName = 'CONOF' + res.tableName
       // 将res的不为空和不是condition的键值 用'|'拼接字符串
       // for (let i in res) {
       //   if (res[i] && i !== 'CONOF' && i !== 'records' && i !== 'INPUTVAROF') {
@@ -445,24 +213,90 @@ export default {
       }
 
       // 每一项list加上label: list.display
-      list.forEach((i) => {
-        i.label = i.display
-        i.leaf = false
-        i.tblAlias = res.VIEWDEF
-        i.fatherCondition = { ...res }
-      })
-      this.treeData = list
+      if (list.length > 0) {
+        list.forEach((i) => {
+          i.label = i.display
+          i.leaf = false
+          i.tblAlias = res.VIEWDEF
+          i[this.conofName] = this.conof
+          i.fatherCondition = { ...res }
+        })
+        this.treeData = list
+      } else {
+        list = [
+          {
+            label: res.display ? res.display : '',
+            leaf: true // 不走第二级节点
+          }
+        ]
+
+        this.treeData = list
+      }
+
       console.log('树treeData:', this.treeData)
       return resolve(this.treeData)
     },
     //加载节点的子节点集合
     async loadchildNode(node, resolve) {
       console.log('超过二级的', node, node.level)
+
+      if (node.data.fatherCondition.tableName === 'fileLibrary') {
+        // 处理condition
+        let condition1 = this.routeRow.condition
+        let conditionArr = condition1.split(',')
+        let condition2 = conditionArr.forEach((i) => {
+          if (i.indexOf('=this.') > -1) {
+            if (node.data[i.split('=this.')[0]]) {
+              i.split('=this.')[0] = node.data[i.split('=this.')[0]]
+            }
+          } else if (i.indexOf('=') > -1) {
+            i.split('=')[0] = i.split('=')[1]
+          } else {
+            i = i
+          }
+        })
+        console.log('condition2:', condition2)
+
+        // 文件处理
+        let fileData = {
+          SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
+          SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+          objectID: this.routeRow.objectID,
+          // condition: this.routeRow.condition,
+          resId: this.routeRow.resId,
+          operationID: this.routeRow.operationID,
+          docFileName: node.data.docFileName
+        }
+        const res = await getTreeMenu(fileData)
+        console.log('超过二级的fileLibrary:', res)
+        let list = res.records
+        if (list.length > 0) {
+          list.forEach((i) => {
+            i.label = i.display
+            i.leaf = false
+            i.tblAlias = res.VIEWDEF
+            i.fatherCondition = { ...res }
+          })
+          this.treeData = list
+        } else {
+          list = [
+            {
+              label: res.display ? res.display : '',
+              leaf: true // 不走第二级节点
+            }
+          ]
+
+          this.treeData = list
+        }
+        console.log('树treeData:', this.treeData)
+        return resolve(this.treeData)
+      }
+
       this.resMap = node.data.fatherCondition
       this.priKey = node.data.fatherCondition.priKey
       this.listMap = node.data
-      if (node.data.INNODEID) {
-        this.NODEID = node.data.INNODEID
+      if (node.data.tableName) {
+        this.NODEID = node.data.tableName
       }
       if (!this.priKey) {
         this.priKey = node.data.priKey
@@ -476,7 +310,7 @@ export default {
 
           if (this.resMap.INPUTVAROF) {
             inputvarof = this.resMap.INPUTVAROF.split(';')
-            this.inputvarofName = 'INPUTVAROF' + this.resMap.INNODEID
+            this.inputvarofName = 'INPUTVAROF' + this.resMap.tableName
             this.isInputvarof = true
           } else {
             this.inputvarofName = ''
@@ -485,7 +319,7 @@ export default {
 
           if (this.resMap.CONOF) {
             conofTM = this.resMap.CONOF.split(';')
-            this.conofTMName = 'CONOF' + this.resMap.INNODEID
+            this.conofTMName = 'CONOF' + this.resMap.tableName
             this.isConof = true
           } else {
             this.isConof = false
@@ -496,7 +330,7 @@ export default {
 
           if (node.data.INPUTVAROF) {
             inputvarof = node.data.INPUTVAROF.split(';')
-            this.inputvarofName = 'INPUTVAROF' + node.data.INNODEID
+            this.inputvarofName = 'INPUTVAROF' + node.data.tableName
             this.isInputvarof = true
           } else {
             this.inputvarofName = ''
@@ -505,14 +339,14 @@ export default {
 
           if (node.data.CONOF) {
             conofTM = node.data.CONOF.split(';')
-            this.conofTMName = 'CONOF' + node.data.INNODEID
+            this.conofTMName = 'CONOF' + node.data.tableName
             this.isConof = true
           } else {
             this.conofTMName = ''
             this.isConof = false
           }
           // conof = node.data.CONOF.split(';')
-          // this.conofName = 'CONOF' + node.data.INNODEID
+          // this.conofName = 'CONOF' + node.data.tableName
         }
         // 将res的不为空和不是condition的键值 用'|'拼接字符串
         this.endCondition = ''
@@ -681,6 +515,7 @@ export default {
         i.label = i.display
         i.leaf = false
         i.tblAlias = res.VIEWDEF
+        i[this.conofName] = this.conof
         i.fatherCondition = { ...res }
       })
       this.treeData = list
@@ -690,8 +525,10 @@ export default {
     nodeClick(data, node) {
       console.log('nodeClick data:', data)
       let nodeData = this.$_.cloneDeep(data)
-      let routerData = this.$_.cloneDeep(data)
       if (nodeData.childNum === 0) {
+        if (data.fatherCondition.tableName === 'fileLibrary') {
+          return
+        }
         delete nodeData.fatherCondition
         delete nodeData.childNum
         delete nodeData.priKey
@@ -702,17 +539,64 @@ export default {
           SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
           condition: data.priKey,
           operationID: 50,
-          resId: this.routeRow.resId,
-          itemName: this.routeRow.itemName,
-          otherProperties: this.routeRow.otherProperties
+          resId: this.routeRowNO.resId,
+          itemName: this.routeRowNO.itemName,
+          otherProperties: this.routeRowNO.otherProperties
         }
         this.$refs.drawer.show(reqData, 'parallel')
       } else {
         this.$refs.drawer.show()
       }
     },
-    handleClose() {
-      this.dialogVisible = false
+    async nodeContextmenu(event, data, node) {
+      console.log('右键 event:', event)
+      console.log('右键 data:', data)
+      console.log('右键 node:', node)
+      let nodeData = this.$_.cloneDeep(data)
+      // 合并this.routeRowNO中不同与nodeData且不为空的参数
+      // let routeRowNO = this.$_.cloneDeep(this.routeRowNO)
+      const { operationID, condition, ...routeRowNO } = this.routeRowNO
+      // delete routeRowNO.operationID
+      // delete routeRowNO.condition
+      console.log('右键 routeRowNO:', routeRowNO)
+      for (let key in routeRowNO) {
+        if (routeRowNO[key] && !nodeData[key]) {
+          nodeData[key] = routeRowNO[key]
+        }
+      }
+      delete nodeData.fatherCondition
+
+      console.log('右键 nodeData:', nodeData)
+
+      let topY = event.clientY
+      let leftX = event.clientX
+      let reqData = {
+        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+        tblAlias: data.tblAlias
+        // meumType: 'form',
+      }
+      let res = await getRecordMenuGrp(reqData)
+      // resId=990 的,加上children
+      res.forEach((i) => {
+        if (i.resId === 990) {
+          i.children = []
+        }
+      })
+      this.recordMenuGrp = res
+
+      await this.$refs.contextmenu.show(topY, leftX, nodeData)
+      //  getRecordMenuGrp(reqData).then((res) => {
+      //   console.log('右键菜单 res:', res)
+      //   this.recordMenuGrp = res
+      //   console.log('refs v-contextmenu',this.$refs.contextmenu)
+      // })
+    },
+    openDrawer(data) {
+      this.$refs.drawer.show(data, 'float')
+    },
+    openReport(row) {
+      this.$refs.iframe.show(row)
     }
   }
 }

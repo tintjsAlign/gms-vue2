@@ -156,50 +156,54 @@ export default {
       console.log(btn.itemName, 'operationID:', btn.operationID, 'resId:', btn.resId)
       // 合并this.currentRow和btn的数据
       Object.assign(btn, this.currentRow)
+      console.log('mainEnter合并后:', btn)
       // 判断按钮功能
-      if (btn.isNeedConfirm === '1') {
-        // 判断是否需要确认
-        this.$confirm(btn.otherProperties.operationTitle, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.mainEnterConfirm(btn)
-        })
-      } else {
-        if (btn.operationID === 1) {
-          // 打开抽屉-填表单
-          this.$emit('openDrawer', btn)
-        } else if (btn.operationID === 51) {
-          // 查询所有数据,重新渲染表格
-          this.$emit('queryAllData', btn)
-        } else if (btn.operationID === 135 && btn.resId === 587) {
-          // 打开报表
-          // 合并this.currentRow和btn的数据
-          Object.assign(btn, this.currentRow)
-          this.$emit('openReport', btn)
-        } else if (btn.operationID === 203) {
-          // 下载文件
-          btn.queryFilePath = '1'
-          this.mainEnterConfirm(btn)
-        } else if (btn.operationID === 204) {
-          // 上传文件
-          this.uploadFile(btn)
-        } else if (btn.operationID === 16) {
-          // 管理树界面
-          this.openTreeManage(btn)
-        } else {
-          console.log('其它按钮功能')
+      // 1 || 2 || 48 || 49 || 50
+      let operationIDs = [1, 2, 48, 49, 50]
 
-          if (btn.otherProperties.urlParam) {
-            // 判断urlParam字符串中是否有=append.
-            if (btn.otherProperties.urlParam.indexOf('=append.') > -1) {
-              // 若有, 打开抽屉-填表单
-              this.$emit('openDrawer', btn)
-              return
-            }
+      if (operationIDs.includes(btn.operationID)) {
+        // 打开抽屉-填表单
+        this.$emit('openDrawer', btn)
+      } else if (btn.operationID === 51) {
+        // 查询所有数据,重新渲染表格
+        this.$emit('queryAllData', btn)
+      } else if (btn.operationID === 135 && btn.resId === 587) {
+        // 打开报表
+        // 合并this.currentRow和btn的数据
+        // Object.assign(btn, this.currentRow)
+        this.$emit('openReport', btn)
+      } else if (btn.operationID === 203) {
+        // 下载文件
+        btn.queryFilePath = '1'
+        this.mainEnterConfirm(btn)
+      } else if (btn.operationID === 204) {
+        // 上传文件
+        this.uploadFile(btn)
+      } else if (btn.operationID === 16) {
+        // 管理树界面
+        this.openTreeManage(btn)
+      } else {
+        console.log('其它按钮功能')
+
+        if (btn.otherProperties.urlParam) {
+          // 判断urlParam字符串中是否有=append.
+          if (btn.otherProperties.urlParam.indexOf('=append.') > -1) {
+            // 若有, 打开抽屉-填表单
+            this.$emit('openDrawer', btn)
+            return
           }
-          // 其它普通操作
+        }
+        // 其它普通操作
+        if (btn.isNeedConfirm === '1') {
+          // 判断是否需要确认
+          this.$confirm(btn.otherProperties.operationTitle, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.mainEnterConfirm(btn)
+          })
+        } else {
           this.mainEnterConfirm(btn)
         }
       }
@@ -221,10 +225,10 @@ export default {
           })
           // 刷新
           this.$emit('refresh')
-        } else if (typeof res === 'string' && res.indexOf('错误原因') > -1) {
+        } else if (typeof res === 'string' && res.indexOf('message=') > -1) {
           // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
           // 提取错误原因
-          let errorMsg = res.match(/错误原因=(.*?)\|/)[1]
+          let errorMsg = res.match(/message=(.*?)\|/)[1]
           this.$message.error(errorMsg)
         } else {
           // 处理res.fileMessage

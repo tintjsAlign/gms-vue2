@@ -22,7 +22,7 @@
         </el-row>
       </div>
     </div>
-    <div class="dynamic-table" >
+    <div class="dynamic-table">
       <el-table
         :data="tableData"
         ref="dynamicTable"
@@ -34,7 +34,7 @@
         class="table-fixed"
         size="mini"
         :max-height="elTableHeight"
-        :header-cell-style="{background:'#f5f7fa',color:'#606266'}"
+        :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
         @current-change="handleCurrentChange"
         @selection-change="handleSelectionChange"
       >
@@ -54,25 +54,13 @@
             {{ scope.row[fruit.queryFldName] }}
           </template>
         </el-table-column>
-        <el-table-column
-          label="操作"
-          width="180"
-          align="center"
-          fixed="right"
-          v-if="tableData.length > 0"
-          show-overflow-tooltip
-        >
+        <el-table-column label="操作" width="180" align="center" fixed="right" v-if="tableData.length > 0" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-button-group>
               <span v-for="(btn, i) in recordBtnGroup" :key="i" class="btnsClass">
-                <el-tooltip class="item" effect="dark" :content="btn.itemName" open-delay="700" placement="top-start">
-                  <el-button
-                  size="mini"
-                  :icon="btn.icon"
-                  circle
-                  @click.native="handleMain(scope.row, btn)"
-                >
-                  <!-- {{ btn.itemName }} -->
+                <!-- <el-tooltip class="item" effect="dark" :content="btn.itemName" open-delay="700" placement="top-start"> -->
+                <el-button size="mini" type="text" @click.native="handleMain(scope.row, btn)">
+                  {{ btn.itemName }}
                 </el-button>
               </span>
             </el-button-group>
@@ -83,8 +71,7 @@
     <!-- </el-card> -->
 
     <dynamic-drawer ref="drawer" @refresh="refresh"></dynamic-drawer>
-    <app-iframe ref="iframe" ></app-iframe>
-
+    <app-iframe ref="iframe"></app-iframe>
   </div>
 </template>
 
@@ -114,7 +101,7 @@ export default {
     requestData: {
       type: Object,
       default: () => {}
-    }
+    },
   },
   data() {
     return {
@@ -131,7 +118,7 @@ export default {
       multipleSelection: [], //多选数据
       recordBtnGroup: [], //操作按钮组
       // table 高度
-      elTableHeight: 450,
+      elTableHeight: 450
     }
   },
   computed: {
@@ -140,8 +127,8 @@ export default {
     }
   },
   watch: {
-    'tableData': {
-      handler(){
+    tableData: {
+      handler() {
         this.$nextTick(() => {
           this.$refs.dynamicTable.doLayout()
         })
@@ -149,14 +136,17 @@ export default {
       deep: true
     }
   },
-  created() {},
+  created() {
+  },
   mounted() {
     this.$nextTick(() => {
       let mainHeight = document.querySelector('.app-main').offsetHeight
-      console.log('mainHeight高度:',mainHeight)
+      console.log('mainHeight高度:', mainHeight)
       // 减去search-container高度和button-group高度和pagination-container高度
-      this.elTableHeight = mainHeight - document.querySelector('.button-group').offsetHeight - document.querySelector('.pagination-container').offsetHeight -180
-      console.log('elTableHeight高度:',this.elTableHeight)
+      this.elTableHeight =
+        mainHeight - document.querySelector('.button-group').offsetHeight - document.querySelector('.pagination-container').offsetHeight - 180
+      console.log('elTableHeight高度:', this.elTableHeight)
+
     })
   },
   methods: {
@@ -379,7 +369,6 @@ export default {
     display: flex;
     justify-content: space-between;
     // align-items: center;
-
   }
 }
 ::v-deep .el-dropdown-link {
@@ -390,8 +379,8 @@ export default {
 ::v-deep .el-icon-arrow-down {
   font-size: 12px;
 }
-::v-deep .el-table__body tr.current-row>td {
-	background: #d5eafe!important;
+::v-deep .el-table__body tr.current-row > td {
+  background: #d5eafe !important;
 }
 
 .btnsClass {
@@ -405,6 +394,5 @@ export default {
   ::v-deep .el-table__fixed {
     height: 100% !important;
   }
-
 }
 </style>

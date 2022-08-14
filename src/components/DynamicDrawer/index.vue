@@ -1,6 +1,6 @@
 <template>
   <div class="drawer-container" v-if="showContainer">
-    <div v-if="levelFlag">
+    <div v-if="showParallel">
       <div class="demo-drawer__content">
         <el-row gutter="20">
           <el-col span="24">
@@ -120,7 +120,7 @@
                 <!-- multirow 类型--多行输入框 end ↑↑↑-->
 
                 <!-- readOnly 类型--只读不可修改框 ↓↓↓-->
-                <el-col span="12" v-else-if="item.otherProperties.textType.match(/readOnly/gi)">
+                <el-col span="12" v-else-if="item.otherProperties.textType === 'notshow' || item.otherProperties.textType.match(/readOnly/gi)">
                   <el-form-item required :label="item.fldAlais">
                     <el-input v-model="form[item.valueFldName]" autocomplete="off" clearable type="text" :disabled="true" autosize></el-input>
                   </el-form-item>
@@ -275,7 +275,7 @@
                 <!-- multirow 类型--多行输入框 end ↑↑↑-->
 
                 <!-- readOnly 类型--只读不可修改框 ↓↓↓-->
-                <el-col span="12" v-else-if="item.otherProperties.textType.match(/readOnly/gi)">
+                <el-col span="12" v-else-if="item.otherProperties.textType === 'notshow' || item.otherProperties.textType.match(/readOnly/gi)">
                   <el-form-item required :label="item.fldAlais">
                     <el-input v-model="form[item.valueFldName]" autocomplete="off" clearable type="text" :disabled="true" autosize></el-input>
                   </el-form-item>
@@ -295,7 +295,7 @@
         </el-row>
         <div class="demo-drawer__footer">
           <el-button @click="cancelForm">取 消</el-button>
-          <el-button type="primary" @click="submitForm" :loading="loading" v-if="requestData.itemName !== '查询' || requestData.operationID !== 48">{{
+          <el-button type="primary" @click="submitForm" :loading="loading" v-if="requestData.operationID !== 48">{{
             loading ? '提交中 ...' : '确 定'
           }}</el-button>
         </div>
@@ -329,7 +329,10 @@ export default {
       options: [],
       printerSelect: [],
       isTextarea: false,
-      levelFlag: false
+      showParallel: false,
+      levelFlag: false,
+      OPENREQMAINDATA: {},
+      REQMAINDATA: {}
     }
   },
   computed: {},
@@ -337,19 +340,27 @@ export default {
   created() {},
   mounted() {},
   methods: {
-    show(data, level) {
+    async show(data, level) {
       if (!data) {
         this.showContainer = false
         return
       }
       this.showContainer = true
       this.form = {}
+      this.OPENREQMAINDATA = {}
+      this.REQMAINDATA = {}
       this.isTextarea = false
 
       if (level) {
         this.levelFlag = true
+        if (level === 'parallel') {
+          this.showParallel = true
+        }else {
+          this.showParallel = false
+        }
       } else {
         this.levelFlag = false
+        this.showParallel = false
       }
 
       // this.loadingInstance = this.$loading({
@@ -416,17 +427,24 @@ export default {
         if (this.requestData.otherProperties.urlParam.indexOf('appendFld=') > -1) {
           requestMainData.operationID = '1056'
           Object.assign(requestMainData, this.requestData)
+          // let newRequestData = this.$_.cloneDeep(this.requestData)
+          // delete newRequestData.operationID
+          // delete newRequestData.condition
           this.OPENREQMAINDATA = {
             ...requestMainData,
             tblAlias: tblAlias,
             resId: this.requestData.resId,
             operationID: '1056'
+            // ...newRequestData
           }
         } else if (this.requestData.otherProperties.urlParam.indexOf('appendRec=') > -1) {
           requestMainData.operationID = '1067'
           Object.assign(requestMainData, this.requestData)
+          // let newRequestData = this.$_.cloneDeep(this.requestData)
+          // delete newRequestData.operationID
           this.OPENREQMAINDATA = {
             ...requestMainData,
+            // ...newRequestData,
             tblAlias: tblAlias,
             resId: this.requestData.resId,
             operationID: '1067'
@@ -441,8 +459,15 @@ export default {
           ...requestMainData
         }
       }
-      requestMain(this.OPENREQMAINDATA).then((res) => {
+      await requestMain(this.OPENREQMAINDATA).then((res) => {
         console.log('抽屉requestMain:', res)
+        if (typeof res === 'string' && res.indexOf('message=') > -1) {
+          // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
+          // 提取错误原因
+          let errorMsg = res.match(/message=(.*?)\|/)[1]
+          this.$message.error(errorMsg)
+          return
+        }
         // if (this.requestData.itemName === '登记被测系统') {
         if (this.specialInstructFlag === true) {
           this.trueRes = res
@@ -458,9 +483,13 @@ export default {
             this.trueRes = this.trueRes.slice(0, -1)
           }
         }
-        // 过滤 类型为notshow的字段
-        let drawerData = this.trueRes.filter((item) => item.otherProperties.textType !== 'notshow')
-        this.drawerData = drawerData
+        if (!this.levelFlag) {
+          // 过滤 类型为notshow的字段
+          let drawerData = this.trueRes.filter((item) => item.otherProperties.textType !== 'notshow')
+          this.drawerData = drawerData
+        } else {
+          this.drawerData = this.trueRes
+        }
         console.log('drawerData:', this.drawerData)
 
         // 根据来源数据,给表单赋初始值(深拷贝)
@@ -487,7 +516,7 @@ export default {
               if (item.otherProperties.textType.match(/enum/gi)) {
                 // 枚举类型特殊处理
                 form[item.valueFldName] = item.otherProperties.fldRemark
-                form[item.valueFldName + '_enum'] = item.otherProperties.fldValue
+                form[item.valueFldName + '_enum'] = item.otherProperties.defaultValue
               } else {
                 // 其它默认值
                 form[item.valueFldName] = item.otherProperties.defaultValue
@@ -498,7 +527,7 @@ export default {
         }
         console.log('抽屉form:', this.form)
 
-        if (this.levelFlag) {
+        if (this.showParallel) {
         } else {
           this.dialog = true
         }
@@ -550,7 +579,7 @@ export default {
     changeType(e) {
       this.isTextarea = !this.isTextarea
     },
-    queryOption(item) {
+    async queryOption(item) {
       this.options = []
       // console.log('查询选择框参数', item)
       this.readName = item.otherProperties.readFld
@@ -570,7 +599,7 @@ export default {
       data.operationID = item.otherProperties.operationIDForSuggest
       data.condition = encodeURI(item.value)
       data.readName = item.otherProperties.readFld
-      requestMain(data).then((res) => {
+      await requestMain(data).then((res) => {
         if (res === []) {
           // 清空选择框和输入框
           this.options = []
@@ -612,13 +641,17 @@ export default {
     dateChange(date) {
       console.log('dateChange:', date)
     },
-    submitForm() {
+    async submitForm() {
       this.$refs.dynamicTableRef.validate((valid) => {
         if (!valid) {
           console.log('error submit!!')
           return false
         } else {
-          this.$confirm('确定要提交表单吗？')
+          let subTip = '确定要提交吗？'
+          if (this.requestData.otherProperties.operationTitle) {
+            subTip = this.requestData.otherProperties.operationTitle
+          }
+          this.$confirm(`${subTip}`)
             .then((_) => {
               this.loading = true
               // this.timer = setTimeout(() => {
@@ -652,11 +685,14 @@ export default {
                 // if (this.requestData.itemName === '登记被测系统') {
                 if (this.specialInstructFlag === true) {
                   // 替换掉condition
-                  data.condition = this.condition
                   data.queryFilePath = '1'
+                  data.condition = this.condition
                   Object.assign(data, this.requestData)
+                  // let newData = this.$_.cloneDeep(this.requestData)
+                  // delete newData.operationID
                   this.REQMAINDATA = {
                     ...data,
+                    // ...newData,
                     condition: encodeURI(this.condition)
                   }
                 } else {
@@ -681,27 +717,28 @@ export default {
                   data.condition = encodeURI(this.preCondition)
                   // operationID
                   // if ( this.requestData.operationID === 1 || this.requestData.itemName.indexOf('新增') > -1) {
-                  if ( this.requestData.operationID === 1) {
+                  if (this.requestData.operationID === 1) {
                     // 新增
                     data.operationID = '1001'
-                  // } else if ( this.requestData.operationID === 50 || this.requestData.itemName.indexOf('修改') > -1) {
-                  } else if ( this.requestData.operationID === 50) {
+                    // } else if ( this.requestData.operationID === 50 || this.requestData.itemName.indexOf('修改') > -1) {
+                  } else if (this.requestData.operationID === 50) {
                     // 修改
                     data.operationID = '1003'
                     data.operationType = 'update'
-                  // } else if ( this.requestData.operationID === 49 || this.requestData.itemName.indexOf('复制') > -1) {
-                  } else if ( this.requestData.operationID === 49) {
+                    // } else if ( this.requestData.operationID === 49 || this.requestData.itemName.indexOf('复制') > -1) {
+                  } else if (this.requestData.operationID === 49) {
                     // 复制
                     data.operationID = '1001'
                   }
 
                   // 把所有的值拼接成字符串,以#START开头,以#ENDFLAG结尾,以|分割
-
-                  let formData = ''
-                  for (let key in data) {
-                    formData += `${key}=${data[key]}|`
+                  if (!this.levelFlag) {
+                    let formData = ''
+                    for (let key in data) {
+                      formData += `${key}=${data[key]}|`
+                    }
+                    data.allResponseFields = `#START${formData}#ENDFLAG`
                   }
-                  data.allResponseFields = `#START${formData}#ENDFLAG`
 
                   this.REQMAINDATA = data
                 }
@@ -802,6 +839,15 @@ export default {
   .demo-drawer__footer {
     // 向右对齐
     text-align: right;
+    // 固定在底部
+    position: fixed;
+    bottom: 10px;
+    right: 20px;
+    width: 100%;
+    // 底部按钮
+    .el-button {
+      margin-top: 10px;
+    }
   }
 
   .dynamic-table {
