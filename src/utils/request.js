@@ -1,8 +1,16 @@
 import axios from 'axios'
-import { MessageBox, Message } from 'element-ui'
+import { MessageBox, Message, Loading } from 'element-ui'
+import _ from 'lodash'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 import qs from 'qs' //引入qs模块，用于序列化post请求参数
+
+// loading对象
+let loadingInstance
+
+// 请求合并只出现一次loading
+// 当前正在请求的数量
+let loadingRequestCount = 0
 
 // create an axios instance
 const service = axios.create({
@@ -14,6 +22,16 @@ const service = axios.create({
 // request interceptor 请求拦截器
 service.interceptors.request.use(
   (config) => {
+    let loadingTarget = '.app-main'
+    if (config.headers.loadingTarget) {
+      loadingTarget = config.headers.loadingTarget
+    }
+    let target = document.querySelector(loadingTarget)
+    if (target) {
+      // 请求拦截进来调用显示loading效果
+      showLoading(loadingTarget)
+    }
+
     // do something before request is sent
 
     // if (store.getters.token) {
@@ -64,7 +82,7 @@ service.interceptors.request.use(
     //   // 暂时使用通用res_token
     //   // config.headers.res_token = 'adeebd32-5f54-4a88-9821-f38c44538dca'
     // }
-    
+
     return config
   },
   (error) => {
@@ -88,6 +106,7 @@ service.interceptors.response.use(
    */
   (response) => {
     const res = response.data
+
     if (res.statusCode === '301') {
       // 跳转到登录页面
       this.$alert(res.message, '提示', {
@@ -98,17 +117,47 @@ service.interceptors.response.use(
       })
       return res
     }
-    return res
+    setTimeout(() => {
+      hideLoading()
+    }, 200)
+    return Promise.resolve(res)
   },
   (error) => {
-    console.log('err' + error) // for debug
-    Message({
-      message: error.message,
-      type: 'error',
-      duration: 5 * 1000
-    })
-    return Promise.reject(error)
+    Message.error(`请求错误: ${error}`)
+    setTimeout(() => {
+      hideLoading()
+    }, 200)
+    if (error.response.status) {
+      return Promise.reject(error.response)
+    }
   }
 )
+
+// 显示loading的函数 并且记录请求次数 ++
+const showLoading = (target) => {
+  if (loadingRequestCount === 0) {
+    loadingInstance = Loading.service({
+      lock: true,
+      text: '加载中...',
+      target: target
+    })
+  }
+  loadingRequestCount++
+}
+
+// 隐藏loading的函数，并且记录请求次数
+const hideLoading = () => {
+  if (loadingRequestCount <= 0) return
+  loadingRequestCount--
+  if (loadingRequestCount === 0) {
+    toHideLoading()
+  }
+}
+
+// 防抖：将 300ms 间隔内的关闭 loading 便合并为一次. 防止连续请求时, loading闪烁的问题。
+var toHideLoading = _.debounce(() => {
+  loadingInstance.close()
+  loadingInstance = null
+}, 300)
 
 export default service
