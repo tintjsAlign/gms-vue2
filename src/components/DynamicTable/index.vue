@@ -16,6 +16,9 @@
       </div>
       <div class="otherBotton">
         <el-row>
+          <el-tooltip class="item" effect="dark" content="删除选中" placement="top">
+            <el-button v-if="showDeleteBtn" type="danger" icon="el-icon-delete" size="small" circle @click="batchDeleteRow"></el-button>
+          </el-tooltip>
           <el-tooltip class="item" effect="dark" content="清空选中" placement="top">
             <el-button icon="el-icon-refresh-left" size="small" circle @click="clickOutSide"></el-button>
           </el-tooltip>
@@ -101,7 +104,7 @@ export default {
     requestData: {
       type: Object,
       default: () => {}
-    },
+    }
   },
   data() {
     return {
@@ -118,7 +121,8 @@ export default {
       multipleSelection: [], //多选数据
       recordBtnGroup: [], //操作按钮组
       // table 高度
-      elTableHeight: 450
+      elTableHeight: 450,
+      showDeleteBtn: false //是否显示删除按钮
     }
   },
   computed: {
@@ -136,8 +140,7 @@ export default {
       deep: true
     }
   },
-  created() {
-  },
+  created() {},
   mounted() {
     this.$nextTick(() => {
       let mainHeight = document.querySelector('.app-main').offsetHeight
@@ -146,7 +149,6 @@ export default {
       this.elTableHeight =
         mainHeight - document.querySelector('.button-group').offsetHeight - document.querySelector('.pagination-container').offsetHeight - 180
       console.log('elTableHeight高度:', this.elTableHeight)
-
     })
   },
   methods: {
@@ -301,13 +303,67 @@ export default {
       if (val.length === 1) {
         this.currentRow = val[0]
         this.$refs.dynamicButton.replaceButtonGroup(val[0])
+        this.showDeleteBtn = false
       } else {
         this.$refs.dynamicButton.replaceButtonGroup(null)
+        if (val.length > 1) {
+          // 显示多选删除按钮 this.recordBtnGroup 中有删除时才显示
+          // this.showDeleteBtn = this.recordBtnGroup.some(item => item.itemName === '删除')
+          this.showDeleteBtn = this.recordBtnGroup.some((item) => item.operationID === 2)
+        } else {
+          this.showDeleteBtn = false
+        }
       }
     },
     openDrawer(row) {
       this.$refs.drawer.show(row)
     },
+    //批量删除
+    batchDeleteRow() {
+      console.log('多选数据:', this.multipleSelection)
+      let row = this.multipleSelection
+      console.log('按钮数据recordBtnGroup:', this.recordBtnGroup)
+      // 获取删除按钮的数据
+      let deleteBtnData = this.recordBtnGroup.find((item) => item.operationID === 2)
+      console.log('删除按钮数据:', deleteBtnData)
+
+      this.$confirm(`${deleteBtnData.otherProperties.operationTitle}`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 删除操作
+        let data = {
+          SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
+          SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        }
+
+        // 循环发送删除请求
+        let successCount = 0
+        let rowLength = row.length
+        row.forEach((item, index) => {
+          Object.assign(data, item, deleteBtnData)
+          requestMain(data).then((res) => {
+            console.log('删除结果:', res)
+            if (res === 'statusCode:200') {
+              successCount++
+              this.$notify({
+                title: '成功',
+                message: `成功删除${successCount}条记录`,
+                type: 'success',
+                duration: 1500,
+                onClose: () => {
+                  if (index === rowLength - 1) {
+                    this.reload()
+                  }
+                }
+              })
+            }
+          })
+        })
+      })
+    },
+    // 删除操作
     deleteRow(row) {
       this.$confirm(`${row.otherProperties.operationTitle}`, '提示', {
         confirmButtonText: '确定',
