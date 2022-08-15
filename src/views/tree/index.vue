@@ -11,7 +11,7 @@
       destroy-on-close
       :before-close="handleClose"
     > -->
-    <split-pane split="vertical" @resize="resize" style="height: 100vh" :min-percent="20" :default-percent="30">
+    <split-pane split="vertical" @resize="resize" style="height: 100vh" :min-percent="20" :max-percent="50" :default-percent="30">
       <template slot="paneL">
         <div class="left-container">
           <el-tree
@@ -240,30 +240,62 @@ export default {
     async loadchildNode(node, resolve) {
       console.log('超过二级的', node, node.level)
 
+      // 文件格式处理
       if (node.data.fatherCondition.tableName === 'fileLibrary') {
         // 处理condition
         let condition1 = this.routeRow.condition
         let conditionArr = condition1.split(',')
-        let condition2 = conditionArr.forEach((i) => {
+        let condition2 = []
+        let endCondition,
+          topCondition = ''
+        conditionArr.forEach((i) => {
           if (i.indexOf('=this.') > -1) {
-            if (node.data[i.split('=this.')[0]]) {
-              i.split('=this.')[0] = node.data[i.split('=this.')[0]]
+            let i0 = i.split('=this.')[0]
+            let i1 = i.split('=this.')[1]
+            let value = this.routeRow[i1]
+            condition2.push({
+              [i0]: value
+            })
+          }
+          // else if (i.indexOf('=') > -1) {
+          //   i.split('=')[0] = i.split('=')[1]
+          // }
+          else {
+            // CHILDCMDI需要动态获取,不拼接
+            if (i.indexOf('CHILDCMDI') === -1) {
+              // 其它的直接用'|'拼接成字符串
+              endCondition += '|' + i
             }
-          } else if (i.indexOf('=') > -1) {
-            i.split('=')[0] = i.split('=')[1]
-          } else {
-            i = i
+            if (i.indexOf('tableList') > -1 || i.indexOf('displayRecInfo') > -1) {
+              topCondition += ',' + i
+            }
           }
         })
-        console.log('condition2:', condition2)
+        // condition2每一项键值用'|'拼接成字符串
+        let condition3 = ''
+        condition2.forEach((i) => {
+          for (let j in i) {
+            condition3 += '|' + `${j}=${i[j]}`
+          }
+        })
+        endCondition = condition3 + endCondition
 
+        let CHILDCMDID
+        if (node.data.childNum === 0) {
+          CHILDCMDID = 2
+        } else {
+          CHILDCMDID = 1
+        }
+        topCondition = topCondition + ',' + `CHILDCMDI=${CHILDCMDID}`
+        let fileCondition = `${topCondition}${endCondition}`
+        console.log('fileCondition:', fileCondition)
         // 文件处理
         let fileData = {
           SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
           SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
-          objectID: this.routeRow.objectID,
-          // condition: this.routeRow.condition,
-          resId: this.routeRow.resId,
+          objectID: node.data.objectID,
+          condition: fileCondition,
+          resId: node.data.resID,
           operationID: this.routeRow.operationID,
           docFileName: node.data.docFileName
         }
@@ -527,23 +559,33 @@ export default {
       let nodeData = this.$_.cloneDeep(data)
       if (nodeData.childNum === 0) {
         if (data.fatherCondition.tableName === 'fileLibrary') {
-          return
+          delete nodeData.fatherCondition
+          let reqData = {
+            ...nodeData,
+            SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
+            SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+            operationID: 50,
+            tblAlias: data.tblAlias || '文件档案管理界面',
+            condition: `docFileName=${data.docFileName}`,
+          }
+          this.$refs.drawer.show(reqData, 'parallel')
+        } else {
+          delete nodeData.fatherCondition
+          delete nodeData.childNum
+          delete nodeData.priKey
+          delete nodeData.condition
+          let reqData = {
+            ...nodeData,
+            SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
+            SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+            condition: data.priKey,
+            operationID: 50,
+            resId: this.routeRowNO.resId,
+            itemName: this.routeRowNO.itemName,
+            otherProperties: this.routeRowNO.otherProperties
+          }
+          this.$refs.drawer.show(reqData, 'parallel')
         }
-        delete nodeData.fatherCondition
-        delete nodeData.childNum
-        delete nodeData.priKey
-        delete nodeData.condition
-        let reqData = {
-          ...nodeData,
-          SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-          SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
-          condition: data.priKey,
-          operationID: 50,
-          resId: this.routeRowNO.resId,
-          itemName: this.routeRowNO.itemName,
-          otherProperties: this.routeRowNO.otherProperties
-        }
-        this.$refs.drawer.show(reqData, 'parallel')
       } else {
         this.$refs.drawer.show()
       }

@@ -81,6 +81,32 @@ export default {
       // })
       // console.log('home: tree', tree)
     },
+    getIcon(name) {
+      // 根据菜单名称,自定义按钮图标
+      let icon = ''
+      if (name === '登记被测系统') {
+        icon = 'dengji'
+      }else if(name === '被测单位'){
+        icon = 'danwei'
+      }else if(name === '被测信息系统'){
+        icon = 'xitong'
+      }else if (name.indexOf('技术') > -1) {
+        icon = 'jishu'
+      }else if (name.indexOf('管理') > -1) {
+        icon = 'guanli'
+      }else if (name.indexOf('通用') > -1) {
+        icon = 'tongyong'
+      }else if (name.indexOf('批次') > -1) {
+        icon = 'pici'
+      }else if (name.indexOf('人员') > -1) {
+        icon = 'renyuan'
+      }else if (name.indexOf('工具') > -1) {
+        icon = 'gongju'
+      }else if (name.indexOf('多') > -1) {
+        icon = 'duo'
+      }
+      return icon
+    },
     routerGo(role) {
       // 根据点击的按钮，赋予不同的权限
       // this.$store.commit('user/SET_ROLES', [role])
@@ -105,7 +131,7 @@ export default {
           children: [
             {
               path: 'dashboard',
-              name: 'Dashboard',
+              name: name,
               component: 'dashboard',
               meta: { title: name, icon: 'dashboard' }
             }
@@ -148,7 +174,7 @@ export default {
               name: item.itemName,
               meta: {
                 title: item.itemName,
-                icon: item.itemName,
+                icon: this.getIcon(item.itemName),
                 roles: [role],
                 itemName: item.itemName,
                 tblAlias: item.tblAlias,
@@ -165,7 +191,7 @@ export default {
               alwaysShow: true,
               meta: {
                 title: item.itemName,
-                icon: item.itemName,
+                icon: this.getIcon(item.itemName),
                 roles: [role],
                 itemName: item.itemName,
                 tblAlias: item.tblAlias,
@@ -181,7 +207,7 @@ export default {
               name: item.tblAlias,
               meta: {
                 title: item.itemName,
-                icon: item.itemName,
+                icon: this.getIcon(item.itemName),
                 roles: [role]
               },
               children: children
@@ -202,7 +228,7 @@ export default {
               path: `tree`,
               component: 'tree',
               name: item.name + '_tree',
-              meta: {  noCache: true, activeMenu: item.path },
+              meta: { noCache: true, activeMenu: item.path },
               hidden: true
             })
           }

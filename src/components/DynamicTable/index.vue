@@ -149,6 +149,7 @@ export default {
       this.elTableHeight =
         mainHeight - document.querySelector('.button-group').offsetHeight - document.querySelector('.pagination-container').offsetHeight - 180
       console.log('elTableHeight高度:', this.elTableHeight)
+
     })
   },
   methods: {
