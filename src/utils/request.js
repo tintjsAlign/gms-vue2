@@ -26,11 +26,14 @@ service.interceptors.request.use(
     if (config.headers.loadingTarget) {
       loadingTarget = config.headers.loadingTarget
     }
-    let target = document.querySelector(loadingTarget)
-    if (target) {
-      // 请求拦截进来调用显示loading效果
-      showLoading(loadingTarget)
+    if (config.headers.showLoading) {
+      let target = document.querySelector(loadingTarget)
+      if (target) {
+        // 请求拦截进来调用显示loading效果
+        showLoading(loadingTarget)
+      }
     }
+    
 
     // do something before request is sent
 
@@ -107,9 +110,22 @@ service.interceptors.response.use(
   (response) => {
     const res = response.data
 
-    if (res.statusCode === '301') {
+    if (typeof res === 'string' && res.indexOf('message=') > -1) {
+      // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
+      // 提取错误原因
+      let errorMsg = res.match(/message=(.*?)\|/)[1]
+      // Message.error(errorMsg)
       // 跳转到登录页面
-      this.$alert(res.message, '提示', {
+      MessageBox.alert(res.message, '提示', {
+        confirmButtonText: '确定',
+        callback: (action) => {
+          this.$router.push('/login')
+        }
+      })
+      return res
+    } else if (res.statusCode === '301') {
+      // 跳转到登录页面
+      MessageBox.alert(res.message, '提示', {
         confirmButtonText: '确定',
         callback: (action) => {
           this.$router.push('/login')

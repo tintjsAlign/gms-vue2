@@ -185,7 +185,7 @@ export default {
       data.operationID = item.otherProperties.operationIDForSuggest
       data.condition = encodeURI(item.condition)
       data.readName = item.otherProperties.fldName
-      requestMain(data).then((res) => {
+      requestMain(data,'unshow').then((res) => {
         if (res === []) {
           // 清空选择框和输入框
           this.options = []

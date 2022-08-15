@@ -9,10 +9,13 @@ export function loginOfTass(data) {
   })
 }
 
-// 通用查询
-export function requestMain(data) {
+// 通用
+export function requestMain(data, loadFlag) {
   return request({
     url: '/main',
+    headers: {
+      showLoading: loadFlag ? false : true
+    },
     method: 'post',
     data
   })
@@ -58,6 +61,9 @@ export function getRecordMenuGrp(data) {
 export function getTreeMenu(data) {
   return request({
     url: '/getTreeMenu',
+    headers: {
+      showLoading: true
+    },
     method: 'post',
     data
   })
