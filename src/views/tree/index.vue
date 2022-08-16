@@ -299,7 +299,7 @@ export default {
           operationID: this.routeRow.operationID,
           docFileName: node.data.docFileName
         }
-        const res = await getTreeMenu(fileData)
+        const res = await getTreeMenu(fileData, 'unshow')
         console.log('超过二级的fileLibrary:', res)
         let list = res.records
         if (list.length > 0) {
@@ -514,7 +514,7 @@ export default {
           this.endCondition
       }
       // 将这几个参数拼接在this.preCondition中，以便后台获取数据
-      const res = await getTreeMenu(this.reqData)
+      const res = await getTreeMenu(this.reqData, 'unshow')
       // this.resMap = res
       console.log('超过二级的', res)
       let list = res.records
@@ -566,7 +566,7 @@ export default {
             SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
             operationID: 50,
             tblAlias: data.tblAlias || '文件档案管理界面',
-            condition: `docFileName=${data.docFileName}`,
+            condition: `docFileName=${data.docFileName}`
           }
           this.$refs.drawer.show(reqData, 'parallel')
         } else {
@@ -574,15 +574,14 @@ export default {
           delete nodeData.childNum
           delete nodeData.priKey
           delete nodeData.condition
+          // delete nodeData.objectID
+          // delete nodeData[this.conofName]
           let reqData = {
             ...nodeData,
             SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
             SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
             condition: data.priKey,
-            operationID: 50,
-            resId: this.routeRowNO.resId,
-            itemName: this.routeRowNO.itemName,
-            otherProperties: this.routeRowNO.otherProperties
+            operationID: 50
           }
           this.$refs.drawer.show(reqData, 'parallel')
         }

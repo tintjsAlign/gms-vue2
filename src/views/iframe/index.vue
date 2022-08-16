@@ -64,6 +64,7 @@ export default {
         this.requestTarget = process.env.VUE_APP_BASE_API
         let html = res.replace(/<a href="main\?/g, '<a href="' + this.requestTarget + '/main?')
         html = html.replace(/body {background/g, '.main {background')
+        html = html.replace(/img {/g, '.main img{')
 
         this.html = html
         // console.log('报表HTML html:', html)

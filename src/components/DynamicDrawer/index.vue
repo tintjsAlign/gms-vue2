@@ -17,6 +17,7 @@
                       placeholder="请选择"
                       clearable
                       style="display: block"
+                      :loading="optionLoading"
                       @focus="queryOption(item)"
                       @change="getChange($event, item, index)"
                     >
@@ -36,6 +37,7 @@
                       filterable
                       allow-create
                       default-first-option
+                      :loading="optionLoading"
                       @focus="queryOption(item)"
                       @change="getChange($event, item, index)"
                     >
@@ -67,6 +69,7 @@
                       placeholder="请选择"
                       style="width: 100%"
                       clearable
+                      :loading="optionLoading"
                       @focus="queryOption(item)"
                       @change="getChange($event, item, index)"
                     >
@@ -83,6 +86,7 @@
                       placeholder="请选择"
                       clearable
                       style="width: 100%"
+                      :loading="optionLoading"
                       @focus="queryOption(item)"
                       @change="getChange($event, item, index)"
                     >
@@ -172,6 +176,7 @@
                       placeholder="请选择"
                       clearable
                       style="display: block"
+                      :loading="optionLoading"
                       @focus="queryOption(item)"
                       @change="getChange($event, item, index)"
                     >
@@ -191,6 +196,7 @@
                       filterable
                       allow-create
                       default-first-option
+                      :loading="optionLoading"
                       @focus="queryOption(item)"
                       @change="getChange($event, item, index)"
                     >
@@ -222,6 +228,7 @@
                       placeholder="请选择"
                       style="width: 100%"
                       clearable
+                      :loading="optionLoading"
                       @focus="queryOption(item)"
                       @change="getChange($event, item, index)"
                     >
@@ -238,6 +245,7 @@
                       placeholder="请选择"
                       clearable
                       style="width: 100%"
+                      :loading="optionLoading"
                       @focus="queryOption(item)"
                       @change="getChange($event, item, index)"
                     >
@@ -331,6 +339,7 @@ export default {
       isTextarea: false,
       showParallel: false,
       levelFlag: false,
+      optionLoading: false,
       OPENREQMAINDATA: {},
       REQMAINDATA: {}
     }
@@ -355,7 +364,7 @@ export default {
         this.levelFlag = true
         if (level === 'parallel') {
           this.showParallel = true
-        }else {
+        } else {
           this.showParallel = false
         }
       } else {
@@ -459,7 +468,13 @@ export default {
           ...requestMainData
         }
       }
-      await requestMain(this.OPENREQMAINDATA).then((res) => {
+
+      let loadingtag = '.app-main'
+      if (this.showParallel) {
+        loadingtag = 'unshow'
+      }
+
+      await requestMain(this.OPENREQMAINDATA, loadingtag).then((res) => {
         console.log('抽屉requestMain:', res)
         if (typeof res === 'string' && res.indexOf('message=') > -1) {
           // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
@@ -581,6 +596,7 @@ export default {
     },
     async queryOption(item) {
       this.options = []
+      this.optionLoading = true
       // console.log('查询选择框参数', item)
       this.readName = item.otherProperties.readFld
       let data = {
@@ -599,7 +615,7 @@ export default {
       data.operationID = item.otherProperties.operationIDForSuggest
       data.condition = encodeURI(item.value)
       data.readName = item.otherProperties.readFld
-      await requestMain(data).then((res) => {
+      await requestMain(data, 'unshow').then((res) => {
         if (res === []) {
           // 清空选择框和输入框
           this.options = []
@@ -625,6 +641,7 @@ export default {
           })
         }
         this.options = options
+        this.optionLoading = false
       })
     },
     getChange(e, item, index) {

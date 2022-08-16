@@ -14,7 +14,8 @@ export function requestMain(data, loadFlag) {
   return request({
     url: '/main',
     headers: {
-      showLoading: loadFlag ? false : true
+      showLoading: loadFlag === 'unshow' ? false : true,
+      loadingTarget: loadFlag !== 'unshow' ? loadFlag : '.app-main'
     },
     method: 'post',
     data
@@ -58,11 +59,12 @@ export function getRecordMenuGrp(data) {
 }
 
 // 获取树形结构菜单
-export function getTreeMenu(data) {
+export function getTreeMenu(data, loadFlag) {
   return request({
     url: '/getTreeMenu',
     headers: {
-      showLoading: true
+      showLoading: loadFlag === 'unshow' ? false : true,
+      loadingTarget: loadFlag !== 'unshow' ? loadFlag : '.app-main'
     },
     method: 'post',
     data
