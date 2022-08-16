@@ -242,10 +242,12 @@ export default {
       // 替换表格操作按钮组
       this.recordBtnGroup = data
     },
-    handleMain(row, btn) {
-      console.log('当前行数据:', row)
+    handleMain(oriRow, oriBtn) {
+      console.log('当前行数据:', oriRow)
       console.log('操作id对照:', this.operationTarget)
-      console.log('btn参数:', btn)
+      console.log('btn参数:', oriBtn)
+      let row = this.$_.cloneDeep(oriRow)
+      let btn = this.$_.cloneDeep(oriBtn)
       // 根据操作id对照,进行不同的操作
       // 以btn.operationID对应this.operationTarget对象中的key,获取对应的值
       // 如果没有对应的key,则默认为空字符串
@@ -294,7 +296,7 @@ export default {
     },
     handleCurrentChange(val) {
       this.currentRow = val
-      console.log('单选数据', this.currentRow)
+      console.log('单选数据', val)
       this.$refs.dynamicButton.replaceButtonGroup(val)
     },
     handleSelectionChange(val) {
