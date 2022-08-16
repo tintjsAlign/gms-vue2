@@ -126,9 +126,6 @@ export default {
     }
   },
   computed: {
-    operationTarget() {
-      return this.$store.state.settings.operationTarget
-    }
   },
   watch: {
     tableData: {
@@ -244,32 +241,22 @@ export default {
     },
     handleMain(oriRow, oriBtn) {
       console.log('当前行数据:', oriRow)
-      console.log('操作id对照:', this.operationTarget)
       console.log('btn参数:', oriBtn)
       let row = this.$_.cloneDeep(oriRow)
       let btn = this.$_.cloneDeep(oriBtn)
-      // 根据操作id对照,进行不同的操作
-      // 以btn.operationID对应this.operationTarget对象中的key,获取对应的值
-      // 如果没有对应的key,则默认为空字符串
-      let key = this.operationTarget[btn.operationID] || ''
-      console.log('key:', key)
       // 处理btn参数,全部加入row中
       for (let i in btn) {
         row[i] = btn[i]
       }
-      btn.objectID = row.objectID
-      switch (key) {
-        case 'ajaxTodo': // ajaxTodo 删除?
-          // 删除操作
+      // btn.objectID = row.objectID
+      let operationIDs = [1, 48, 49, 50]
+
+      if (operationIDs.includes(btn.operationID)) {
+        // 打开抽屉-填表单
+        this.openDrawer(row)
+      } else if (btn.operationID === 2) {
+        // 删除操作
           this.deleteRow(row)
-          break
-        case 'dialog': // dialog 弹框
-          // 打开抽屉
-          console.log('打开抽屉')
-          this.openDrawer(row)
-          break
-        default: // 默认操作
-          break
       }
     },
     handleMoreCommand(command, row) {

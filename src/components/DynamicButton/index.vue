@@ -159,7 +159,7 @@ export default {
       console.log('mainEnter合并后:', btn)
       // 判断按钮功能
       // 1 || 2 || 48 || 49 || 50
-      let operationIDs = [1, 2, 48, 49, 50]
+      let operationIDs = [1, 48, 49, 50]
 
       if (operationIDs.includes(btn.operationID)) {
         // 打开抽屉-填表单
