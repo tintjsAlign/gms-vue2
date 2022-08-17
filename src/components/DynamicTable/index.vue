@@ -41,8 +41,8 @@
         @current-change="handleCurrentChange"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55"> </el-table-column>
-        <el-table-column
+        <af-table-column type="selection" width="55"> </af-table-column>
+        <af-table-column
           v-for="(fruit, index) in formThead"
           align="center"
           show-overflow-tooltip
@@ -50,14 +50,12 @@
           :key="index"
           :label="fruit.fldAlais"
           :prop="fruit.queryFldName"
-          min-width="80px"
-          :width="formThead.length > 5 ? '180' : 'auto'"
         >
           <template slot-scope="scope">
             {{ scope.row[fruit.queryFldName] }}
           </template>
-        </el-table-column>
-        <el-table-column label="操作" width="180" align="center" fixed="right" v-if="tableData.length > 0" show-overflow-tooltip>
+        </af-table-column>
+        <af-table-column label="操作" width="180" align="center" fixed="right" v-if="tableData.length > 0" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-button-group>
               <span v-for="(btn, i) in recordBtnGroup" :key="i" class="btnsClass">
@@ -68,7 +66,7 @@
               </span>
             </el-button-group>
           </template>
-        </el-table-column>
+        </af-table-column>
       </el-table>
     </div>
     <!-- </el-card> -->

@@ -19,6 +19,9 @@ import '@/permission' // permission control
 import contentmenu from 'v-contextmenu'
 import 'v-contextmenu/dist/index.css'
 import _ from 'lodash'
+// main.js (需要先引入 Vue 和 Element-UI 依赖库, 并在 <el-table></el-table> 组件下使用该组件)
+import AFTableColumn from 'af-table-column'
+Vue.use(AFTableColumn)
 
 Object.defineProperty(Vue.prototype, '$_', { value: _ })
 Vue.use(contentmenu)

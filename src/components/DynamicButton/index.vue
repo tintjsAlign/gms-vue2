@@ -260,7 +260,7 @@ export default {
           } else if (res.statusCode === '555') {
             //“555”后台返回statusCode为操作后有文件带回，并且展示该文件内容；弹出dialog层
             requestMain(data).then((res) => {
-              console.log('展示文件 res:', res)
+              // console.log('展示文件 res:', res)
               // 弹出dialog层
               this.$refs.showFileContent.show(res, data.itemName)
             })
