@@ -29,7 +29,7 @@ module.exports = {
   assetsDir: 'static',
   // lintOnSave: process.env.NODE_ENV === 'development',
   lintOnSave: false,
-  productionSourceMap: false,
+  productionSourceMap: true, // 是否在构建生产包时生成对应的SourceMap
   devServer: {
     port: port,
     open: true,

@@ -99,7 +99,6 @@ const actions = {
       getInfo(state.token)
         .then((response) => {
           const { data } = response
-          console.log('getInfo:', data)
 
           if (!data) {
             return reject('Verification failed, please Login again.')
@@ -175,7 +174,7 @@ const actions = {
         root: true
       }
     )
-    console.log('changeRoles accessRoutes:', accessRoutes)
+    // console.log('changeRoles accessRoutes:', accessRoutes)
 
     // 处理tree
     // dynamically add accessible routes
