@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 // 登录
-export function loginOfTass(data) {
+export function loginByUsername(data) {
   return request({
     url: '/loginEvlation',
     method: 'post',

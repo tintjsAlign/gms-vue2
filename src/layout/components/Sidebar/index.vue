@@ -144,7 +144,7 @@ export default {
 
         // 更新路由表
         this.$store.dispatch('user/changeRoles', {
-          role: role,
+          roles: this.routeParams.roles,
           tree: this.routesArray
         })
       })

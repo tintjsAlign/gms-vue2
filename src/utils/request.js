@@ -114,14 +114,10 @@ service.interceptors.response.use(
       // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
       // 提取错误原因
       let errorMsg = res.match(/message=(.*?)\|/)[1]
-      // Message.error(errorMsg)
-      // 跳转到登录页面
-      MessageBox.alert(res.message, '提示', {
-        confirmButtonText: '确定',
-        callback: (action) => {
-          this.$router.push('/login')
-        }
-      })
+      Message.error(errorMsg)
+      setTimeout(() => {
+        hideLoading()
+      }, 200)
       return res
     } else if (res.statusCode === '301') {
       // 跳转到登录页面
@@ -131,6 +127,9 @@ service.interceptors.response.use(
           this.$router.push('/login')
         }
       })
+      setTimeout(() => {
+        hideLoading()
+      }, 200)
       return res
     }
     setTimeout(() => {

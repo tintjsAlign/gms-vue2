@@ -11,7 +11,7 @@
                 <!-- <el-row gutter="24" :key="index" v-if="index % 2 == 0"> -->
                 <!-- query类型(只可选择)--选择框 ↓↓↓-->
                 <el-col span="12" v-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === 'readonly'">
-                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                  <el-form-item :required="isRequired(item)" :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
@@ -28,7 +28,7 @@
                 <!-- query类型(只可选择)--选择框 end ↑↑↑-->
                 <!-- query类型（可创建）--选择框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === ''">
-                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                  <el-form-item :required="isRequired(item)" :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
@@ -48,14 +48,14 @@
                 <!-- query类型（可创建）--选择框 end ↑↑↑-->
                 <!-- dateTime类型--日期选择框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType === 'dateTime'">
-                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                  <el-form-item :required="isRequired(item)" :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-date-picker
                       v-model="form[item.valueFldName]"
                       :value-format="item.otherProperties.dateFmt"
                       clearable
                       type="date"
                       placeholder="选择日期"
-                      @change="dateChange"
+                      @change="dateChange($event, item)"
                     >
                     </el-date-picker>
                   </el-form-item>
@@ -63,7 +63,7 @@
                 <!-- dateTime类型--日期选择框 end ↑↑↑-->
                 <!-- enum类型--枚举选择框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType === 'enum'">
-                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                  <el-form-item :required="isRequired(item)" :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
@@ -80,7 +80,7 @@
                 <!-- enum类型--枚举选择框 end ↑↑↑-->
                 <!-- queryArea 类型--地区选择框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType === 'queryArea'">
-                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                  <el-form-item :required="isRequired(item)" :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
@@ -97,7 +97,7 @@
                 <!-- queryArea 类型--地区选择框 end ↑↑↑-->
                 <!-- multirow 类型--多行输入框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType === 'multirow'">
-                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                  <el-form-item :required="isRequired(item)" :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-popover placement="bottom" width="300" trigger="click">
                       <el-input
                         v-model="form[item.valueFldName]"
@@ -125,7 +125,7 @@
 
                 <!-- readOnly 类型--只读不可修改框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType === 'notshow' || item.otherProperties.textType.match(/readOnly/gi)">
-                  <el-form-item required :label="item.fldAlais">
+                  <el-form-item :label="item.fldAlais">
                     <el-input v-model="form[item.valueFldName]" autocomplete="off" clearable type="text" :disabled="true" autosize></el-input>
                   </el-form-item>
                 </el-col>
@@ -133,7 +133,7 @@
 
                 <!-- 普通类型--输入框 ↓↓↓-->
                 <el-col span="12" v-else>
-                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                  <el-form-item :required="isRequired(item)" :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-input v-model="form[item.valueFldName]" autocomplete="off" clearable></el-input>
                   </el-form-item>
                 </el-col>
@@ -170,7 +170,7 @@
                 <!-- <el-row gutter="24" :key="index" v-if="index % 2 == 0"> -->
                 <!-- query类型(只可选择)--选择框 ↓↓↓-->
                 <el-col span="12" v-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === 'readonly'">
-                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                  <el-form-item :required="isRequired(item)" :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
@@ -187,7 +187,7 @@
                 <!-- query类型(只可选择)--选择框 end ↑↑↑-->
                 <!-- query类型（可创建）--选择框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === ''">
-                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                  <el-form-item :required="isRequired(item)" :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
@@ -207,14 +207,14 @@
                 <!-- query类型（可创建）--选择框 end ↑↑↑-->
                 <!-- dateTime类型--日期选择框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType === 'dateTime'">
-                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                  <el-form-item :required="isRequired(item)" :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-date-picker
                       v-model="form[item.valueFldName]"
                       :value-format="item.otherProperties.dateFmt"
                       clearable
                       type="date"
                       placeholder="选择日期"
-                      @change="dateChange"
+                      @change="dateChange($event, item)"
                     >
                     </el-date-picker>
                   </el-form-item>
@@ -222,7 +222,7 @@
                 <!-- dateTime类型--日期选择框 end ↑↑↑-->
                 <!-- enum类型--枚举选择框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType === 'enum'">
-                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                  <el-form-item :required="isRequired(item)" :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
@@ -239,7 +239,7 @@
                 <!-- enum类型--枚举选择框 end ↑↑↑-->
                 <!-- queryArea 类型--地区选择框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType === 'queryArea'">
-                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                  <el-form-item :required="isRequired(item)" :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
                       placeholder="请选择"
@@ -256,7 +256,7 @@
                 <!-- queryArea 类型--地区选择框 end ↑↑↑-->
                 <!-- multirow 类型--多行输入框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType === 'multirow'">
-                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                  <el-form-item :required="isRequired(item)" :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-popover placement="bottom" width="300" trigger="click">
                       <el-input
                         v-model="form[item.valueFldName]"
@@ -292,7 +292,7 @@
 
                 <!-- 普通类型--输入框 ↓↓↓-->
                 <el-col span="12" v-else>
-                  <el-form-item :required="isRequired(item)" :label="item.fldAlais">
+                  <el-form-item :required="isRequired(item)" :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-input v-model="form[item.valueFldName]" autocomplete="off" clearable></el-input>
                   </el-form-item>
                 </el-col>
@@ -317,6 +317,7 @@
 <script>
 import { requestMain } from '@/api/main'
 import showFileContent from '@/components/ShowFileContent'
+
 export default {
   name: 'drawer-container',
   components: { showFileContent },
@@ -513,10 +514,16 @@ export default {
         if (this.specialInstructFlag === false && this.requestData.operationID !== 1) {
           let form = {}
           this.drawerData.forEach((item) => {
-            if (item.otherProperties.textType.match(/enum/gi)) {
+            let type = item.otherProperties.textType
+            if (type.match(/enum/gi)) {
               // 枚举类型特殊处理
               form[item.valueFldName] = item.otherProperties.fldRemark
               form[item.valueFldName + '_enum'] = item.otherProperties.fldValue
+            } else if (type.match(/date/gi)) {
+              // 日期类型特殊处理(去掉-)
+              let dateValue = this.resMap[item.valueFldName].replace(/-/g, '')
+              form[item.valueFldName] = this.resMap[item.valueFldName]
+              form[item.valueFldName + '_enum'] = dateValue
             } else {
               // 其它默认值,与resMap对应
               form[item.valueFldName] = this.resMap[item.valueFldName]
@@ -527,11 +534,17 @@ export default {
         } else {
           let form = {}
           this.drawerData.forEach((item) => {
+            let type = item.otherProperties.textType
             if (item.otherProperties.textType) {
               if (item.otherProperties.textType.match(/enum/gi)) {
                 // 枚举类型特殊处理
                 form[item.valueFldName] = item.otherProperties.fldRemark
                 form[item.valueFldName + '_enum'] = item.otherProperties.defaultValue
+              } else if (type.match(/date/gi)) {
+                // 日期类型特殊处理(去掉-)
+                let dateValue = item.otherProperties.defaultValue.replace(/-/g, '')
+                form[item.valueFldName] = item.otherProperties.defaultValue
+                form[item.valueFldName + '_enum'] = dateValue
               } else {
                 // 其它默认值
                 form[item.valueFldName] = item.otherProperties.defaultValue
@@ -557,6 +570,13 @@ export default {
         return true
       } else {
         return false
+      }
+    },
+    requiredRules(item) {
+      if (item.valueConstraint && item.valueConstraint.includes('notnull')) {
+        return { required: true, message: '必填项不能为空' }
+      } else {
+        return { required: false }
       }
     },
     handleClose(done) {
@@ -655,8 +675,11 @@ export default {
         }
       }
     },
-    dateChange(date) {
+    dateChange(date, item) {
       console.log('dateChange:', date)
+      // 格式化date
+      let dateValue = date.replace(/-/g, '')
+      this.form[item.valueFldName + '_enum'] = dateValue
     },
     async submitForm() {
       this.$refs.dynamicTableRef.validate((valid) => {
@@ -818,6 +841,12 @@ export default {
                         this.$refs.showFileContent.show(res, this.REQMAINDATA.itemName)
                         this.loading = false
                         this.dialog = false
+                        if (this.requestData.itemName === '登记被测系统') {
+                          this.$router.push('/被测信息系统')
+                        } else {
+                          // 刷新
+                          this.$emit('refresh')
+                        }
                       })
                     }
                   }

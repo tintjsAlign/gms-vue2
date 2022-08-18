@@ -1,4 +1,5 @@
 import { login, loginOfTass, logout, getInfo } from '@/api/user'
+import { loginByUsername } from '@/api/main'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
@@ -9,7 +10,7 @@ const getDefaultState = () => {
     avatar: '',
     introduction: '',
     roles: [],
-    routers: [],
+    routers: []
   }
 }
 
@@ -54,15 +55,18 @@ const actions = {
         svrMainMenuName: 'Splenwise密评工具平台主工作界面',
         useMenuItemButton: '2'
       }
-      loginOfTass(data)
+      loginByUsername(data)
         .then((response) => {
           console.log(response)
           window.localStorage.setItem('SYSTEMKEYNAME', response.SYSTEMKEYNAME)
           window.localStorage.setItem('SYSTEMTELLERNO', response.SYSTEMTELLERNO)
+          window.localStorage.setItem('userRole', response.TELLERROLE)
           // const { data } = response
           // console.log('login成功:', data)
           // commit('SET_TOKEN', data.token)
+          // commit('SET_TOKEN', data.SERVICELOGSSN)
           // setToken(data.token)
+          // setToken(data.SERVICELOGSSN)
           resolve()
         })
         .catch((error) => {
@@ -95,6 +99,7 @@ const actions = {
 
   // get user info
   getInfo({ commit, state }) {
+    console.log('getInfo!!!!')
     return new Promise((resolve, reject) => {
       getInfo(state.token)
         .then((response) => {
@@ -153,14 +158,15 @@ const actions = {
   },
 
   // dynamically modify permissions
-  async changeRoles({ commit, dispatch }, { role, tree }) {
-    const token = role + '-token'
+  async changeRoles({ commit, dispatch }, { roles, tree }) {
+    console.log('changeRoles:', roles)
+    const token = roles[0] + '-token'
 
     commit('SET_TOKEN', token)
     setToken(token)
 
     // const { roles } = await dispatch('getInfo')
-    let roles = [role]
+    // let roles = [role]
     commit('SET_ROLES', roles)
     // commit('SET_ROUTERS', tree)
 

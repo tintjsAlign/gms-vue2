@@ -104,15 +104,23 @@ export default {
         icon = 'gongju'
       }else if (name.indexOf('多') > -1) {
         icon = 'duo'
+      }else if (name.indexOf('风险') > -1) {
+        icon = 'fengxian'
       }
       return icon
     },
     routerGo(role) {
       // 根据点击的按钮，赋予不同的权限
       // this.$store.commit('user/SET_ROLES', [role])
+      let userRole = window.localStorage.getItem('userRole')
+    // 把userRole和role的值, 放进同一个数组
+      let roles = []
+      roles.push(role)
+      roles.push(userRole)
       this.$store
         .dispatch('user/changeRoles', {
-          role: role,
+          roles,
+          // role: [role],
           tree: this.routerListsss
         })
         .then(() => {
@@ -143,7 +151,7 @@ export default {
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
         menuGrpName: menuLv1Name
       }).then((res) => {
-        // console.log('getMenuLv2:', res)
+        console.log('getMenuLv2:', res)
         let menuLv2 = res
         // 生成菜单树
         menuLv2.forEach((item) => {

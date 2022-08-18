@@ -46,7 +46,7 @@
           v-for="(fruit, index) in formThead"
           align="center"
           show-overflow-tooltip
-          sortable
+          :sortable="false"
           :key="index"
           :label="fruit.fldAlais"
           :prop="fruit.queryFldName"
@@ -123,8 +123,7 @@ export default {
       showDeleteBtn: false //是否显示删除按钮
     }
   },
-  computed: {
-  },
+  computed: {},
   watch: {
     tableData: {
       handler() {
@@ -144,7 +143,6 @@ export default {
       this.elTableHeight =
         mainHeight - document.querySelector('.button-group').offsetHeight - document.querySelector('.pagination-container').offsetHeight - 180
       console.log('elTableHeight高度:', this.elTableHeight)
-
     })
   },
   methods: {
@@ -254,7 +252,7 @@ export default {
         this.openDrawer(row)
       } else if (btn.operationID === 2) {
         // 删除操作
-          this.deleteRow(row)
+        this.deleteRow(row)
       }
     },
     handleMoreCommand(command, row) {
@@ -370,11 +368,33 @@ export default {
           requestMain(data)
             .then((res) => {
               console.log('删除结果:', res)
-              this.$message({
-                message: '删除成功',
-                type: 'success'
-              })
-              this.reload()
+              if (res === 'statusCode:200') {
+                this.$notify({
+                  title: '成功',
+                  message: '成功删除一条记录',
+                  type: 'success',
+                  duration: 1500,
+                  onClose: () => {
+                    this.reload()
+                  }
+                })
+              } else {
+                if (typeof res === 'string' && res.indexOf('message=') > -1) {
+                  // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
+                  // 提取错误原因
+                  let errorMsg = res.match(/message=(.*?)\|/)[1]
+
+                  this.$notify({
+                    title: '失败',
+                    message: errorMsg,
+                    type: 'error',
+                    duration: 2500,
+                    onClose: () => {
+                      // this.reload()
+                    }
+                  })
+                }
+              }
             })
             .catch((err) => {
               console.log('删除错误:', err)
