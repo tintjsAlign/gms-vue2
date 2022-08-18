@@ -33,7 +33,6 @@ service.interceptors.request.use(
         showLoading(loadingTarget)
       }
     }
-    
 
     // do something before request is sent
 
@@ -118,7 +117,7 @@ service.interceptors.response.use(
       setTimeout(() => {
         hideLoading()
       }, 200)
-      return res
+      return Promise.resolve(res)
     } else if (res.statusCode === '301') {
       // 跳转到登录页面
       MessageBox.alert(res.message, '提示', {
@@ -130,7 +129,7 @@ service.interceptors.response.use(
       setTimeout(() => {
         hideLoading()
       }, 200)
-      return res
+      return Promise.resolve(res)
     }
     setTimeout(() => {
       hideLoading()
@@ -165,12 +164,14 @@ const hideLoading = () => {
   if (loadingRequestCount <= 0) return
   loadingRequestCount--
   if (loadingRequestCount === 0) {
-    toHideLoading()
+    loadingInstance.close()
+    // toHideLoading()
   }
 }
 
 // 防抖：将 300ms 间隔内的关闭 loading 便合并为一次. 防止连续请求时, loading闪烁的问题。
 var toHideLoading = _.debounce(() => {
+  console.log('hideLoading关闭loading~~~', loadingRequestCount)
   loadingInstance.close()
   loadingInstance = null
 }, 300)
