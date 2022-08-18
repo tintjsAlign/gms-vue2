@@ -430,31 +430,28 @@ export default {
       }
       // if (this.requestData.itemName === '登记被测系统') {
       if (this.specialInstructFlag === true) {
-        requestMainData.tblAlias = tblAlias
-        requestMainData.resId = this.requestData.resId
+        // requestMainData.tblAlias = tblAlias
+        // requestMainData.resId = this.requestData.resId
 
         // 根据append特例化operationID
         if (this.requestData.otherProperties.urlParam.indexOf('appendFld=') > -1) {
           requestMainData.operationID = '1056'
           Object.assign(requestMainData, this.requestData)
-          // let newRequestData = this.$_.cloneDeep(this.requestData)
-          // delete newRequestData.operationID
-          // delete newRequestData.condition
+          delete requestMainData.operationID
+          delete requestMainData.condition
           this.OPENREQMAINDATA = {
             ...requestMainData,
             tblAlias: tblAlias,
             resId: this.requestData.resId,
             operationID: '1056'
-            // ...newRequestData
           }
         } else if (this.requestData.otherProperties.urlParam.indexOf('appendRec=') > -1) {
           requestMainData.operationID = '1067'
           Object.assign(requestMainData, this.requestData)
-          // let newRequestData = this.$_.cloneDeep(this.requestData)
-          // delete newRequestData.operationID
+          delete requestMainData.operationID
+          delete requestMainData.condition
           this.OPENREQMAINDATA = {
             ...requestMainData,
-            // ...newRequestData,
             tblAlias: tblAlias,
             resId: this.requestData.resId,
             operationID: '1067'
@@ -473,97 +470,104 @@ export default {
       let loadingtag = '.app-main'
       if (this.showParallel) {
         loadingtag = 'unshow'
+      }else{
+        delete this.OPENREQMAINDATA.condition
       }
-
-      await requestMain(this.OPENREQMAINDATA, loadingtag).then((res) => {
-        console.log('抽屉requestMain:', res)
-        if (typeof res === 'string' && res.indexOf('message=') > -1) {
-          // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
-          // 提取错误原因
-          let errorMsg = res.match(/message=(.*?)\|/)[1]
-          this.$message.error(errorMsg)
-          return
-        }
-        // if (this.requestData.itemName === '登记被测系统') {
-        if (this.specialInstructFlag === true) {
-          this.trueRes = res
-        } else {
-          // ###########暂时测试用####
-          if (this.requestData.operationID === 1) {
+      console.log('抽屉form请求数据:', this.OPENREQMAINDATA)
+      await requestMain(this.OPENREQMAINDATA, loadingtag)
+        .then((res) => {
+          console.log('抽屉requestMain:', res)
+          if (typeof res === 'string' && res.indexOf('message=') > -1) {
+            // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
+            // 提取错误原因
+            let errorMsg = res.match(/message=(.*?)\|/)[1]
+            this.$message.error(errorMsg)
+            return
+          }
+          // if (this.requestData.itemName === '登记被测系统') {
+          if (this.specialInstructFlag === true) {
             this.trueRes = res
           } else {
-            this.trueRes = res.showfield
-            this.resMap = res.resMap
-            console.log('初始值对照:', this.resMap)
-            // 去除res.showfield最后一个字段
-            this.trueRes = this.trueRes.slice(0, -1)
-          }
-        }
-        if (!this.levelFlag) {
-          // 过滤 类型为notshow的字段
-          let drawerData = this.trueRes.filter((item) => item.otherProperties.textType !== 'notshow')
-          this.drawerData = drawerData
-        } else {
-          this.drawerData = this.trueRes
-        }
-        console.log('drawerData:', this.drawerData)
-
-        // 根据来源数据,给表单赋初始值(深拷贝)
-        // key=this.drawerData.valueFldName  value=this.drawerData.otherProperties.fldRemark
-        // if (this.requestData.itemName !== '登记被测系统' && this.requestData.operationID !== 1) {
-        if (this.specialInstructFlag === false && this.requestData.operationID !== 1) {
-          let form = {}
-          this.drawerData.forEach((item) => {
-            let type = item.otherProperties.textType
-            if (type.match(/enum/gi)) {
-              // 枚举类型特殊处理
-              form[item.valueFldName] = item.otherProperties.fldRemark
-              form[item.valueFldName + '_enum'] = item.otherProperties.fldValue
-            } else if (type.match(/date/gi)) {
-              // 日期类型特殊处理(去掉-)
-              let dateValue = this.resMap[item.valueFldName].replace(/-/g, '')
-              form[item.valueFldName] = this.resMap[item.valueFldName]
-              form[item.valueFldName + '_enum'] = dateValue
+            // ###########暂时测试用####
+            if (this.requestData.operationID === 1) {
+              this.trueRes = res
             } else {
-              // 其它默认值,与resMap对应
-              form[item.valueFldName] = this.resMap[item.valueFldName]
-              // form[item.valueFldName] = item.otherProperties.fldRemark
+              this.trueRes = res.showfield
+              this.resMap = res.resMap
+              console.log('初始值对照:', this.resMap)
+              // 去除res.showfield最后一个字段
+              this.trueRes = this.trueRes.slice(0, -1)
             }
-          })
-          this.form = JSON.parse(JSON.stringify(form))
-        } else {
-          let form = {}
-          this.drawerData.forEach((item) => {
-            let type = item.otherProperties.textType
-            if (item.otherProperties.textType) {
-              if (item.otherProperties.textType.match(/enum/gi)) {
+          }
+          if (!this.levelFlag) {
+            // 过滤 类型为notshow的字段
+            let drawerData = this.trueRes.filter((item) => item.otherProperties.textType !== 'notshow')
+            this.drawerData = drawerData
+          } else {
+            this.drawerData = this.trueRes
+          }
+          console.log('drawerData:', this.drawerData)
+
+          // 根据来源数据,给表单赋初始值(深拷贝)
+          // key=this.drawerData.valueFldName  value=this.drawerData.otherProperties.fldRemark
+          // if (this.requestData.itemName !== '登记被测系统' && this.requestData.operationID !== 1) {
+          if (this.specialInstructFlag === false && this.requestData.operationID !== 1) {
+            let form = {}
+            this.drawerData.forEach((item) => {
+              let type = item.otherProperties.textType
+              if (type.match(/enum/gi)) {
                 // 枚举类型特殊处理
                 form[item.valueFldName] = item.otherProperties.fldRemark
-                form[item.valueFldName + '_enum'] = item.otherProperties.defaultValue
+                form[item.valueFldName + '_enum'] = item.otherProperties.fldValue
               } else if (type.match(/date/gi)) {
                 // 日期类型特殊处理(去掉-)
-                let dateValue = item.otherProperties.defaultValue.replace(/-/g, '')
-                form[item.valueFldName] = item.otherProperties.defaultValue
+                let dateValue = this.resMap[item.valueFldName].replace(/-/g, '')
+                form[item.valueFldName] = this.resMap[item.valueFldName]
                 form[item.valueFldName + '_enum'] = dateValue
               } else {
-                // 其它默认值
-                form[item.valueFldName] = item.otherProperties.defaultValue
+                // 其它默认值,与resMap对应
+                form[item.valueFldName] = this.resMap[item.valueFldName]
+                // form[item.valueFldName] = item.otherProperties.fldRemark
               }
-            }
-          })
-          this.form = JSON.parse(JSON.stringify(form))
-        }
-        console.log('抽屉form:', this.form)
+            })
+            this.form = JSON.parse(JSON.stringify(form))
+          } else {
+            let form = {}
+            this.drawerData.forEach((item) => {
+              let type = item.otherProperties.textType
+              if (item.otherProperties.textType) {
+                if (item.otherProperties.textType.match(/enum/gi)) {
+                  // 枚举类型特殊处理
+                  form[item.valueFldName] = item.otherProperties.fldRemark
+                  form[item.valueFldName + '_enum'] = item.otherProperties.defaultValue
+                } else if (type.match(/date/gi)) {
+                  // 日期类型特殊处理(去掉-)
+                  let dateValue = item.otherProperties.defaultValue.replace(/-/g, '')
+                  form[item.valueFldName] = item.otherProperties.defaultValue
+                  form[item.valueFldName + '_enum'] = dateValue
+                } else {
+                  // 其它默认值
+                  form[item.valueFldName] = item.otherProperties.defaultValue
+                }
+              }
+            })
+            this.form = JSON.parse(JSON.stringify(form))
+          }
+          console.log('抽屉form:', this.form)
 
-        if (this.showParallel) {
-        } else {
-          this.dialog = true
-        }
-        // this.loadingInstance.close()
-        // this.thead.forEach((item) => {
-        //   this[item.key] = item.value
-        // })
-      })
+          if (this.showParallel) {
+          } else {
+            this.dialog = true
+          }
+          // this.loadingInstance.close()
+          // this.thead.forEach((item) => {
+          //   this[item.key] = item.value
+          // })
+        })
+        .catch((err) => {
+          console.log('抽屉requestMain err:', err)
+          this.$message.error('请求失败')
+        })
     },
     isRequired(item) {
       if (item.otherProperties.checkClass.includes('required')) {

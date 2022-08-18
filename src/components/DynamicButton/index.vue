@@ -293,6 +293,7 @@ export default {
       link.click()
     },
     getDropdownBtn(item) {
+      this.dropdownBtnList = []
       let data = {
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
