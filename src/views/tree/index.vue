@@ -342,6 +342,10 @@ export default {
 
           if (this.resMap.INPUTVAROF) {
             inputvarof = this.resMap.INPUTVAROF.split(';')
+            // 去掉空的
+            inputvarof = inputvarof.filter((i) => {
+              return i !== ''
+            })
             this.inputvarofName = 'INPUTVAROF' + this.resMap.tableName
             this.isInputvarof = true
           } else {
@@ -351,6 +355,10 @@ export default {
 
           if (this.resMap.CONOF) {
             conofTM = this.resMap.CONOF.split(';')
+            // 去掉空的
+            conofTM = conofTM.filter((i) => {
+              return i !== ''
+            })
             this.conofTMName = 'CONOF' + this.resMap.tableName
             this.isConof = true
           } else {
@@ -362,6 +370,10 @@ export default {
 
           if (node.data.INPUTVAROF) {
             inputvarof = node.data.INPUTVAROF.split(';')
+            // 去掉空的
+            inputvarof = inputvarof.filter((i) => {
+              return i !== ''
+            })
             this.inputvarofName = 'INPUTVAROF' + node.data.tableName
             this.isInputvarof = true
           } else {
@@ -371,6 +383,9 @@ export default {
 
           if (node.data.CONOF) {
             conofTM = node.data.CONOF.split(';')
+            conofTM = conofTM.filter((i) => {
+              return i !== ''
+            })
             this.conofTMName = 'CONOF' + node.data.tableName
             this.isConof = true
           } else {
@@ -391,22 +406,54 @@ export default {
           }
         }
         console.log('endCondition:', this.endCondition)
+
+        let priKeyLists = this.priKey.split('|')
+        priKeyLists = priKeyLists.filter((i) => {
+          return i !== ''
+        })
+        let priKeyList = {}
+        priKeyLists.forEach((i) => {
+          let key,value
+          if (i && i.indexOf('=') !== -1) {
+            // 键值对 i.split('=')[0] = i.split('=')[1]
+            key = i.split('=')[0]
+            value = i.split('=')[1]
+            priKeyList[key] = value
+          }
+        })
+        console.log('priKeyList:', priKeyList)
+
         if (this.isInputvarof) {
           // 处理INPUTVAROF
           console.log('inputvarof:', inputvarof)
           // 某一项没有'=',则添加'='
+          // let inputvarofNew = []
+          // inputvarof.forEach((i) => {
+          //   if (i && i.indexOf('=') === -1) {
+          //     // 取this.resMap键相同的值
+          //     if (this.resMap[i]) {
+          //       i = i + '=' + this.resMap[i]
+          //     } else {
+          //       i = i + '=' + this.listMap[i]
+          //     }
+          //   }
+          //   inputvarofNew.push(i)
+          // })
+
           let inputvarofNew = []
           inputvarof.forEach((i) => {
-            if (i && i.indexOf('=') === -1) {
-              // 取this.resMap键相同的值
+            if (i && i.indexOf('=') !== -1) {
+              i = i.split('=')[0] + '=' + i.split('=')[1]
+            } else {
               if (this.resMap[i]) {
                 i = i + '=' + this.resMap[i]
               } else {
-                i = i + '=' + this.listMap[i]
+                i = i + '=' + priKeyList[i]
               }
             }
             inputvarofNew.push(i)
           })
+          console.log('inputvarofNew:', inputvarofNew)
           this.inputvarof = inputvarofNew.join(';')
           console.log('inputvarof:', this.inputvarof)
         } else {
@@ -417,17 +464,34 @@ export default {
         // if (node.data.childNum === 0) {
         // 某一项没有'=',则添加'='
         if (this.isConof) {
+          // let conofTMNew = []
+          // conofTM.forEach((i) => {
+          //   if (i && i.indexOf('=') === -1) {
+          //     if (this.resMap[i]) {
+          //       i = i + '=' + this.resMap[i]
+          //     } else {
+          //       i = i + '=' + this.listMap[i]
+          //     }
+          //   }
+          //   conofTMNew.push(i)
+          // })
+          // this.conofTM = conofTMNew.join(';')
+          // console.log('conofTM:', this.conofTM)
+
           let conofTMNew = []
           conofTM.forEach((i) => {
-            if (i && i.indexOf('=') === -1) {
+            if (i && i.indexOf('=') !== -1) {
+              i = i.split('=')[0] + '=' + i.split('=')[1]
+            } else {
               if (this.resMap[i]) {
                 i = i + '=' + this.resMap[i]
               } else {
-                i = i + '=' + this.listMap[i]
+                i = i + '=' + priKeyList[i]
               }
             }
             conofTMNew.push(i)
           })
+          console.log('conofTMNew:', conofTMNew)
           this.conofTM = conofTMNew.join(';')
           console.log('conofTM:', this.conofTM)
         } else {
