@@ -678,8 +678,11 @@ export default {
       let reqData = {
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
-        tblAlias: data.tblAlias
-        // meumType: 'form',
+        tblAlias: data.tblAlias,
+        meumType: 'form',
+      }
+      if (nodeData.childNum === 0) {
+        delete reqData.meumType
       }
       let res = await getRecordMenuGrp(reqData)
       // resId=990 的,加上children

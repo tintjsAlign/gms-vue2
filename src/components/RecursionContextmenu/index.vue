@@ -4,14 +4,16 @@
       <div v-for="(item, index) in recordMenuGrp" :key="index">
         <v-contextmenu-submenu :title="item.itemName" :key="index" v-if="item.resId === 990" @mouseenter="subMouseenter(item)">
           <template #title>
-            <span><svg-icon icon-class="more" /> {{ item.itemName }}</span>
+            <span><svg-icon icon-class="wenjian1" /> {{ item.itemName }}</span>
           </template>
           <template v-for="(s, index) in item.children">
             <!-- <Recursion :recordMenuGrp="item.children"></Recursion> -->
             <v-contextmenu-item :key="index" @click="submenuClick(s)">{{ s.itemName }}</v-contextmenu-item>
           </template>
         </v-contextmenu-submenu>
-        <v-contextmenu-item :key="index" v-else @click="submenuClick(item)">{{ item.itemName }}</v-contextmenu-item>
+        <v-contextmenu-item :key="index" v-else @click="submenuClick(item)">
+          <span><svg-icon icon-class="shezhi01" /> {{ item.itemName }}</span>
+          </v-contextmenu-item>
       </div>
     </v-contextmenu>
   </div>
