@@ -111,8 +111,9 @@ service.interceptors.response.use(
 
     if (typeof res === 'string' && res.indexOf('message=') > -1) {
       // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
-      // 提取错误原因
-      let errorMsg = res.match(/message=(.*?)\|/)[1]
+      // 提取错误原因 截取{}包裹着的内容(不包括{})
+      let errorMsg = res.substring(res.indexOf('{') + 1, res.lastIndexOf('}'))
+      console.log('请求响应错误:', errorMsg)
       Message.error(errorMsg)
       setTimeout(() => {
         hideLoading()
@@ -129,7 +130,7 @@ service.interceptors.response.use(
       setTimeout(() => {
         hideLoading()
       }, 200)
-      return Promise.resolve(res)
+      return res
     }
     setTimeout(() => {
       hideLoading()

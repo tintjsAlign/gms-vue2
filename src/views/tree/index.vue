@@ -37,6 +37,7 @@
             :recordMenuGrp="recordMenuGrp"
             @openDrawer="openDrawer"
             @openReport="openReport"
+            @refreshNode="refreshNode"
           ></recursion-contextmenu>
           <!-- <v-contextmenu ref="contextmenu" @show="contextmenuShow">
             <template v-for="(item, index) in recordMenuGrp">
@@ -162,7 +163,7 @@ export default {
     loadNode(node, resolve) {
       //如果展开第一级节点，从后台加载一级节点列表
       if (node.level == 0) {
-        this.loadFirstNode(resolve)
+        this.loadFirstNode(node, resolve)
       }
       //如果展开其他级节点，动态从后台加载下一级节点列表
       if (node.level >= 1) {
@@ -170,7 +171,7 @@ export default {
       }
     },
     //加载第一级节点
-    async loadFirstNode(resolve) {
+    async loadFirstNode(node, resolve) {
       let data = {
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
@@ -219,7 +220,7 @@ export default {
           i.leaf = false
           i.tblAlias = res.VIEWDEF
           i[this.conofName] = this.conof
-          i.fatherCondition = { ...res }
+          i.fatherCondition = { ...res, node, resolve }
         })
         this.treeData = list
       } else {
@@ -238,7 +239,7 @@ export default {
     },
     //加载节点的子节点集合
     async loadchildNode(node, resolve) {
-      console.log('超过二级的', node, node.level)
+      console.log('超过二级的', node)
 
       // 文件格式处理
       if (node.data.fatherCondition.tableName === 'fileLibrary') {
@@ -307,7 +308,7 @@ export default {
             i.label = i.display
             i.leaf = false
             i.tblAlias = res.VIEWDEF
-            i.fatherCondition = { ...res }
+            i.fatherCondition = { ...res, node, resolve }
           })
           this.treeData = list
         } else {
@@ -413,7 +414,7 @@ export default {
         })
         let priKeyList = {}
         priKeyLists.forEach((i) => {
-          let key,value
+          let key, value
           if (i && i.indexOf('=') !== -1) {
             // 键值对 i.split('=')[0] = i.split('=')[1]
             key = i.split('=')[0]
@@ -612,7 +613,8 @@ export default {
         i.leaf = false
         i.tblAlias = res.VIEWDEF
         i[this.conofName] = this.conof
-        i.fatherCondition = { ...res }
+        i[this.inputvarofName] = this.inputvarof
+        i.fatherCondition = { ...res, node, resolve }
       })
       this.treeData = list
       console.log('树treeData:', this.treeData)
@@ -664,26 +666,44 @@ export default {
       // delete routeRowNO.operationID
       // delete routeRowNO.condition
       console.log('右键 routeRowNO:', routeRowNO)
+
+      let prikeyNew = {}
+      if (nodeData.priKey) {
+        let prikey = nodeData.priKey.split('|').filter((i) => i !== '')
+        prikey.forEach((i) => {
+          if (i.indexOf('=') !== -1) {
+            prikeyNew[i.split('=')[0]] = i.split('=')[1]
+          }
+        })
+        console.log('prikeyNew:', prikeyNew)
+      }
       for (let key in routeRowNO) {
         if (routeRowNO[key] && !nodeData[key]) {
           nodeData[key] = routeRowNO[key]
         }
       }
+      for (let key in prikeyNew) {
+        if (prikeyNew[key] && !nodeData[key]) {
+          nodeData[key] = prikeyNew[key]
+        }
+      }
       delete nodeData.fatherCondition
+      delete nodeData.priKey
 
       console.log('右键 nodeData:', nodeData)
 
-      let topY = event.clientY
-      let leftX = event.clientX
+      this.topY = event.clientY
+      this.leftX = event.clientX
       let reqData = {
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
         tblAlias: data.tblAlias,
-        meumType: 'form',
+        meumType: 'form'
       }
       if (nodeData.childNum === 0) {
         delete reqData.meumType
       }
+
       let res = await getRecordMenuGrp(reqData)
       // resId=990 的,加上children
       res.forEach((i) => {
@@ -691,14 +711,33 @@ export default {
           i.children = []
         }
       })
-      this.recordMenuGrp = res
+      let newRes = res.filter((i) => i.itemName !== '编辑本视图')
+      // 添加'刷新该节点'，位置在第一个
+      newRes.unshift({
+        ...data,
+        itemName: '刷新该节点',
+        itemId: 'refresh'
+      })
 
-      await this.$refs.contextmenu.show(topY, leftX, nodeData)
+      this.recordMenuGrp = newRes
+
+      await this.$refs.contextmenu.show(this.topY, this.leftX, nodeData, node)
       //  getRecordMenuGrp(reqData).then((res) => {
       //   console.log('右键菜单 res:', res)
       //   this.recordMenuGrp = res
       //   console.log('refs v-contextmenu',this.$refs.contextmenu)
       // })
+    },
+    refreshNode(nodeOri) {
+      console.log('refreshNode nodeOri:', nodeOri)
+      let node = this.$refs.elTree.getNode(nodeOri)
+      console.log('refreshNode node:', node)
+      if (node) {
+        node.loaded = false
+        node.expand() // 主动调用展开节点方法，重新查询该节点下的所有子节点
+      }
+
+      // this.refreshTree()
     },
     openDrawer(data) {
       this.$refs.drawer.show(data, 'float')

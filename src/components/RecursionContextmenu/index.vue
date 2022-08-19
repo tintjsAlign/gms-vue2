@@ -11,9 +11,12 @@
             <v-contextmenu-item :key="index" @click="submenuClick(s)">{{ s.itemName }}</v-contextmenu-item>
           </template>
         </v-contextmenu-submenu>
+        <v-contextmenu-item :key="index" v-else-if="item.itemId === 'refresh'" @click="refresh">
+          <span><svg-icon icon-class="refresh" /> {{ item.itemName }}</span>
+        </v-contextmenu-item>
         <v-contextmenu-item :key="index" v-else @click="submenuClick(item)">
           <span><svg-icon icon-class="shezhi01" /> {{ item.itemName }}</span>
-          </v-contextmenu-item>
+        </v-contextmenu-item>
       </div>
     </v-contextmenu>
   </div>
@@ -43,8 +46,9 @@ export default {
   created() {},
   mounted() {},
   methods: {
-    show(topY, leftX, data) {
+    show(topY, leftX, data, node) {
       this.btnRequest = data
+      this.node = node
       this.$refs.contextmenu.show({ top: topY, left: leftX })
     },
     subMouseenter(sub) {
@@ -55,12 +59,17 @@ export default {
       }
       getMenuLvAfter(reqData).then((res) => {
         console.log('子菜单res', res)
+        // 过滤编辑本视图
+        let newSub = res.filter((item) => item.itemName !== '编辑本视图')
         // 将res值赋值给recordMenuGrp对应item.children
-        this.recordMenuGrp[this.recordMenuGrp.findIndex((item) => item.tblAlias === sub.tblAlias)].children = res
+        this.recordMenuGrp[this.recordMenuGrp.findIndex((item) => item.tblAlias === sub.tblAlias)].children = newSub
 
         // 将recordMenuGrp赋值给子菜单
         console.log('recordMenuGrp', this.recordMenuGrp)
       })
+    },
+    refresh() {
+      this.$emit('refreshNode', this.node)
     },
     submenuClick(btn) {
       console.log('btn', btn)
