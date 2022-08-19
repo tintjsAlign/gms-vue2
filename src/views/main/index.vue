@@ -3,7 +3,13 @@
     <div class="dynamic-search">
       <dynamic-search :searchData="searchLists" :currentPage="currentPage" :pageSize="pageSize" @searchResult="searchResult"></dynamic-search>
     </div>
-    <dynamic-table :tableData="tableDataFinal" :formThead="formThead" :requestData="routeParams" @searchResult="searchResult"></dynamic-table>
+    <dynamic-table
+      :tableData="tableDataFinal"
+      :originTableData="originTableData"
+      :formThead="formThead"
+      :requestData="routeParams"
+      @searchResult="searchResult"
+    ></dynamic-table>
     <div class="pagination-container">
       <el-pagination
         background
@@ -88,7 +94,9 @@ export default {
           this.formThead = res[1].sqlFlag
           this.searchLists = res[1].queryFlag
           this.total = Number(res[0].totalRecNum)
-          console.log('初始tableData:', this.tableData)
+
+          this.originTableData = this.$_.cloneDeep(this.tableData)
+          console.log('初始tableData:', this.originTableData)
           console.log('searchLists:', this.searchLists)
           console.log('total:', this.total)
           let originSearchLists = JSON.parse(JSON.stringify(this.searchLists))
@@ -160,6 +168,8 @@ export default {
         this.searchReqData = data
       }
       console.log('查询结果:', searchData)
+      this.originTableData = this.$_.cloneDeep(searchData[0].list)
+      console.log('初始tableData:', this.originTableData)
       this.tableData = searchData[0].list
       this.formatEnum(searchData[1].queryFlag)
       this.tableDataFinal = this.tableData
