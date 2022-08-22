@@ -91,6 +91,24 @@ export default {
 
       if (operationIDs.includes(btn.operationID)) {
         // 打开抽屉-填表单
+        if (btn.operationID === 1) {
+          let name = `INPUTVAROF${btn.INNODEID}`
+          let newInputvarof = ''
+          let inputvarofs = btn.INPUTVAROF.split(';')
+          inputvarofs = inputvarofs.filter((item) => item !== '')
+          inputvarofs.forEach((item) => {
+            if (item.indexOf('=') === -1) {
+              newInputvarof = newInputvarof + item + '=' + btn[item] + ';'
+            } else {
+              newInputvarof = newInputvarof + item + ';'
+            }
+          })
+          console.log('newInputvarof', newInputvarof)
+          // ;改为|
+          let endCondition = newInputvarof.replace(/;/g, '|')
+          btn[name] = newInputvarof
+          btn.condition = btn.condition + '|' + endCondition
+        }
         this.$emit('openDrawer', btn)
       } else if (btn.operationID === 51) {
         // 查询所有数据,重新渲染表格

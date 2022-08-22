@@ -776,9 +776,9 @@ export default {
 ::v-deep .el-page-header {
   margin-bottom: 20px;
 }
-::v-deep .el-dialog {
-  // height: 100%;
-}
+// ::v-deep .el-dialog {
+//   height: 100%;
+// }
 ::v-deep .el-dialog__wrapper {
   position: absolute !important;
 }

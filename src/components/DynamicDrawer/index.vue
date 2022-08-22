@@ -509,7 +509,7 @@ export default {
             this.trueRes = this.trueRes.slice(0, -1)
           }
         }
-        if (!this.levelFlag) {
+        if (!this.showParallel) {
           // 过滤 类型为notshow的字段
           let drawerData = this.trueRes.filter((item) => item.otherProperties.textType !== 'notshow')
           this.drawerData = drawerData

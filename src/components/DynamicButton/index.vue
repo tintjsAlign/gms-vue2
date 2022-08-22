@@ -152,7 +152,7 @@ export default {
       console.log('currentRow::', this.currentRow)
     },
     batchMainEnter(btn) {
-      if (this.currentRow.length && this.currentRow.length > 1) {
+      if (this.currentRow && this.currentRow.length > 1) {
         console.log('批量操作')
         // 多记录操作
         this.currentRow.forEach((item) => {
