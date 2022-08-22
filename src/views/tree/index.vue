@@ -70,7 +70,7 @@
         </v-contextmenu>
 
         <div v-contextmenu:contextmenu>右键点击此区域</div> -->
-        <dynamic-drawer ref="drawer" @refresh="refresh"></dynamic-drawer>
+        <dynamic-drawer ref="drawer" @refresh="refresh" @getDrawerForm="getDrawerForm"></dynamic-drawer>
       </template>
     </split-pane>
     <!-- </el-dialog> -->
@@ -661,6 +661,10 @@ export default {
         this.$refs.drawer.show()
       }
     },
+    getDrawerForm(data) {
+      console.log('getDrawerForm data:', data)
+      this.drawerForm = data
+    },
     async nodeContextmenu(event, data, node) {
       console.log('右键 event:', event)
       console.log('右键 data:', data)
@@ -712,6 +716,7 @@ export default {
       if (nodeData.VIEWDEF) {
         reqData.tblAlias = nodeData.VIEWDEF
       }
+      Object.assign(nodeData, this.drawerForm)
       let res = await getRecordMenuGrp(reqData)
       // resId=990 的,加上children
       res.forEach((i) => {

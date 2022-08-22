@@ -566,6 +566,9 @@ export default {
         console.log('抽屉form:', this.form)
 
         if (this.showParallel) {
+          this.drawerForm = this.$_.cloneDeep(this.form)
+          // this.form传回给父组件
+          this.$emit('getDrawerForm', this.drawerForm)
         } else {
           this.dialog = true
         }
