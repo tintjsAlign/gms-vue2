@@ -2,10 +2,10 @@
   <div class="button-container">
     <el-row :gutter="10" type="flex">
       <el-col v-for="(item, index) in btnLists" :key="index">
-        <el-button :type="!typeChange ? 'primary' : 'success'" plain size="small" @click="mainEnter(item)" v-if="item.resId !== 990">{{
+        <el-button :type="!typeChange ? 'primary' : 'success'" plain size="small" @click="batchMainEnter(item)" v-if="item.resId !== 990">{{
           item.itemName
         }}</el-button>
-        <el-dropdown trigger="click" v-else @command="mainEnter" placement="bottom">
+        <el-dropdown trigger="click" v-else @command="batchMainEnter" placement="bottom">
           <el-button :type="!typeChange ? 'primary' : 'success'" @click="getDropdownBtn(item)" plain size="small">
             {{ item.itemName }}<i class="el-icon-arrow-down el-icon--right"></i>
           </el-button>
@@ -149,13 +149,27 @@ export default {
         this.btnLists = [...new Set(this.mainBtnLists)]
       }
       this.currentRow = flag
+      console.log('currentRow::', this.currentRow)
     },
-
+    batchMainEnter(btn) {
+      if (this.currentRow.length && this.currentRow.length > 1) {
+        console.log('批量操作')
+        // 多记录操作
+        this.currentRow.forEach((item) => {
+          this.currentRowData = item
+          this.mainEnter(btn)
+        })
+      } else {
+        this.currentRowData = this.currentRow
+        this.mainEnter(btn)
+      }
+    },
     mainEnter(btn) {
       console.log('mainEnter:', btn)
       console.log(btn.itemName, 'operationID:', btn.operationID, 'resId:', btn.resId)
       // 合并this.currentRow和btn的数据
-      Object.assign(btn, this.currentRow)
+
+      Object.assign(btn, this.currentRowData)
       console.log('mainEnter合并后:', btn)
       // 判断按钮功能
       // 1 || 2 || 48 || 49 || 50
@@ -169,8 +183,6 @@ export default {
         this.$emit('queryAllData', btn)
       } else if (btn.operationID === 135 && btn.resId === 587) {
         // 打开报表
-        // 合并this.currentRow和btn的数据
-        // Object.assign(btn, this.currentRow)
         this.$emit('openReport', btn)
       } else if (btn.operationID === 203) {
         // 下载文件
@@ -301,9 +313,17 @@ export default {
       }
       getMenuLvAfter(data).then((res) => {
         console.log('getMenuLvAfter:', res)
-        this.dropdownBtnList = res.filter((item) => {
-          return item.itemName !== '编辑本视图'
-        })
+        if (this.currentRow.length && this.currentRow.length > 1) {
+          console.log('支持批处理的选项')
+          // 只显示支持批量操作的  isOperatorSingleRec !== '1'
+          this.dropdownBtnList = res.filter((item) => {
+            return item.isOperatorSingleRec !== '1' && item.itemName !== '编辑本视图'
+          })
+        } else {
+          this.dropdownBtnList = res.filter((item) => {
+            return item.itemName !== '编辑本视图'
+          })
+        }
       })
     }
   }

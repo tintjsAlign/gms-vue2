@@ -95,6 +95,10 @@ export default {
       type: Array,
       default: () => []
     },
+    originTableData: {
+      type: Array,
+      default: () => []
+    },
     formThead: {
       type: Array,
       default: () => []
@@ -278,20 +282,33 @@ export default {
       })
     },
     handleCurrentChange(val) {
+      if (!val) {
+        return
+      }
       this.currentRow = val
       console.log('单选数据', val)
-      this.$refs.dynamicButton.replaceButtonGroup(val)
+      // 用this.originTableData原始数据传递
+      let oriVal
+      if (val.objectID) {
+        this.originTableData.find((item) => {
+          if (item.objectID === val.objectID) {
+            oriVal = item
+          }
+        })
+      }
+      console.log('原始单选数据', oriVal)
+      this.$refs.dynamicButton.replaceButtonGroup(oriVal)
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
-      console.log('多选数据multipleSelection', this.multipleSelection)
+      console.log('多选数据multipleSelection(非原始)', this.multipleSelection)
       // 所选数据只有一条时,
       if (val.length === 1) {
         this.currentRow = val[0]
         this.$refs.dynamicButton.replaceButtonGroup(val[0])
         this.showDeleteBtn = false
       } else {
-        this.$refs.dynamicButton.replaceButtonGroup(null)
+        this.$refs.dynamicButton.replaceButtonGroup(val)
         if (val.length > 1) {
           // 显示多选删除按钮 this.recordBtnGroup 中有删除时才显示
           // this.showDeleteBtn = this.recordBtnGroup.some(item => item.itemName === '删除')
