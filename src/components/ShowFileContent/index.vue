@@ -43,7 +43,10 @@ export default {
   created() {},
   mounted() {},
   methods: {
-    show(res, title) {
+    show(res, title,isTree) {
+      if (isTree) {
+        this.isTree = isTree
+      }
       this.title = title
       // 根据文件后缀判断展示图片还是文件或者文本
       if (res.match(/\.(jpg|jpeg|png|gif|bmp|svg)$/)) {
@@ -67,8 +70,12 @@ export default {
       this.drawer = true
     },
     handleClose(done) {
-      this.reload()
-      done()
+      if (this.isTree) {
+        done()
+      }else{
+        this.reload()
+        done()
+      }
     }
   }
 }

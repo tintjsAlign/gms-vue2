@@ -38,6 +38,8 @@
             @openDrawer="openDrawer"
             @openReport="openReport"
             @refreshNode="refreshNode"
+            @uploadFile="uploadFile"
+            @fileContentShow="fileContentShow"
           ></recursion-contextmenu>
           <!-- <v-contextmenu ref="contextmenu" @show="contextmenuShow">
             <template v-for="(item, index) in recordMenuGrp">
@@ -73,6 +75,8 @@
     </split-pane>
     <!-- </el-dialog> -->
     <app-iframe ref="iframe"></app-iframe>
+    <show-file-content ref="showFileContent"></show-file-content>
+    <upload-file ref="uploadFile"></upload-file>
   </div>
 </template>
 
@@ -86,10 +90,12 @@ import { requestMain, getTreeMenu, getRecordMenuGrp, getMenuLvAfter } from '@/ap
 import dynamicDrawer from '@/components/DynamicDrawer/index.vue'
 import RecursionContextmenu from '@/components/RecursionContextmenu/index.vue'
 import appIframe from '@/views/iframe'
+import showFileContent from '@/components/ShowFileContent'
+import uploadFile from '@/components/UploadFile'
 
 export default {
   name: 'treeContainer',
-  components: { VueContextMenu, splitPane, dynamicDrawer, RecursionContextmenu, appIframe },
+  components: { VueContextMenu, splitPane, dynamicDrawer, RecursionContextmenu, appIframe, showFileContent, uploadFile },
   props: {},
   data() {
     return {
@@ -638,7 +644,7 @@ export default {
         } else {
           delete nodeData.fatherCondition
           delete nodeData.childNum
-          delete nodeData.priKey
+          // delete nodeData.priKey
           delete nodeData.condition
           // delete nodeData.objectID
           // delete nodeData[this.conofName]
@@ -688,7 +694,7 @@ export default {
         }
       }
       delete nodeData.fatherCondition
-      delete nodeData.priKey
+      // delete nodeData.priKey
 
       console.log('右键 nodeData:', nodeData)
 
@@ -703,7 +709,9 @@ export default {
       if (nodeData.childNum === 0) {
         delete reqData.meumType
       }
-
+      if (nodeData.VIEWDEF) {
+        reqData.tblAlias = nodeData.VIEWDEF
+      }
       let res = await getRecordMenuGrp(reqData)
       // resId=990 的,加上children
       res.forEach((i) => {
@@ -744,6 +752,15 @@ export default {
     },
     openReport(row) {
       this.$refs.iframe.show(row)
+    },
+    fileContentShow(res, name) {
+      console.log('fileContentShow res:', res)
+      this.$refs.showFileContent.show(res, name, 'tree')
+    },
+    // 上传文件
+    uploadFile(row) {
+      // 弹出dialog
+      this.$refs.uploadFile.show(row)
     }
   }
 }
@@ -753,12 +770,14 @@ export default {
 .tree-container {
   padding: 20px;
   width: 100%;
+  // 不能滚动
+  overflow: hidden;
 }
 ::v-deep .el-page-header {
   margin-bottom: 20px;
 }
 ::v-deep .el-dialog {
-  height: 100%;
+  // height: 100%;
 }
 ::v-deep .el-dialog__wrapper {
   position: absolute !important;

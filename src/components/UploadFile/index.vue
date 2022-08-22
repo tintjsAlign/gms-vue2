@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-dialog :title="title" :visible.sync="dialogVisible">
+    <el-dialog :title="title" :visible.sync="dialogVisible" style="height: auto">
       <el-upload
         class="upload-demo"
         ref="upload"
@@ -73,6 +73,7 @@ export default {
     },
     submitUpload() {
       this.$refs.upload.submit()
+
       // console.log('submitUpload upfile:', this.upfile)
       // requestMain(
       //   {
@@ -85,12 +86,13 @@ export default {
       // })
     },
     success(response, file, fileList) {
-      console.log(response, file, fileList)
+      console.log('上传成功:', response)
       if (response.statusCode === '200') {
         this.$message({
           message: '上传成功',
           type: 'success'
         })
+        this.dialogVisible = false
       } else {
         this.$message({
           message: response.message,
@@ -118,6 +120,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.app-container {
+  height: 100%;
+}
 ::v-deep .upload-demo {
   display: flex;
   justify-content: center;

@@ -80,7 +80,12 @@ export default {
       console.log(btnOri.itemName, 'operationID:', btnOri.operationID, 'resId:', btnOri.resId)
       // 合并this.btnRequest和btn的数据
       // Object.assign(btn, this.btnRequest)
+      console.log('this.btnRequest 数据:', this.btnRequest)
       let btn = Object.assign({}, this.btnRequest, btnOri)
+      if (this.btnRequest.priKey) {
+        btn.condition = btn.condition + '|' + this.btnRequest.priKey
+      }
+      console.log('mainEnter 数据:', btn)
       // 1 || 2 || 48 || 49 || 50
       let operationIDs = [1, 48, 49, 50]
 
@@ -101,7 +106,7 @@ export default {
         this.mainEnterConfirm(btn)
       } else if (btn.operationID === 204) {
         // 上传文件
-        this.uploadFile(btn)
+        this.$emit('uploadFile', btn)
       } else if (btn.operationID === 16) {
         // 管理树界面
         this.openTreeManage(btn)
@@ -191,12 +196,21 @@ export default {
             requestMain(data).then((res) => {
               console.log('展示文件 res:', res)
               // 弹出dialog层
-              this.$refs.showFileContent.show(res, data.itemName)
+              this.$emit('fileContentShow', res, data.itemName)
             })
           }
         }
         this.reqLoading.close()
       })
+    },
+    // 下载文件
+    downloadFile(res, file_Name) {
+      let blob = new Blob([res])
+      let fileName = file_Name
+      let link = document.createElement('a')
+      link.href = window.URL.createObjectURL(blob)
+      link.download = fileName
+      link.click()
     },
     openTreeManage(row) {
       // 打开树管理界面
