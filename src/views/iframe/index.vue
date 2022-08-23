@@ -15,15 +15,14 @@
       fullscreen
       :show-close="false"
       destroy-on-close
+      lock-scroll
       :before-close="handleClose"
     >
-      <!-- <iframe
-        :src="html"
-        scrolling="auto"
-        frameborder="0"
-        style="width: 100%;"
-      ></iframe> -->
+
+      <div style="height:50px"></div>
       <div v-html="html"></div>
+      
+      <!-- <iframe :srcdoc="html" width="100%" :height="iframeH" scrolling="no" frameborder="0" ></iframe> -->
     </el-dialog>
   </div>
 </template>
@@ -44,6 +43,8 @@ export default {
   watch: {},
   created() {
     // this.init()
+    let mainHeight = document.querySelector('.app-main').offsetHeight
+    this.iframeH = mainHeight - 50
   },
   mounted() {},
   methods: {
@@ -81,6 +82,7 @@ export default {
 <style scoped lang="scss">
 .iframe-container {
   width: 100%;
+  overflow: hidden;
 }
 ::v-deep .el-dialog {
   height: 100%;
@@ -88,6 +90,12 @@ export default {
 ::v-deep .el-dialog__wrapper {
   position: absolute !important;
 }
+
+//  ::v-deep .iframe-dialog {
+//     height: 100%;
+//     overflow: hidden;
+//     overflow-y: scroll;
+//  }
 // ::v-deep .v-modal {
 //   position: absolute !important;
 // }
@@ -103,7 +111,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 3000;
+  z-index: 2004;
 
   .title {
     font-size: 18px;
