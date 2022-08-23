@@ -633,6 +633,7 @@ export default {
         if (data.fatherCondition.tableName === 'fileLibrary') {
           delete nodeData.fatherCondition
           let reqData = {
+            // ...this.routeRowNO,
             ...nodeData,
             SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
             SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
@@ -649,6 +650,7 @@ export default {
           // delete nodeData.objectID
           // delete nodeData[this.conofName]
           let reqData = {
+            // ...this.routeRowNO,
             ...nodeData,
             SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
             SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),

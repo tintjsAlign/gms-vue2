@@ -509,7 +509,7 @@ export default {
             this.trueRes = this.trueRes.slice(0, -1)
           }
         }
-        if (!this.showParallel) {
+        if (!this.levelFlag || this.requestData.operationID === '1') {
           // 过滤 类型为notshow的字段
           let drawerData = this.trueRes.filter((item) => item.otherProperties.textType !== 'notshow')
           this.drawerData = drawerData
@@ -698,7 +698,7 @@ export default {
           return false
         } else {
           let subTip = '确定要提交吗？'
-          if (this.requestData.otherProperties.operationTitle) {
+          if (this.requestData.otherProperties && this.requestData.otherProperties.operationTitle) {
             subTip = this.requestData.otherProperties.operationTitle
           }
           this.$confirm(`${subTip}`)
@@ -789,7 +789,10 @@ export default {
                     }
                     data.allResponseFields = `#START${formData}#ENDFLAG`
                   }
-
+                  if (!data.resId && data.objectID) {
+                    let resId = data.objectID.split('-')[0]
+                    data.resId = resId
+                  }
                   this.REQMAINDATA = data
                 }
                 console.log('$$$$ REQMAINDATA:', this.REQMAINDATA)
