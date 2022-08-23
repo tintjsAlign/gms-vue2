@@ -627,6 +627,7 @@ export default {
       return resolve(this.treeData)
     },
     nodeClick(data, node) {
+      this.$refs.contextmenu.hide()
       console.log('nodeClick data:', data)
       let nodeData = this.$_.cloneDeep(data)
       if (nodeData.childNum === 0) {
@@ -704,8 +705,8 @@ export default {
 
       console.log('右键 nodeData:', nodeData)
 
-      this.topY = event.clientY
-      this.leftX = event.clientX
+      this.topY = event.pageY
+      this.leftX = event.pageX
       let reqData = {
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),

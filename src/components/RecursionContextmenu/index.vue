@@ -46,6 +46,9 @@ export default {
   created() {},
   mounted() {},
   methods: {
+    hide() {
+      this.$refs.contextmenu.hide()
+    },
     show(topY, leftX, data, node) {
       this.btnRequest = data
       this.node = node
