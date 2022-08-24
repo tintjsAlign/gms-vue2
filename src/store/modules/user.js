@@ -61,12 +61,16 @@ const actions = {
           window.localStorage.setItem('SYSTEMKEYNAME', response.SYSTEMKEYNAME)
           window.localStorage.setItem('SYSTEMTELLERNO', response.SYSTEMTELLERNO)
           window.localStorage.setItem('userRole', response.TELLERROLE)
+
+          window.sessionStorage.setItem('sessionToken', response.SERVICELOGSSN)
           // const { data } = response
           // console.log('login成功:', data)
           // commit('SET_TOKEN', data.token)
-          // commit('SET_TOKEN', data.SERVICELOGSSN)
+          // commit('SET_TOKEN', response.SERVICELOGSSN)
           // setToken(data.token)
-          // setToken(data.SERVICELOGSSN)
+          // let token = response.SERVICELOGSSN + '_token'
+          // setToken(token)
+          // commit('SET_TOKEN', token)
           resolve()
         })
         .catch((error) => {
@@ -84,32 +88,22 @@ const actions = {
       //       reject(error)
       //     })
     })
-    //   login({ username: username.trim(), password: password })
-    //     .then((response) => {
-    //       const { data } = response
-    //       commit('SET_TOKEN', data.token)
-    //       setToken(data.token)
-    //       resolve()
-    //     })
-    //     .catch((error) => {
-    //       reject(error)
-    //     })
-    // })
   },
 
   // get user info
   getInfo({ commit, state }) {
-    console.log('getInfo!!!!')
+    console.log('getInfo!!!!', state)
     return new Promise((resolve, reject) => {
+      resolve(state)
       getInfo(state.token)
         .then((response) => {
           const { data } = response
 
           if (!data) {
-            return reject('Verification failed, please Login again.')
+            return reject('验证失败，请重新登录.')
           }
           if (!data) {
-            reject('Verification failed, please Login again.')
+            reject('验证失败，请重新登录.')
           }
 
           const { roles, name, avatar, introduction } = data

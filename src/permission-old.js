@@ -21,15 +21,12 @@ router.beforeEach(async (to, from, next) => {
   const hasToken = getToken()
   // const hasToken = window.sessionStorage.getItem('sessionToken')
   console.log('hasToken::', hasToken)
-  console.log('to::', to.path, 'from::', from.path)
+  console.log('to && from::', to, from)
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
       next({ path: '/' })
       NProgress.done() // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939
-    } else if (to.path === '/home') {
-      next()
-      NProgress.done()
     } else {
       // determine whether the user has obtained his permission roles through getInfo
       // console.log('store.getters.roles::', store.getters.roles)
@@ -41,29 +38,26 @@ router.beforeEach(async (to, from, next) => {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
 
-          if (window.sessionStorage.getItem('gatInfoRoles')) {
+        //   if (window.sessionStorage.getItem('gatInfoRoles')) {
+            
+        //     const roles = await JSON.parse(window.sessionStorage.getItem('gatInfoRoles'))
+        //     const tree = await JSON.parse(window.sessionStorage.getItem('gatInfoTree'))
+        //     console.log('getInfo roles::', roles)
+        //     console.log('getInfo tree::', tree)
+        //     await store.commit('user/SET_ROLES', roles)
 
-            const roles = await JSON.parse(window.sessionStorage.getItem('gatInfoRoles'))
-            const tree = await JSON.parse(window.sessionStorage.getItem('gatInfoTree'))
-            console.log('getInfo roles::', roles)
-            console.log('getInfo tree::', tree)
-            await store.commit('user/SET_ROLES', roles)
-
-            const accessRoutes = await store.dispatch('permission/generateRoutes', { roles, tree })
+        //  const accessRoutes = await store.dispatch('permission/generateRoutes', { roles,tree})
+        //  router.addRoutes(accessRoutes)
+        //   } else {
+            const { roles } = await store.dispatch('user/getInfo')
+            // generate accessible routes map based on roles
+            const accessRoutes = await store.dispatch('permission/generateRoutes', { roles })
+            // const accessRoutes = await store.dispatch(
+            //   'permission/generateRoutes',
+            //   roles
+            // )
+            // dynamically add accessible routes
             router.addRoutes(accessRoutes)
-          } else {
-            return false
-          }
-          // const { roles } = await store.dispatch('user/getInfo')
-          // console.log('roles::', roles)
-          // // generate accessible routes map based on roles
-          // const accessRoutes = await store.dispatch('permission/generateRoutes', { roles })
-          // // const accessRoutes = await store.dispatch(
-          // //   'permission/generateRoutes',
-          // //   roles
-          // // )
-          // // dynamically add accessible routes
-          // router.addRoutes(accessRoutes)
           // }
           next({ ...to, replace: true })
 

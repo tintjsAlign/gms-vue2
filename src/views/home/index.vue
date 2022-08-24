@@ -56,6 +56,9 @@ export default {
   mounted() {},
   methods: {
     init() {
+      window.sessionStorage.removeItem('gatInfoRoles')
+      window.sessionStorage.removeItem('gatInfoTree')
+
       let data = {
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
@@ -86,25 +89,25 @@ export default {
       let icon = ''
       if (name === '登记被测系统') {
         icon = 'dengji'
-      }else if(name === '被测单位'){
+      } else if (name === '被测单位') {
         icon = 'danwei'
-      }else if(name === '被测信息系统'){
+      } else if (name === '被测信息系统') {
         icon = 'xitong'
-      }else if (name.indexOf('技术') > -1) {
+      } else if (name.indexOf('技术') > -1) {
         icon = 'jishu'
-      }else if (name.indexOf('管理') > -1) {
+      } else if (name.indexOf('管理') > -1) {
         icon = 'guanli'
-      }else if (name.indexOf('通用') > -1) {
+      } else if (name.indexOf('通用') > -1) {
         icon = 'tongyong'
-      }else if (name.indexOf('批次') > -1) {
+      } else if (name.indexOf('批次') > -1) {
         icon = 'pici'
-      }else if (name.indexOf('人员') > -1) {
+      } else if (name.indexOf('人员') > -1) {
         icon = 'renyuan'
-      }else if (name.indexOf('工具') > -1) {
+      } else if (name.indexOf('工具') > -1) {
         icon = 'gongju'
-      }else if (name.indexOf('多') > -1) {
+      } else if (name.indexOf('多') > -1) {
         icon = 'duo'
-      }else if (name.indexOf('风险') > -1) {
+      } else if (name.indexOf('风险') > -1) {
         icon = 'fengxian'
       }
       return icon
@@ -113,10 +116,13 @@ export default {
       // 根据点击的按钮，赋予不同的权限
       // this.$store.commit('user/SET_ROLES', [role])
       let userRole = window.localStorage.getItem('userRole')
-    // 把userRole和role的值, 放进同一个数组
+      // 把userRole和role的值, 放进同一个数组
       let roles = []
       roles.push(role)
       roles.push(userRole)
+
+      window.sessionStorage.setItem('gatInfoRoles', JSON.stringify(roles))
+      window.sessionStorage.setItem('gatInfoTree', JSON.stringify(this.routerListsss))
       this.$store
         .dispatch('user/changeRoles', {
           roles,
@@ -125,7 +131,8 @@ export default {
         })
         .then(() => {
           this.$emit('change')
-          this.$router.push(`/?${role}`)
+          // this.$router.push(`/?${role}`)
+          this.$router.push('/')
         })
     },
 
