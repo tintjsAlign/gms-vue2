@@ -63,7 +63,7 @@ export const constantRoutes = [
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
-  },
+  }
   // {
   //   path: '/tree',
   //   component: Layout,
@@ -92,6 +92,7 @@ export const routerMap = {
   main: () => import('@/views/main'), // 异步的方式
   drawer: () => import('@/views/drawer'),
   tree: () => import('@/views/tree'),
+  iframe: () => import('@/views/iframe'),
   layout: () => import('@/layout')
 }
 //之后遍历这个map 并将 component 替换为map[component]

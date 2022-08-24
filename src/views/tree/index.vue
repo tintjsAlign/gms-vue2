@@ -74,9 +74,9 @@
       </template>
     </split-pane>
     <!-- </el-dialog> -->
-    <app-iframe ref="iframe"></app-iframe>
     <show-file-content ref="showFileContent"></show-file-content>
     <upload-file ref="uploadFile"></upload-file>
+    <app-iframe ref="iframe"></app-iframe>
   </div>
 </template>
 
@@ -89,13 +89,13 @@ import { requestMain, getTreeMenu, getRecordMenuGrp, getMenuLvAfter } from '@/ap
 
 import dynamicDrawer from '@/components/DynamicDrawer/index.vue'
 import RecursionContextmenu from '@/components/RecursionContextmenu/index.vue'
-import appIframe from '@/views/iframe'
 import showFileContent from '@/components/ShowFileContent'
 import uploadFile from '@/components/UploadFile'
+import appIframe  from '@/views/iframe/index-dialog.vue'
 
 export default {
   name: 'treeContainer',
-  components: { VueContextMenu, splitPane, dynamicDrawer, RecursionContextmenu, appIframe, showFileContent, uploadFile },
+  components: { VueContextMenu, splitPane, dynamicDrawer, RecursionContextmenu, showFileContent, uploadFile, appIframe },
   props: {},
   data() {
     return {
@@ -758,8 +758,8 @@ export default {
     openDrawer(data) {
       this.$refs.drawer.show(data, 'float')
     },
-    openReport(row) {
-      this.$refs.iframe.show(row)
+    openReport(data) {
+      this.$refs.iframe.show(data)
     },
     fileContentShow(res, name) {
       console.log('fileContentShow res:', res)

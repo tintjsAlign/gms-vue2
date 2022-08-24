@@ -238,14 +238,24 @@ export default {
         // menuRouterLists某一项中若有children的话，则children中加多一项
         menuRouterLists.forEach((item) => {
           if (item.children) {
-            item.children.push({
-              // path: `tree/:id(\\d+)`,
-              path: `tree`,
-              component: 'tree',
-              name: item.name + '_tree',
-              meta: { noCache: true, activeMenu: item.path },
-              hidden: true
-            })
+            item.children.push(
+              {
+                // path: `tree/:id(\\d+)`,
+                path: `tree`,
+                component: 'tree',
+                name: item.name + '_tree',
+                meta: { noCache: true, activeMenu: item.path },
+                hidden: true
+              },
+              {
+                // path: `tree/:id(\\d+)`,
+                path: `iframe`,
+                component: 'iframe',
+                name: item.name + '_iframe',
+                meta: { noCache: true, activeMenu: item.path },
+                hidden: true
+              }
+            )
           }
         })
         //   {

@@ -2,7 +2,7 @@
   <div class="button-container">
     <el-row :gutter="10" type="flex">
       <el-col v-for="(item, index) in btnLists" :key="index">
-         <el-dropdown trigger="click" v-if="item.resId === 990" @command="batchMainEnter" placement="bottom">
+        <el-dropdown trigger="click" v-if="item.resId === 990" @command="batchMainEnter" placement="bottom">
           <el-button :type="!typeChange ? 'primary' : 'success'" @click="getDropdownBtn(item)" plain size="small">
             {{ item.itemName }}<i class="el-icon-arrow-down el-icon--right"></i>
           </el-button>
@@ -10,16 +10,19 @@
             <el-dropdown-item v-for="(btn, i) in dropdownBtnList" :key="i" :command="btn">{{ btn.itemName }}</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <el-button :type="!typeChange ? 'primary' : 'success'" plain size="small" @click="batchMainEnter(item)" v-if="item.resId !== 990 && !batchFlag">{{
-          item.itemName
-        }}</el-button>
-       
+        <el-button
+          :type="!typeChange ? 'primary' : 'success'"
+          plain
+          size="small"
+          @click="batchMainEnter(item)"
+          v-if="item.resId !== 990 && !batchFlag"
+          >{{ item.itemName }}</el-button
+        >
       </el-col>
     </el-row>
 
     <show-file-content ref="showFileContent"></show-file-content>
     <upload-file ref="uploadFile"></upload-file>
-    <!-- <app-tree ref="treeManage"></app-tree> -->
   </div>
 </template>
 
@@ -28,13 +31,11 @@ import { requestMain, getRecordMenuGrp, getMenuLvAfter } from '@/api/main'
 
 import showFileContent from '@/components/ShowFileContent'
 import uploadFile from '@/components/UploadFile'
-import appTree from '@/views/tree'
 export default {
   name: '',
   components: {
     showFileContent,
-    uploadFile,
-    appTree
+    uploadFile
   },
   props: {
     requestData: {
@@ -47,7 +48,7 @@ export default {
       btnLists: [],
       dropdownBtnList: [],
       typeChange: false,
-      batchFlag : false,
+      batchFlag: false
     }
   },
   computed: {
@@ -144,7 +145,6 @@ export default {
         // 改变按钮颜色
         this.typeChange = true
         if (flag && flag.length > 1) {
-          
           this.batchFlag = true
         }
         this.btnLists = [...new Set(this.recordMenuGrp)]
@@ -190,7 +190,8 @@ export default {
         this.$emit('queryAllData', btn)
       } else if (btn.operationID === 135 && btn.resId === 587) {
         // 打开报表
-        this.$emit('openReport', btn)
+        // this.$emit('openReport', btn)
+        this.openIframeManage(btn)
       } else if (btn.operationID === 203) {
         // 下载文件
         btn.queryFilePath = '1'
@@ -291,6 +292,16 @@ export default {
       // 打开树管理界面
       this.$router.push({
         path: `/tree`,
+        query: {
+          row: row
+        }
+      })
+      // this.$refs.treeManage.show(row)
+    },
+    openIframeManage(row) {
+      // 打开树管理界面
+      this.$router.push({
+        path: `/iframe`,
         query: {
           row: row
         }

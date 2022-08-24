@@ -1,29 +1,11 @@
 <template>
   <div class="iframe-container">
-    <div class="header" v-if="dialogVisible">
-      <div class="title">{{ title }}</div>
-      <div class="close">
-        <el-button type="info" plain circle icon="el-icon-close" @click="handleClose"></el-button>
-      </div>
+    <div class="iframe-header">
+      <el-page-header @back="handleClose" title="" :content="title"> </el-page-header>
     </div>
-    <el-dialog
-      :visible.sync="dialogVisible"
-      width="100%"
-      :modal-append-to-body="false"
-      :modal="false"
-      top="0"
-      fullscreen
-      :show-close="false"
-      destroy-on-close
-      lock-scroll
-      :before-close="handleClose"
-    >
+    <div v-html="html"></div>
 
-      <div style="height:50px"></div>
-      <div v-html="html"></div>
-      
-      <!-- <iframe :srcdoc="html" width="100%" :height="iframeH" scrolling="no" frameborder="0" ></iframe> -->
-    </el-dialog>
+    <!-- <iframe :srcdoc="html" width="100%" :height="iframeH" scrolling="no" frameborder="0" ></iframe> -->
   </div>
 </template>
 
@@ -42,9 +24,10 @@ export default {
   computed: {},
   watch: {},
   created() {
-    // this.init()
-    let mainHeight = document.querySelector('.app-main').offsetHeight
-    this.iframeH = mainHeight - 50
+    // 获取路由的参数
+    this.routeRow = this.$route.query.row
+    console.log('iframe this.routeRow:::', this.routeRow)
+    this.show(this.routeRow)
   },
   mounted() {},
   methods: {
@@ -73,7 +56,7 @@ export default {
     },
     handleClose() {
       this.html = ''
-      this.dialogVisible = false
+      this.$router.go(-1)
     }
   }
 }
@@ -82,40 +65,11 @@ export default {
 <style scoped lang="scss">
 .iframe-container {
   width: 100%;
-  overflow: hidden;
-}
-::v-deep .el-dialog {
-  height: 100%;
-}
-::v-deep .el-dialog__wrapper {
-  position: absolute !important;
-}
-
-//  ::v-deep .iframe-dialog {
-//     height: 100%;
-//     overflow: hidden;
-//     overflow-y: scroll;
-//  }
-// ::v-deep .v-modal {
-//   position: absolute !important;
-// }
-.header {
-  // 固定在顶部
-  position: fixed;
-  top: 50px;
-  // position: relative;
-  width: 80%;
-  height: 50px;
-  background-color: #fff;
-  padding: 0 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 2004;
-
-  .title {
-    font-size: 18px;
-    font-weight: bold;
+  padding: 20px;
+  // overflow: hidden;
+  .iframe-header {
+    position: fixed;
+    height: 50px;
   }
 }
 </style>

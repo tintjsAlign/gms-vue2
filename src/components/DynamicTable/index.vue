@@ -72,14 +72,14 @@
     <!-- </el-card> -->
 
     <dynamic-drawer ref="drawer" @refresh="refresh"></dynamic-drawer>
-    <app-iframe ref="iframe"></app-iframe>
+    <!-- <app-iframe ref="iframe"></app-iframe> -->
   </div>
 </template>
 
 <script>
 import dynamicButton from '@/components/DynamicButton/index.vue'
 import dynamicDrawer from '@/components/DynamicDrawer/index.vue'
-import appIframe from '@/views/iframe'
+// import appIframe from '@/views/iframe'
 
 import { requestMain } from '@/api/main'
 export default {
@@ -88,7 +88,7 @@ export default {
   components: {
     dynamicButton,
     dynamicDrawer,
-    appIframe
+    // appIframe
   },
   props: {
     tableData: {
@@ -430,7 +430,8 @@ export default {
         })
     },
     openReport(row) {
-      this.$refs.iframe.show(row)
+      // this.$refs.iframe.show(row)
+      
     }
   }
 }

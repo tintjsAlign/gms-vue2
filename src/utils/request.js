@@ -1,8 +1,9 @@
 import axios from 'axios'
 import { MessageBox, Message, Loading } from 'element-ui'
+import router from '@/router'
 import _ from 'lodash'
 import store from '@/store'
-import { getToken } from '@/utils/auth'
+import { getToken, removeToken } from '@/utils/auth'
 import qs from 'qs' //引入qs模块，用于序列化post请求参数
 
 // loading对象
@@ -115,16 +116,20 @@ service.interceptors.response.use(
       let errorMsg = res.substring(res.indexOf('{') + 1, res.lastIndexOf('}'))
       console.log('请求响应错误:', errorMsg)
       Message.error(errorMsg)
-      setTimeout(() => {
-        hideLoading()
-      }, 200)
+      if (errorMsg.indexOf('没有登录或登录超时，请重新登录') > -1) {
+        removeToken()
+        router.push('/login')
+      }
+        setTimeout(() => {
+          hideLoading()
+        }, 200)
       return Promise.resolve(res)
     } else if (res.statusCode === '301') {
       // 跳转到登录页面
       MessageBox.alert(res.message, '提示', {
         confirmButtonText: '确定',
         callback: (action) => {
-          this.$router.push('/login')
+          router.push('/login')
         }
       })
       setTimeout(() => {

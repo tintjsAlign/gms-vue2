@@ -121,6 +121,7 @@ export default {
         // 合并this.btnRequest和btn的数据
         // Object.assign(btn, this.btnRequest)
         this.$emit('openReport', btn)
+        // this.openIframeManage(btn)
       } else if (btn.operationID === 203) {
         // 下载文件
         btn.queryFilePath = '1'
@@ -235,13 +236,29 @@ export default {
     },
     openTreeManage(row) {
       // 打开树管理界面
-      this.$router.push({
-        path: `/tree`,
+      const { fullPath } = this.$route
+      this.$router.replace({
+        path: '/redirect' + fullPath,
         query: {
           row: row
         }
       })
-      // this.$refs.treeManage.show(row)
+    },
+    openIframeManage(row) {
+      // 打开树管理界面
+      // const { fullPath } = this.$route
+      // this.$router.replace({
+      //   path: '/redirect' + fullPath,
+      //   query: {
+      //     row: row
+      //   }
+      // })
+      this.$router.push({
+        path: `/iframe`,
+        query: {
+          row: row
+        }
+      })
     }
   }
 }
