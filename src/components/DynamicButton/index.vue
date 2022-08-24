@@ -2,10 +2,7 @@
   <div class="button-container">
     <el-row :gutter="10" type="flex">
       <el-col v-for="(item, index) in btnLists" :key="index">
-        <el-button :type="!typeChange ? 'primary' : 'success'" plain size="small" @click="batchMainEnter(item)" v-if="item.resId !== 990">{{
-          item.itemName
-        }}</el-button>
-        <el-dropdown trigger="click" v-else @command="batchMainEnter" placement="bottom">
+         <el-dropdown trigger="click" v-if="item.resId === 990" @command="batchMainEnter" placement="bottom">
           <el-button :type="!typeChange ? 'primary' : 'success'" @click="getDropdownBtn(item)" plain size="small">
             {{ item.itemName }}<i class="el-icon-arrow-down el-icon--right"></i>
           </el-button>
@@ -13,6 +10,10 @@
             <el-dropdown-item v-for="(btn, i) in dropdownBtnList" :key="i" :command="btn">{{ btn.itemName }}</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
+        <el-button :type="!typeChange ? 'primary' : 'success'" plain size="small" @click="batchMainEnter(item)" v-if="item.resId !== 990 && !batchFlag">{{
+          item.itemName
+        }}</el-button>
+       
       </el-col>
     </el-row>
 
@@ -45,7 +46,8 @@ export default {
     return {
       btnLists: [],
       dropdownBtnList: [],
-      typeChange: false
+      typeChange: false,
+      batchFlag : false,
     }
   },
   computed: {
@@ -141,8 +143,13 @@ export default {
         // console.log('以选中,替换按钮组')
         // 改变按钮颜色
         this.typeChange = true
+        if (flag && flag.length > 1) {
+          
+          this.batchFlag = true
+        }
         this.btnLists = [...new Set(this.recordMenuGrp)]
       } else {
+        this.batchFlag = false
         // console.log('取消选中,替换按钮组')
         this.$emit('replaceButtonGroup')
         this.typeChange = false

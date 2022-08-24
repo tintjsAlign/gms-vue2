@@ -941,6 +941,10 @@ export default {
 ::v-deep .el-input {
   width: 100%;
 }
+::v-deep .el-input--small .el-input__inner {
+  height: 33px !important;
+  line-height: 33px !important;
+}
 ::v-deep .el-select .el-input {
   width: 100%;
 }

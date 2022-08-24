@@ -157,6 +157,7 @@ export default {
     clickOutSide() {
       // 取消选中
       this.$refs.dynamicTable.setCurrentRow()
+      this.$refs.dynamicTable.clearSelection()
       // 替换回原来的按钮组
       this.$refs.dynamicButton.replaceButtonGroup('')
     },
