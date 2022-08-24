@@ -25,7 +25,7 @@ router.beforeEach(async (to, from, next) => {
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
-      next({ path: '/' })
+      next()
       NProgress.done() // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939
     } else if (to.path === '/home') {
       next()
@@ -52,6 +52,8 @@ router.beforeEach(async (to, from, next) => {
             const accessRoutes = await store.dispatch('permission/generateRoutes', { roles, tree })
             router.addRoutes(accessRoutes)
           } else {
+            console.log('无gatInfoRoles')
+            next(`/login`)
             return false
           }
           // const { roles } = await store.dispatch('user/getInfo')
