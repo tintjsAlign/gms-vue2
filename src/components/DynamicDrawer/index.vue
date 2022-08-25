@@ -569,6 +569,8 @@ export default {
           this.drawerForm = this.$_.cloneDeep(this.form)
           // this.form传回给父组件
           this.$emit('getDrawerForm', this.drawerForm)
+          console.log('表单refs:', this.$refs.dynamicTableRef)
+          this.$refs.dynamicTableRef.clearValidate()
         } else {
           this.dialog = true
         }
@@ -586,7 +588,7 @@ export default {
       if (item.otherProperties.checkClass.includes('required') || item.valueConstraint.includes('notnull')) {
         return { required: true, message: '必填项不能为空' }
       } else {
-        return { required: false }
+        return { required: false, message: '' }
       }
     },
     handleClose(done) {
