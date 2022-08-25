@@ -58,6 +58,19 @@ export const constantRoutes = [
     component: () => import('@/views/home/index'),
     hidden: true
   },
+  {
+    path: '/main',
+    component: Layout,
+    redirect: '/main',
+    hidden: true,
+    children: [
+      {
+        path: '',
+        name: 'main',
+        component: () => import('@/views/main/index'),
+      }
+    ]
+  },
 
   {
     path: '/404',

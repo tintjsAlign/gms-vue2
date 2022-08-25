@@ -1,5 +1,6 @@
 <template>
   <div class="globalPageTemplate">
+    <!-- <el-page-header @back="goBack" title="" :content="title" v-if="treeQuery"> </el-page-header> -->
     <div class="dynamic-search">
       <dynamic-search :searchData="searchLists" :currentPage="currentPage" :pageSize="pageSize" @searchResult="searchResult"></dynamic-search>
     </div>
@@ -41,6 +42,7 @@ export default {
   props: {},
   data() {
     return {
+      treeQuery: false,
       routeParams: {},
       formThead: [],
       tableData: [],
@@ -59,7 +61,14 @@ export default {
   },
   created() {
     // 获取路由的参数
-    this.routeParams = this.$route.meta
+    console.log('this.$route::', this.$route)
+    if (this.$route.query.meta) {
+      this.routeParams = this.$route.query.meta
+      // this.treeQuery = true
+      // this.title = this.routeParams.itemName
+    } else {
+      this.routeParams = this.$route.meta
+    }
     console.log('routeParams:', this.routeParams)
     this.currentPage = 1
     this.pageSize = 10
@@ -67,18 +76,18 @@ export default {
   },
   mounted() {},
   methods: {
+    goBack() {
+      this.$router.go(-1)
+    },
     init(searchReqData) {
       let requestMainData = {
         pageNum: this.currentPage,
         numPerPage: this.pageSize,
-        operationID: this.routeParams.operationID,
-        resId: this.routeParams.resId,
-        // rel: this.routeParams.rel,
-        tblAlias: this.routeParams.tblAlias,
-        // isOperatorSingleRec: '0',
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
       }
+      Object.assign(requestMainData, this.routeParams)
+
       if (searchReqData) {
         // 合并requestMainData
         requestMainData = Object.assign(requestMainData, searchReqData)

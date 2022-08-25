@@ -569,7 +569,6 @@ export default {
           this.drawerForm = this.$_.cloneDeep(this.form)
           // this.form传回给父组件
           this.$emit('getDrawerForm', this.drawerForm)
-          console.log('表单refs:', this.$refs.dynamicTableRef)
           this.$refs.dynamicTableRef.clearValidate()
         } else {
           this.dialog = true

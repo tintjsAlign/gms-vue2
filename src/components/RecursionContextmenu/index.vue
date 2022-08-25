@@ -115,7 +115,8 @@ export default {
         this.$emit('openDrawer', btn)
       } else if (btn.operationID === 51) {
         // 查询所有数据,重新渲染表格
-        this.$emit('queryAllData', btn)
+        // this.$emit('queryAllData', btn)
+        this.queryAllData(btn)
       } else if (btn.operationID === 135 && btn.resId === 587) {
         // 打开报表
         // 合并this.btnRequest和btn的数据
@@ -259,6 +260,87 @@ export default {
           row: row
         }
       })
+    },
+    queryAllData(btn) {
+      console.log('查询所有,', btn)
+      // keyName--  ''+tableName
+      let conofName = 'CONOF' + btn.tableName
+      let inputvarofName = 'INPUTVAROF' + btn.tableName
+
+      let conofValue = this.synthesisString(btn.CONOF, btn)
+      let inputvarofValue = this.synthesisString(btn.INPUTVAROF, btn)
+      let conof = `${conofName}=${conofValue}|`
+      let inputvarof = `${inputvarofName}=${inputvarofValue}|`
+
+      // condition
+      let url = this.btnRequest.otherProperties.urlParam
+      let urlParam = url.split('&')
+      console.log('urlParam:', urlParam)
+      // 获取condition
+      let conditionOriginal
+      urlParam.forEach((element) => {
+        if (element.indexOf('condition=') > -1) {
+          conditionOriginal = element.replace('condition=', '')
+        }
+      })
+      console.log('conditionOriginal:', conditionOriginal)
+      let condition1 = conditionOriginal.split(',')
+      let conditionNext = ''
+      condition1.forEach((e) => {
+        if (e.indexOf('=this.') > -1) {
+          let key = e.split('=this.')[0]
+          let value = e.split('=this.')[1]
+          conditionNext += key + '=' + btn[value] + '|'
+        } else {
+          let key = e.split('=')[0]
+          if (key === 'NODEID') {
+            conditionNext += key + '=' + btn.tableName + '|'
+          } else {
+            conditionNext += e + '|'
+          }
+        }
+      })
+      console.log('conditionNext:', conditionNext)
+
+      let btnData = this.$_.cloneDeep(btn)
+      delete btnData.CONOF
+
+      let conofType
+      for (const key in btnData) {
+        if (key.match(/CONOF/g)) {
+          conofType = key + '=' + btnData[key]
+        }
+      }
+      console.log('conofType:', conofType)
+
+      let condition = `${conditionNext}${conofType}${conof}${inputvarof}`
+
+      btnData.condition = condition
+
+      this.$router.push({
+        path: `/main`,
+        query: {
+          meta: btnData
+        }
+      })
+    },
+    synthesisString(origin, data) {
+      let oriArr = origin.split(';').filter((i) => i !== '')
+      let stringStrand = ''
+      oriArr.forEach((item) => {
+        if (item.indexOf('=') === -1) {
+          stringStrand += item + '=' + data[item] + ';'
+        } else {
+          let key = item.split('=')[1]
+          let key0 = item.split('=')[0]
+          if (data[key]) {
+            stringStrand += key0 + '=' + data[key] + ';'
+          } else {
+            stringStrand += item + ';'
+          }
+        }
+      })
+      return stringStrand
     }
   }
 }
