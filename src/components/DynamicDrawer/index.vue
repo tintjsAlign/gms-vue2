@@ -158,6 +158,7 @@
       direction="rtl"
       size="720px"
       ref="drawer"
+      :append-to-body="true"
       v-else
     >
       <div class="demo-drawer__content">
@@ -892,6 +893,22 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.drawerBox {
+  .demo-drawer__footer {
+    // 向右对齐
+    text-align: right;
+    // 固定在底部
+    position: fixed;
+    bottom: 10px;
+    right: 20px;
+    width: 100%;
+    // 底部按钮
+    .el-button {
+      margin-top: 10px;
+    }
+  }
+}
+
 .drawer-container {
   .demo-drawer__content {
     padding: 20px;
@@ -960,5 +977,8 @@ export default {
 }
 ::v-deep .el-input.is-disabled .el-input__inner {
   color: #81827b;
+}
+::v-deep .el-drawer__body {
+  overflow: hidden;
 }
 </style>

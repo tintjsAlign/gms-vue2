@@ -317,12 +317,13 @@ export default {
 
       btnData.condition = condition
 
-      this.$router.push({
-        path: `/main`,
-        query: {
-          meta: btnData
-        }
-      })
+      // this.$router.push({
+      //   path: `/main`,
+      //   query: {
+      //     meta: btnData
+      //   }
+      // })
+      this.$emit('queryAllData', btnData)
     },
     synthesisString(origin, data) {
       let oriArr = origin.split(';').filter((i) => i !== '')

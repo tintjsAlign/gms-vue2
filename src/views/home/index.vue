@@ -244,7 +244,7 @@ export default {
                 path: `tree`,
                 component: 'tree',
                 name: item.name + '_tree',
-                meta: { noCache: true, activeMenu: item.path },
+                meta: { activeMenu: item.path },
                 hidden: true
               },
               {
@@ -252,7 +252,7 @@ export default {
                 path: `iframe`,
                 component: 'iframe',
                 name: item.name + '_iframe',
-                meta: { noCache: true, activeMenu: item.path },
+                meta: { activeMenu: item.path },
                 hidden: true
               }
             )

@@ -1,6 +1,5 @@
 <template>
   <div class="globalPageTemplate">
-    <!-- <el-page-header @back="goBack" title="" :content="title" v-if="treeQuery"> </el-page-header> -->
     <div class="dynamic-search">
       <dynamic-search :searchData="searchLists" :currentPage="currentPage" :pageSize="pageSize" @searchResult="searchResult"></dynamic-search>
     </div>
@@ -64,18 +63,26 @@ export default {
     console.log('this.$route::', this.$route)
     if (this.$route.query.meta) {
       this.routeParams = this.$route.query.meta
-      // this.treeQuery = true
-      // this.title = this.routeParams.itemName
+      this.treeQuery = true
+      this.title = this.routeParams.itemName
     } else {
       this.routeParams = this.$route.meta
     }
-    console.log('routeParams:', this.routeParams)
+    console.log('MAIN routeParams:', this.routeParams)
     this.currentPage = 1
     this.pageSize = 10
     this.init()
   },
   mounted() {},
   methods: {
+    show(data) {
+      console.log('MAIN show:', data)
+      this.routeParams = data
+      this.title = this.routeParams.itemName
+      this.currentPage = 1
+      this.pageSize = 10
+      this.init()
+    },
     goBack() {
       this.$router.go(-1)
     },

@@ -37,6 +37,7 @@
             :recordMenuGrp="recordMenuGrp"
             @openDrawer="openDrawer"
             @openReport="openReport"
+            @queryAllData="queryAllData"
             @refreshNode="refreshNode"
             @uploadFile="uploadFile"
             @fileContentShow="fileContentShow"
@@ -77,6 +78,7 @@
     <show-file-content ref="showFileContent"></show-file-content>
     <upload-file ref="uploadFile"></upload-file>
     <app-iframe ref="iframe"></app-iframe>
+    <drawer-main ref="appMain"></drawer-main>
   </div>
 </template>
 
@@ -91,11 +93,12 @@ import dynamicDrawer from '@/components/DynamicDrawer/index.vue'
 import RecursionContextmenu from '@/components/RecursionContextmenu/index.vue'
 import showFileContent from '@/components/ShowFileContent'
 import uploadFile from '@/components/UploadFile'
-import appIframe  from '@/views/iframe/index-dialog.vue'
+import appIframe from '@/views/iframe/index-dialog.vue'
+import drawerMain from '@/views/main/drawer/index.vue'
 
 export default {
   name: 'treeContainer',
-  components: { VueContextMenu, splitPane, dynamicDrawer, RecursionContextmenu, showFileContent, uploadFile, appIframe },
+  components: { VueContextMenu, splitPane, dynamicDrawer, RecursionContextmenu, showFileContent, uploadFile, appIframe, drawerMain },
   props: {},
   data() {
     return {
@@ -113,13 +116,13 @@ export default {
     }
   },
   computed: {
-    cascaderProps() {
-      return {
-        lazy: true,
-        lazyLoad: this.lazyLoad,
-        expandTrigger: 'hover'
-      }
-    }
+    // cascaderProps() {
+    //   return {
+    //     lazy: true,
+    //     lazyLoad: this.lazyLoad,
+    //     expandTrigger: 'hover'
+    //   }
+    // }
   },
   watch: {},
   created() {
@@ -760,6 +763,10 @@ export default {
     },
     openReport(data) {
       this.$refs.iframe.show(data)
+    },
+    queryAllData(data) {
+      console.log('queryAllData data:', data)
+      this.$refs.appMain.show(data)
     },
     fileContentShow(res, name) {
       console.log('fileContentShow res:', res)
