@@ -41,7 +41,19 @@ export default {
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
       }
+      let objCondition = row.condition.split(',').filter((i) => i !== '')
+      let conditionArr = ''
+      objCondition.forEach((e) => {
+        if (!e.split('=')[1]) {
+          if (row[e.split('=')[0]]) {
+            e = e.split('=')[0] + '=' + row[e.split('=')[0]]
+          }
+        }
+        conditionArr += e + ','
+      })
+      console.log('conditionArr:', conditionArr)
       Object.assign(data, row)
+      data.condition = conditionArr
       requestMain(data).then((res) => {
         // console.log('报表HTML res:', res)
         // 找到res中的包含'<a href="main?'的全部字符串，并且替换

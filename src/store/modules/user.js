@@ -68,9 +68,9 @@ const actions = {
           // commit('SET_TOKEN', data.token)
           // commit('SET_TOKEN', response.SERVICELOGSSN)
           // setToken(data.token)
-          // let token = response.SERVICELOGSSN + '_token'
-          // setToken(token)
-          // commit('SET_TOKEN', token)
+          let token = response.SERVICELOGSSN + '_token'
+          setToken(token)
+          commit('SET_TOKEN', token)
           resolve()
         })
         .catch((error) => {

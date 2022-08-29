@@ -3,7 +3,6 @@ import request from '@/utils/request'
 // 登录
 export function loginByUsername(data) {
   return request({
-    // url: 'https://www.paytunnel.cn:8888/secretassessment/loginEvlation',
     url: '/loginEvlation',
     method: 'post',
     data

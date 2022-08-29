@@ -37,12 +37,12 @@ service.interceptors.request.use(
 
     // do something before request is sent
 
-    // if (store.getters.token) {
-    //   // let each request carry token
-    //   // ['X-Token'] is a custom headers key
-    //   // please modify it according to the actual situation
-    //   config.headers['X-Token'] = getToken()
-    // }
+    if (store.getters.token) {
+      // let each request carry token
+      // ['X-Token'] is a custom headers key
+      // please modify it according to the actual situation
+      config.headers['X-Token'] = getToken()
+    }
     // 如果是 post 请求,并且请求的数据是对象格式
     if (config.method === 'post' && config.data) {
       if (config.headers['myType']) {
@@ -116,7 +116,7 @@ service.interceptors.response.use(
       let errorMsg = res.substring(res.indexOf('{') + 1, res.lastIndexOf('}'))
       console.log('请求响应错误:', errorMsg)
       Message.error(errorMsg)
-      if (errorMsg.indexOf('没有登录或登录超时，请重新登录') > -1) {
+      if (errorMsg.indexOf('没有登录') > -1) {
         removeToken()
         router.push('/login')
       }

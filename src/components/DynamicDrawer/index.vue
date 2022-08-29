@@ -159,6 +159,7 @@
       size="720px"
       ref="drawer"
       :append-to-body="true"
+      destroy-on-close
       v-else
     >
       <div class="demo-drawer__content">
@@ -979,6 +980,7 @@ export default {
   color: #81827b;
 }
 ::v-deep .el-drawer__body {
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 </style>
