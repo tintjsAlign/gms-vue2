@@ -267,10 +267,16 @@ export default {
       let conofName = 'CONOF' + btn.tableName
       let inputvarofName = 'INPUTVAROF' + btn.tableName
 
-      let conofValue = this.synthesisString(btn.CONOF, btn)
-      let inputvarofValue = this.synthesisString(btn.INPUTVAROF, btn)
-      let conof = `${conofName}=${conofValue}|`
-      let inputvarof = `${inputvarofName}=${inputvarofValue}|`
+      let conof = ''
+      if (btn.CONOF) {
+        let conofValue = this.synthesisString(btn.CONOF, btn)
+        conof = `${conofName}=${conofValue}|`
+      }
+      let inputvarof = ''
+      if (btn.INPUTVAROF) {
+        let inputvarofValue = this.synthesisString(btn.INPUTVAROF, btn)
+        inputvarof = `${inputvarofName}=${inputvarofValue}|`
+      }
 
       // condition
       let url = this.btnRequest.otherProperties.urlParam
