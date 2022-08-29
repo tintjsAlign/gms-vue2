@@ -55,7 +55,14 @@
             {{ scope.row[fruit.queryFldName] }}
           </template>
         </af-table-column>
-        <af-table-column label="操作" width="180" align="center" fixed="right" v-if="tableData.length > 0" show-overflow-tooltip>
+        <af-table-column
+          label="操作"
+          width="180"
+          align="center"
+          fixed="right"
+          v-if="tableData.length > 0 && recordBtnGroup.length > 0"
+          show-overflow-tooltip
+        >
           <template slot-scope="scope">
             <el-button-group>
               <span v-for="(btn, i) in recordBtnGroup" :key="i" class="btnsClass">
@@ -87,7 +94,7 @@ export default {
   inject: ['reload'],
   components: {
     dynamicButton,
-    dynamicDrawer,
+    dynamicDrawer
     // appIframe
   },
   props: {
@@ -431,7 +438,6 @@ export default {
     },
     openReport(row) {
       // this.$refs.iframe.show(row)
-      
     }
   }
 }

@@ -511,7 +511,7 @@ export default {
             this.trueRes = this.trueRes.slice(0, -1)
           }
         }
-        if (!this.levelFlag || this.requestData.operationID === '1') {
+        if (!this.levelFlag || this.requestData.operationID === 1) {
           // 过滤 类型为notshow的字段
           let drawerData = this.trueRes.filter((item) => item.otherProperties.textType !== 'notshow')
           this.drawerData = drawerData
@@ -568,9 +568,9 @@ export default {
         console.log('抽屉form:', this.form)
 
         if (this.showParallel) {
-          this.drawerForm = this.$_.cloneDeep(this.form)
-          // this.form传回给父组件
-          this.$emit('getDrawerForm', this.drawerForm)
+          // this.drawerForm = this.$_.cloneDeep(this.form)
+          // // this.form传回给父组件
+          // this.$emit('getDrawerForm', this.drawerForm)
           this.$refs.dynamicTableRef.clearValidate()
         } else {
           this.dialog = true

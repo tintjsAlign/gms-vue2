@@ -667,32 +667,38 @@ export default {
         this.$refs.drawer.show()
       }
     },
-    getDrawerForm(data) {
-      console.log('getDrawerForm data:', data)
-      this.drawerForm = data
-    },
+    // getDrawerForm(data) {
+    //   console.log('getDrawerForm data:', data)
+    //   this.drawerForm = data
+    // },
     async nodeContextmenu(event, data, node) {
       console.log('右键 event:', event)
       console.log('右键 data:', data)
       console.log('右键 node:', node)
       let nodeData = this.$_.cloneDeep(data)
       // 合并this.routeRowNO中不同与nodeData且不为空的参数
-      // let routeRowNO = this.$_.cloneDeep(this.routeRowNO)
-      const { operationID, condition, ...routeRowNO } = this.routeRowNO
+      let routeRowNO1 = this.$_.cloneDeep(this.routeRowNO)
+      const { operationID, condition, ...routeRowNO } = routeRowNO1
       // delete routeRowNO.operationID
       // delete routeRowNO.condition
       console.log('右键 routeRowNO:', routeRowNO)
 
       let prikeyNew = {}
+      let priKeyOriginal = {}
+
       if (nodeData.priKey) {
-        let prikey = nodeData.priKey.split('|').filter((i) => i !== '')
-        prikey.forEach((i) => {
-          if (i.indexOf('=') !== -1) {
-            prikeyNew[i.split('=')[0]] = i.split('=')[1]
-          }
-        })
-        console.log('prikeyNew:', prikeyNew)
+        priKeyOriginal = nodeData.priKey
+      } else {
+        priKeyOriginal = nodeData.fatherCondition.priKey
       }
+      let prikey = priKeyOriginal.split('|').filter((i) => i !== '')
+      prikey.forEach((i) => {
+        if (i.indexOf('=') !== -1) {
+          prikeyNew[i.split('=')[0]] = i.split('=')[1]
+        }
+      })
+      console.log('prikeyNew:', prikeyNew)
+
       for (let key in routeRowNO) {
         if (routeRowNO[key] && !nodeData[key]) {
           nodeData[key] = routeRowNO[key]
@@ -705,8 +711,6 @@ export default {
       }
       delete nodeData.fatherCondition
       // delete nodeData.priKey
-
-      console.log('右键 nodeData:', nodeData)
 
       this.topY = event.pageY
       this.leftX = event.pageX
@@ -722,7 +726,7 @@ export default {
       if (nodeData.VIEWDEF) {
         reqData.tblAlias = nodeData.VIEWDEF
       }
-      Object.assign(nodeData, this.drawerForm)
+      // Object.assign(nodeData, this.drawerForm)
       let res = await getRecordMenuGrp(reqData)
       // resId=990 的,加上children
       res.forEach((i) => {
@@ -739,6 +743,8 @@ export default {
       })
 
       this.recordMenuGrp = newRes
+
+      console.log('右键 nodeData:', nodeData)
 
       await this.$refs.contextmenu.show(this.topY, this.leftX, nodeData, node)
       //  getRecordMenuGrp(reqData).then((res) => {
