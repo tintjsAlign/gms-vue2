@@ -317,9 +317,15 @@ export default {
           conofType = key + '=' + btnData[key]
         }
       }
+      // let conofType
+      // for (const key in btnData) {
+      //   if (key.match(/CONOF/g)) {
+      //     conofType = key + '=' + btnData[key]
+      //   }
+      // }
       console.log('conofType:', conofType)
 
-      let condition = `${conditionNext}${conofType}${conof}${inputvarof}`
+      let condition = `${conditionNext}${conofType}|${conof}${inputvarof}`
 
       btnData.condition = condition
 
