@@ -8,7 +8,14 @@ export function loginByUsername(data) {
     data
   })
 }
-
+// 密码加密 getRsaParams
+export function getRsaParams(data) {
+  return request({
+    url: '/getRsaParams',
+    method: 'post',
+    data
+  })
+}
 // 通用
 export function requestMain(data, loadFlag) {
   return request({

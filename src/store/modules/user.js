@@ -3,6 +3,8 @@ import { loginByUsername } from '@/api/main'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
+import { encryption } from '@/utils/encryption'
+
 const getDefaultState = () => {
   return {
     token: getToken(),
@@ -42,14 +44,15 @@ const mutations = {
 
 const actions = {
   // user login
-  login({ commit }, userInfo) {
+  login({ commit }, { userInfo, rsaParams }) {
     const { username, password } = userInfo
+    const { pkbase64, modulus, exponent } = rsaParams
     return new Promise((resolve, reject) => {
+      let encryptionPsw = encryption(pkbase64, modulus, exponent, password)
+      console.log('encryptionPsw:', encryptionPsw)
       let data = {
         userID: username.trim(),
-        // password: password,
-        password:
-          '0d566b8160e9fd8ccc2d1f3e19ccad9e6dd37b8b8ddfe5a49ff83db0d768d2530c813676c47a54c5ce092e582db1a5b3e7214edfe202b757285bf396109a7655653b63b40bf7ebe7c7d4f8d2e7a8a0b8076f47a3feedaf56c579e8dbc6228d9b667bbb33f70ef7706b161239ba9a13f67195d0a94f1cb49774653039546144ac',
+        password: encryptionPsw,
         keySvrName: 'SevaluationManagement_TASS',
         svrName: '密评辅助工具',
         svrMainMenuName: 'Splenwise密评工具平台主工作界面',
@@ -129,16 +132,20 @@ const actions = {
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token)
-        .then(() => {
-          removeToken() // must remove  token  first
-          resetRouter()
-          commit('RESET_STATE')
-          resolve()
-        })
-        .catch((error) => {
-          reject(error)
-        })
+      // logout(state.token)
+      //   .then(() => {
+      removeToken() // must remove  token  first
+      resetRouter()
+      commit('RESET_STATE')
+      window.localStorage.removeItem('SYSTEMKEYNAME')
+      window.localStorage.removeItem('SYSTEMTELLERNO')
+      window.localStorage.removeItem('userRole')
+      window.sessionStorage.removeItem('sessionToken')
+      resolve()
+      // })
+      // .catch((error) => {
+      //   reject(error)
+      // })
     })
   },
 

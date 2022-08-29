@@ -47,6 +47,8 @@
 <script>
 import { validUsername } from '@/utils/validate'
 
+import { getRsaParams } from '@/api/main'
+
 export default {
   name: 'Login',
   data() {
@@ -86,6 +88,9 @@ export default {
       immediate: true
     }
   },
+  created() {
+    this.rsaEncryption()
+  },
   methods: {
     showPwd() {
       if (this.passwordType === 'password') {
@@ -101,10 +106,12 @@ export default {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.loading = true
+          console.log('rsaParams:', this.rsaParams)
           this.$store
-            .dispatch('user/login', this.loginForm)
+            .dispatch('user/login', { userInfo: this.loginForm, rsaParams: this.rsaParams })
             .then(() => {
               // this.$router.push({ path: this.redirect || '/' })
+              // this.testPassword()
               this.$router.push({ path: '/home' })
               this.$message({
                 message: '登录成功',
@@ -119,6 +126,11 @@ export default {
           console.log('error submit!!')
           return false
         }
+      })
+    },
+    rsaEncryption() {
+      getRsaParams().then((res) => {
+        this.rsaParams = { ...res }
       })
     }
   }
