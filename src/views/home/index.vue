@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container">
+  <div class="home-container" ref="container">
     <div class="home-text">
       <h3 class="title">密评工具平台</h3>
     </div>
@@ -37,7 +37,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getMenuLv1, getMenuLv2, getMenuLvAfter } from '@/api/main'
+import { getMenuLv1, getMenuLv2 } from '@/api/main'
 
 export default {
   name: 'home',
@@ -53,8 +53,40 @@ export default {
   created() {
     this.init()
   },
-  mounted() {},
+  mounted() {
+    window.onresize = () => {
+      return (() => {
+        this.detectZoom()
+      })()
+    }
+  },
   methods: {
+    detectZoom() {
+      var ratio = 0,
+        screen = window.screen,
+        ua = navigator.userAgent.toLowerCase()
+      if (window.devicePixelRatio !== undefined) {
+        ratio = window.devicePixelRatio
+      } else if (~ua.indexOf('msie')) {
+        if (screen.deviceXDPI && screen.logicalXDPI) {
+          ratio = screen.deviceXDPI / screen.logicalXDPI
+        }
+      } else if (window.outerWidth !== undefined && window.innerWidth !== undefined) {
+        ratio = window.outerWidth / window.innerWidth
+      }
+
+      if (ratio) {
+        ratio = Math.round(ratio * 100)
+      }
+      //ratio就是获取到的百分比
+      console.log(ratio)
+      // this.onresize_height = ratio
+      ratio = ratio >= 100 ? ratio : 100
+      // 设置高度
+      let container = this.$refs.container
+      container.style.height = ratio + '%'
+      // return ratio;
+    },
     init() {
       window.sessionStorage.removeItem('gatInfoRoles')
       window.sessionStorage.removeItem('gatInfoTree')
