@@ -142,6 +142,7 @@
             </el-form>
           </el-col>
         </el-row>
+        <div style="height: 50px"></div>
         <div class="demo-drawer__footer">
           <!-- <el-button @click="cancelForm">取 消</el-button> -->
           <el-button type="primary" @click="submitForm" :loading="loading" v-if="requestData.itemName !== '查询' || requestData.operationID !== 48">{{
@@ -303,6 +304,7 @@
             </el-form>
           </el-col>
         </el-row>
+        <div style="height: 50px"></div>
         <div class="demo-drawer__footer">
           <el-button @click="cancelForm">取 消</el-button>
           <el-button type="primary" @click="submitForm" :loading="loading" v-if="requestData.operationID !== 48">{{
@@ -511,7 +513,8 @@ export default {
             this.trueRes = this.trueRes.slice(0, -1)
           }
         }
-        if (!this.levelFlag || this.requestData.operationID === 1) {
+        // if (!this.levelFlag || this.requestData.operationID === 1) {
+        if (this.requestData.operationID === 1) {
           // 过滤 类型为notshow的字段
           let drawerData = this.trueRes.filter((item) => item.otherProperties.textType !== 'notshow')
           this.drawerData = drawerData

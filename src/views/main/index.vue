@@ -92,6 +92,9 @@ export default {
         numPerPage: this.pageSize,
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        // tblAlias: this.routeParams.tblAlias,
+        // resId: this.routeParams.resId,
+        // operationID: this.routeParams.operationID,
       }
       Object.assign(requestMainData, this.routeParams)
 
@@ -152,6 +155,19 @@ export default {
             console.log('queryEnum枚举:', res)
             this.enumRes = res
             this.queryEnum(item)
+          })
+        }
+
+        if (item.remark.indexOf('日期') > -1) {
+          // 对日期数据进行处理
+          this.tableData.forEach((table) => {
+            // 替换tableData中的值
+            if (table[item.fldName]) {
+              let value = table[item.fldName]
+              table[item.fldName] = this.$dayjs(value).format('YYYY-MM-DD')
+            }else {
+              return
+            }
           })
         }
       })

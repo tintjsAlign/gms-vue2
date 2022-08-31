@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container" ref="container">
+  <div class="home-container" ref="homeContainer">
     <div class="home-text">
       <h3 class="title">密评工具平台</h3>
     </div>
@@ -54,14 +54,21 @@ export default {
     this.init()
   },
   mounted() {
-    window.onresize = () => {
-      return (() => {
-        this.detectZoom()
-      })()
-    }
+    this.$nextTick(function () {
+      window.onresize = () => {
+        return (() => {
+          if (this.$refs.homeContainer) {
+            this.detectZoom()
+          }else {
+            return false
+          }
+        })()
+      }
+    })
   },
   methods: {
     detectZoom() {
+      // js 检测浏览器是否缩放并返回缩放的比例
       var ratio = 0,
         screen = window.screen,
         ua = navigator.userAgent.toLowerCase()
@@ -83,7 +90,7 @@ export default {
       // this.onresize_height = ratio
       ratio = ratio >= 100 ? ratio : 100
       // 设置高度
-      let container = this.$refs.container
+      let container = this.$refs.homeContainer
       container.style.height = ratio + '%'
       // return ratio;
     },
@@ -253,6 +260,7 @@ export default {
               component: 'layout',
               name: item.tblAlias,
               meta: {
+                breadcrumb: false,
                 title: item.itemName,
                 icon: this.getIcon(item.itemName),
                 roles: [role]
