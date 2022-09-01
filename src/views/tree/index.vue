@@ -699,6 +699,13 @@ export default {
       })
       console.log('prikeyNew:', prikeyNew)
 
+      for (let key in nodeData.fatherCondition) {
+        if (nodeData.fatherCondition[key] && !nodeData[key]) {
+          nodeData[key] = nodeData.fatherCondition[key]
+        }
+      }
+      delete nodeData.fatherCondition
+
       for (let key in routeRowNO) {
         if (routeRowNO[key] && !nodeData[key]) {
           nodeData[key] = routeRowNO[key]
@@ -709,7 +716,7 @@ export default {
           nodeData[key] = prikeyNew[key]
         }
       }
-      delete nodeData.fatherCondition
+
       // delete nodeData.priKey
 
       this.topY = event.pageY

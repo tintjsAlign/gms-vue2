@@ -99,11 +99,16 @@ export default {
           let newInputvarof = ''
           let inputvarofs = btn.INPUTVAROF.split(';')
           inputvarofs = inputvarofs.filter((item) => item !== '')
+          console.log('inputvarofs', inputvarofs)
           inputvarofs.forEach((item) => {
             if (item.indexOf('=') === -1) {
               newInputvarof = newInputvarof + item + '=' + btn[item] + ';'
             } else {
-              newInputvarof = newInputvarof + item + ';'
+              if (btn[item.split('=')[1]]) {
+                newInputvarof = newInputvarof + item.split('=')[0] + '=' + btn[item.split('=')[1]] + ';'
+              } else {
+                newInputvarof = newInputvarof + item + ';'
+              }
             }
           })
           console.log('newInputvarof', newInputvarof)
@@ -317,15 +322,10 @@ export default {
           conofType = key + '=' + btnData[key]
         }
       }
-      // let conofType
-      // for (const key in btnData) {
-      //   if (key.match(/CONOF/g)) {
-      //     conofType = key + '=' + btnData[key]
-      //   }
-      // }
       console.log('conofType:', conofType)
 
-      let condition = `${conditionNext}${conofType}|${conof}${inputvarof}`
+      // let condition = `${conditionNext}${conofType}|${conof}${inputvarof}`
+      let condition = `${conditionNext}${conofType}|${inputvarof}`
 
       btnData.condition = condition
 
