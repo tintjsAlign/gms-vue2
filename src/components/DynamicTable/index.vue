@@ -249,13 +249,24 @@ export default {
     },
     handleMain(oriRow, oriBtn) {
       console.log('当前行数据:', oriRow)
+      // 用this.originTableData原始数据传递
+      let oriVal
+      if (oriRow.objectID) {
+        this.originTableData.find((item) => {
+          if (item.objectID === oriRow.objectID) {
+            oriVal = item
+          }
+        })
+      }
+      console.log('原始当前行数据', oriVal)
       console.log('btn参数:', oriBtn)
-      let row = this.$_.cloneDeep(oriRow)
+      let row = this.$_.cloneDeep(oriVal)
       let btn = this.$_.cloneDeep(oriBtn)
       // 处理btn参数,全部加入row中
-      for (let i in btn) {
-        row[i] = btn[i]
-      }
+      Object.assign(row, btn)
+      // for (let i in btn) {
+      //   row[i] = btn[i]
+      // }
       // btn.objectID = row.objectID
       let operationIDs = [1, 48, 49, 50]
 
@@ -266,14 +277,6 @@ export default {
         // 删除操作
         this.deleteRow(row)
       }
-    },
-    handleMoreCommand(command, row) {
-      console.log(command, row)
-      this.$notify({
-        title: '成功',
-        message: '点击了按钮' + command,
-        type: 'success'
-      })
     },
     queryAllData(btn) {
       let data = {
