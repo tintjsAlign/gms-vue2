@@ -3,9 +3,9 @@
     <div class="iframe-header">
       <el-page-header @back="handleClose" title="" :content="title"> </el-page-header>
     </div>
-    <div v-html="html"></div>
+    <!-- <div v-html="html"></div> -->
 
-    <!-- <iframe :srcdoc="html" width="100%" :height="iframeH" scrolling="no" frameborder="0" ></iframe> -->
+    <iframe :srcdoc="html" width="100%" :height="iframeH" scrolling="yes" frameborder="0"></iframe>
   </div>
 </template>
 
@@ -18,7 +18,8 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      html: ''
+      html: '',
+      iframeH: '600px'
     }
   },
   computed: {},
@@ -28,6 +29,10 @@ export default {
     this.routeRow = this.$route.query.row
     console.log('iframe this.routeRow:::', this.routeRow)
     this.show(this.routeRow)
+
+    let mainHeight = document.querySelector('.app-main').offsetHeight - 50
+    console.log('mainHeight高度:', mainHeight)
+    this.iframeH = mainHeight + 'px'
   },
   mounted() {},
   methods: {
@@ -63,7 +68,7 @@ export default {
         html = html.replace(/img {/g, '.main img{')
 
         this.html = html
-        // console.log('报表HTML html:', html)
+        console.log('报表HTML html:', html)
       })
     },
     handleClose() {
