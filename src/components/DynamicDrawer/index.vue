@@ -78,6 +78,20 @@
                   </el-form-item>
                 </el-col>
                 <!-- enum类型--枚举选择框 end ↑↑↑-->
+                <!-- form类型--多选穿梭框 ↓↓↓-->
+                <el-col span="12" v-else-if="item.otherProperties.textType === 'form'">
+                  <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
+                    <el-input
+                      v-model="form[item.valueFldName]"
+                      :ref="'transferInput' + '_' + item.valueFldName"
+                      autocomplete="off"
+                      @focus="toTransfer(item, form[item.valueFldName])"
+                      suffix-icon="el-icon-zoom-in"
+                      clearable
+                    ></el-input>
+                  </el-form-item>
+                </el-col>
+                <!-- form类型--多选穿梭框 end ↑↑↑-->
                 <!-- queryArea 类型--地区选择框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType === 'queryArea'">
                   <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
@@ -240,6 +254,20 @@
                   </el-form-item>
                 </el-col>
                 <!-- enum类型--枚举选择框 end ↑↑↑-->
+                <!-- form类型--多选穿梭框 ↓↓↓-->
+                <el-col span="12" v-else-if="item.otherProperties.textType === 'form'">
+                  <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
+                    <el-input
+                      v-model="form[item.valueFldName]"
+                      :ref="'transferInput' + '_' + item.valueFldName"
+                      autocomplete="off"
+                      @focus="toTransfer(item, form[item.valueFldName])"
+                      suffix-icon="el-icon-zoom-in"
+                      clearable
+                    ></el-input>
+                  </el-form-item>
+                </el-col>
+                <!-- form类型--多选穿梭框 end ↑↑↑-->
                 <!-- queryArea 类型--地区选择框 ↓↓↓-->
                 <el-col span="12" v-else-if="item.otherProperties.textType === 'queryArea'">
                   <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
@@ -315,16 +343,18 @@
     </el-drawer>
 
     <show-file-content ref="showFileContent"></show-file-content>
+    <dynamicTransfer ref="transfer" @reSelect="reSelect"></dynamicTransfer>
   </div>
 </template>
 
 <script>
 import { requestMain } from '@/api/main'
 import showFileContent from '@/components/ShowFileContent'
+import dynamicTransfer from '@/components/DynamicTransfer'
 
 export default {
   name: 'drawer-container',
-  components: { showFileContent },
+  components: { showFileContent, dynamicTransfer },
   props: {},
   data() {
     return {
@@ -346,7 +376,10 @@ export default {
       levelFlag: false,
       optionLoading: false,
       OPENREQMAINDATA: {},
-      REQMAINDATA: {}
+      REQMAINDATA: {},
+
+      oriData: '',
+      oriLevel: ''
     }
   },
   computed: {},
@@ -354,7 +387,12 @@ export default {
   created() {},
   mounted() {},
   methods: {
+    reSelect(value, name) {
+      this.form[name] = value
+    },
     show(data, level) {
+      this.oriData = data
+      this.oriLevel = level
       if (!data) {
         this.showContainer = false
         return
@@ -531,14 +569,23 @@ export default {
           this.drawerData.forEach((item) => {
             let type = item.otherProperties.textType
             if (type.match(/enum/gi)) {
+              console.log('枚举类型:',item)
               // 枚举类型特殊处理
               form[item.valueFldName] = item.otherProperties.fldRemark
-              form[item.valueFldName + '_enum'] = item.otherProperties.fldValue
+              form[item.valueFldName + '_enum'] = item.otherProperties.fldValue ? item.otherProperties.fldValue : this.resMap[item.valueFldName]
             } else if (type.match(/date/gi)) {
               // 日期类型特殊处理(去掉-)
               let dateValue = this.resMap[item.valueFldName].replace(/-/g, '')
               form[item.valueFldName] = this.resMap[item.valueFldName]
               form[item.valueFldName + '_enum'] = dateValue
+            } else if (type.match(/form/gi)) {
+              let value = this.resMap[item.valueFldName]
+              if (value.indexOf('|') > -1) {
+                value = value.split('|')[0]
+                form[item.valueFldName] = value
+              } else {
+                form[item.valueFldName] = this.resMap[item.valueFldName]
+              }
             } else {
               // 其它默认值,与resMap对应
               form[item.valueFldName] = this.resMap[item.valueFldName]
@@ -560,6 +607,14 @@ export default {
                 let dateValue = item.otherProperties.defaultValue.replace(/-/g, '')
                 form[item.valueFldName] = item.otherProperties.defaultValue
                 form[item.valueFldName + '_enum'] = dateValue
+              } else if (type.match(/form/gi)) {
+                let value = this.resMap[item.valueFldName]
+                if (value.indexOf('|') > -1) {
+                  value = value.split('|')[0]
+                  form[item.valueFldName] = value
+                } else {
+                  form[item.valueFldName] = this.resMap[item.valueFldName]
+                }
               } else {
                 // 其它默认值
                 form[item.valueFldName] = item.otherProperties.defaultValue
@@ -696,6 +751,12 @@ export default {
       // 格式化date
       let dateValue = date.replace(/-/g, '')
       this.form[item.valueFldName + '_enum'] = dateValue
+    },
+    toTransfer(item, value) {
+      this.$refs.transfer.show(this.oriData, item, value)
+      let name = 'transferInput' + '_' + item.valueFldName
+      console.log('this.$refs.transferInput', this.$refs[name])
+      this.$refs[name][0].blur()
     },
     async submitForm() {
       this.$refs.dynamicTableRef.validate((valid) => {

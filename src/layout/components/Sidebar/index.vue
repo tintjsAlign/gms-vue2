@@ -13,12 +13,7 @@
         mode="vertical"
         @open="handleOpen"
       >
-        <sidebar-item
-          v-for="(route, index) in permission_routes"
-          :key="index"
-          :item="route"
-          :base-path="route.path"
-        />
+        <sidebar-item v-for="(route, index) in permission_routes" :key="index" :item="route" :base-path="route.path" />
       </el-menu>
     </el-scrollbar>
   </div>
@@ -97,10 +92,9 @@ export default {
           let componentOf
           if (item.itemName === '登记被测系统') {
             componentOf = 'drawer'
-          }else if (item.itemName === '编辑本视图') {
+          } else if (item.itemName === '编辑本视图') {
             return
-          } 
-          else {
+          } else {
             if (item.resId === 990) {
               componentOf = ''
             } else {
@@ -121,7 +115,25 @@ export default {
               operationID: item.operationID,
               resId: item.resId,
               otherProperties: item.otherProperties
-            }
+            },
+            children: [
+              {
+                // path: `tree/:id(\\d+)`,
+                path: `tree`,
+                component: 'tree',
+                name: 'tree',
+                meta: { activeMenu: `/${route.itemName}_${item.itemName}` },
+                hidden: true
+              },
+              {
+                // path: `tree/:id(\\d+)`,
+                path: `iframe`,
+                component: 'iframe',
+                name: 'iframe',
+                meta: { activeMenu: `/${route.itemName}_${item.itemName}` },
+                hidden: true
+              }
+            ]
           })
         })
         // console.log('查子路由menuRouterLists:', menuRouterLists)
@@ -134,13 +146,11 @@ export default {
           // }
           if (item.path === key) {
             item.children = menuRouterLists
+            console.log('menuRouterLists children:', item.children)
           }
         })
         // console.log('点击侧边栏 新路由表:', this.routesArray)
-        this.$store.commit(
-          'user/SET_ROUTERS',
-          JSON.parse(JSON.stringify(this.routesArray))
-        )
+        this.$store.commit('user/SET_ROUTERS', JSON.parse(JSON.stringify(this.routesArray)))
 
         // 更新路由表
         this.$store.dispatch('user/changeRoles', {

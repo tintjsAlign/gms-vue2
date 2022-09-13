@@ -49,7 +49,7 @@ const actions = {
     const { pkbase64, modulus, exponent } = rsaParams
     return new Promise((resolve, reject) => {
       let encryptionPsw = encryption(pkbase64, modulus, exponent, password)
-      console.log('encryptionPsw:', encryptionPsw)
+      // console.log('encryptionPsw:', encryptionPsw)
       let data = {
         userID: username.trim(),
         password: encryptionPsw,
