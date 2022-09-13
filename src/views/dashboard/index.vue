@@ -28,7 +28,7 @@ export default {
     this.routeParams = this.$route.meta
     console.log('routeParams:', this.routeParams)
     if (this.routeParams.title === '测评准备') {
-      this.imageSrc = require('@/assets/img/ZPZB.png')
+      this.imageSrc = require('@/assets/img/CPZB.png')
     }else if (this.routeParams.title === '方案编制') {
       this.imageSrc = require('@/assets/img/FABZ.png')
     }else if (this.routeParams.title === '现场测评') {
