@@ -3,7 +3,7 @@
     <!-- <switch-roles @change="handleRolesChange" /> -->
     <!-- <h1>{{ routeParams.title }}</h1> -->
     <div class="imgBG">
-      <el-image style="width: 100%" :src="imageSrc" fit="fit"></el-image>
+      <el-image style="width: 100%; height: 100%" :src="imageSrc" fit="contain"></el-image>
     </div>
   </div>
 </template>
@@ -20,7 +20,7 @@ export default {
   data() {
     return {
       key: 1, // 为了能每次切换权限的时候重新初始化指令
-      imageSrc: '' 
+      imageSrc: ''
     }
   },
   created() {
@@ -29,11 +29,11 @@ export default {
     console.log('routeParams:', this.routeParams)
     if (this.routeParams.title === '测评准备') {
       this.imageSrc = require('@/assets/img/CPZB.png')
-    }else if (this.routeParams.title === '方案编制') {
+    } else if (this.routeParams.title === '方案编制') {
       this.imageSrc = require('@/assets/img/FABZ.png')
-    }else if (this.routeParams.title === '现场测评') {
+    } else if (this.routeParams.title === '现场测评') {
       this.imageSrc = require('@/assets/img/XCCP.png')
-    }else if (this.routeParams.title === '结果分析') {
+    } else if (this.routeParams.title === '结果分析') {
       this.imageSrc = require('@/assets/img/JGFX.png')
     }
   },
@@ -58,8 +58,8 @@ export default {
 }
 .imgBG {
   width: 70%;
-  // height: 100%;
-  
+  height: 90vh;
+
   // margin-top: 50px;
 }
 </style>

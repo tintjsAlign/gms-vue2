@@ -3,35 +3,38 @@
     <div class="home-text">
       <h3 class="title">密评工具平台</h3>
     </div>
-
-    <el-row type="flex" justify="center">
-      <el-col :span="5">
-        <div class="grid-content bg-purple" @click="toDashboard('测评准备', 'router_ready')">
-          <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/pczb.png')" fit="fit"></el-image>
-          <div class="titleName">测评准备</div>
-        </div>
-      </el-col>
-      <el-col :span="5">
-        <div class="grid-content bg-purple" @click="toDashboard('方案编制', 'router_plan')">
-          <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/fabz.png')" fit="fit"></el-image>
-          <div class="titleName">方案编制</div>
-        </div>
-      </el-col>
-    </el-row>
-    <el-row type="flex" justify="center">
-      <el-col :span="5">
-        <div class="grid-content bg-purple" @click="toDashboard('现场测评', 'router_scene')">
-          <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/xcpc.png')" fit="fit"></el-image>
-          <div class="titleName">现场测评</div>
-        </div>
-      </el-col>
-      <el-col :span="5">
-        <div class="grid-content bg-purple" @click="toDashboard('结果分析', 'router_result')">
-          <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/pcjg.png')" fit="fit"></el-image>
-          <div class="titleName">结果分析</div>
-        </div>
-      </el-col>
-    </el-row>
+    <div class="row-container">
+      <div>
+        <el-row type="flex" justify="center">
+          <el-col :span="5" v-if="showCPZB">
+            <div class="grid-content bg-purple" @click="toDashboard('测评准备', 'router_ready')">
+              <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/pczb.png')" fit="fit"></el-image>
+              <div class="titleName">测评准备</div>
+            </div>
+          </el-col>
+          <el-col :span="5" v-if="showFABZ">
+            <div class="grid-content bg-purple" @click="toDashboard('方案编制', 'router_plan')">
+              <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/fabz.png')" fit="fit"></el-image>
+              <div class="titleName">方案编制</div>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row type="flex" justify="center">
+          <el-col :span="5" v-if="showXCCP">
+            <div class="grid-content bg-purple" @click="toDashboard('现场测评', 'router_scene')">
+              <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/xcpc.png')" fit="fit"></el-image>
+              <div class="titleName">现场测评</div>
+            </div>
+          </el-col>
+          <el-col :span="5" v-if="showJGFX">
+            <div class="grid-content bg-purple" @click="toDashboard('结果分析', 'router_result')">
+              <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/pcjg.png')" fit="fit"></el-image>
+              <div class="titleName">结果分析</div>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -43,7 +46,11 @@ export default {
   name: 'home',
   data() {
     return {
-      menuTree: []
+      menuTree: [],
+      showCPZB: false,
+      showFABZ: false,
+      showXCCP: false,
+      showJGFX: false
     }
   },
   computed: {
@@ -59,7 +66,7 @@ export default {
         return (() => {
           if (this.$refs.homeContainer) {
             this.detectZoom()
-          }else {
+          } else {
             return false
           }
         })()
@@ -105,6 +112,19 @@ export default {
       getMenuLv1(data).then((res) => {
         console.log('getMenuLv1:', res)
         this.menuLv1 = res
+        // let menuGrpNameList = ['测评准备', '方案编制', '现场测评', '结果分析']
+        this.menuLv1.forEach((item) => {
+          // if (menuGrpNameList.includes(item.menuGrpName)) {}
+          if (item.menuGrpName === '测评准备') {
+            this.showCPZB = true
+          } else if (item.menuGrpName === '方案编制') {
+            this.showFABZ = true
+          } else if (item.menuGrpName === '现场测评') {
+            this.showXCCP = true
+          } else if (item.menuGrpName === '结果分析') {
+            this.showJGFX = true
+          }
+        })
       })
     },
     toDashboard(name, role) {
@@ -184,6 +204,7 @@ export default {
           redirect: '/dashboard',
           children: [
             {
+              breadcrumb: false,
               path: 'dashboard',
               name: name,
               component: 'dashboard',
@@ -243,6 +264,7 @@ export default {
               path: `/${item.itemName}`,
               component: 'layout',
               alwaysShow: true,
+              redirect: 'noRedirect',
               meta: {
                 title: item.itemName,
                 icon: this.getIcon(item.itemName),
@@ -283,7 +305,7 @@ export default {
                 // path: `tree/:id(\\d+)`,
                 path: `tree`,
                 component: 'tree',
-                name: item.name + '_tree',
+                name: 'tree',
                 meta: { activeMenu: item.path },
                 hidden: true
               },
@@ -291,7 +313,7 @@ export default {
                 // path: `tree/:id(\\d+)`,
                 path: `iframe`,
                 component: 'iframe',
-                name: item.name + '_iframe',
+                name: 'iframe',
                 meta: { activeMenu: item.path },
                 hidden: true
               }
@@ -344,17 +366,27 @@ export default {
     font-size: 30px;
     line-height: 46px;
     color: #fff;
-    position: relative;
-    top: 50px;
-    bottom: 30px;
+    /* position: relative; */
+    /* top: 50px; */
+    /* bottom: 30px; */
     text-align: center;
-    margin-bottom: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 10%;
   }
 }
+.row-container {
+  height: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .el-row {
-  margin-top: 50px;
+  // margin-top: 50px;
   // 上下左右居中
-
+  // height: 50%;
+  display: flex;
   justify-content: center;
   align-items: center;
 
