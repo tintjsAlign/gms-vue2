@@ -106,7 +106,7 @@ export default {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.loading = true
-          console.log('rsaParams:', this.rsaParams)
+          // console.log('rsaParams:', this.rsaParams)
           this.$store
             .dispatch('user/login', { userInfo: this.loginForm, rsaParams: this.rsaParams })
             .then(() => {

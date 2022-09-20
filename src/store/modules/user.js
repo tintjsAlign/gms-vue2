@@ -2,6 +2,7 @@ import { login, loginOfTass, logout, getInfo } from '@/api/user'
 import { loginByUsername } from '@/api/main'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
+import { MessageBox, Message, Loading } from 'element-ui'
 
 import { encryption } from '@/utils/encryption'
 
@@ -60,6 +61,11 @@ const actions = {
       }
       loginByUsername(data)
         .then((response) => {
+          if (response.错误原因) {
+            Message.error(response.错误原因)
+            reject(response.错误原因)
+            return
+          }
           console.log(response)
           window.localStorage.setItem('SYSTEMKEYNAME', response.SYSTEMKEYNAME)
           window.localStorage.setItem('SYSTEMTELLERNO', response.SYSTEMTELLERNO)
