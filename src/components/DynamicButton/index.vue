@@ -289,12 +289,22 @@ export default {
       })
     },
     openTreeManage(row) {
+      let fatherPath
+      if (this.$route.path && this.$route.path.indexOf('_') > -1) {
+        fatherPath = ''
+        this.fatherPath = this.$route.path
+      } else {
+        fatherPath = this.$route.path
+      }
+      console.log('openTreeManage:', this.$route)
       // 打开树管理界面
       this.$router.push({
-        path: `/tree`,
+        // path: `/tree`,
+        path: `${fatherPath}/tree`,
         query: {
           row: row
-        }
+        },
+        meta: { activeMenu: `${this.fatherPath}` }
       })
       // this.$refs.treeManage.show(row)
     },

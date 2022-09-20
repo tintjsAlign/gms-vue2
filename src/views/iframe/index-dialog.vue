@@ -21,9 +21,8 @@
       :before-close="handleClose"
     >
       <!-- <div style="height:50px"></div> -->
-      <div v-html="html"></div>
-
-      <!-- <iframe :srcdoc="html" width="100%" :height="iframeH" scrolling="no" frameborder="0" ></iframe> -->
+      <!-- <div v-html="html"></div> -->
+      <iframe :srcdoc="html" width="100%" :height="iframeH" scrolling="yes" frameborder="0"></iframe>
     </el-dialog>
   </div>
 </template>
@@ -37,15 +36,16 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      html: ''
+      html: '',
+      iframeH: '600px'
     }
   },
   computed: {},
   watch: {},
   created() {
-    // // this.init()
-    // let mainHeight = document.querySelector('.app-main').offsetHeight
-    // this.iframeH = mainHeight - 50
+    let mainHeight = document.querySelector('.app-main').offsetHeight - 150
+    console.log('mainHeight高度:', mainHeight)
+    this.iframeH = mainHeight + 'px'
   },
   mounted() {},
   methods: {
@@ -60,7 +60,7 @@ export default {
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
       }
       Object.assign(data, row)
-      requestMain(data).then((res) => {
+      requestMain(data, '.el-dialog__body').then((res) => {
         // console.log('报表HTML res:', res)
         // 找到res中的包含'<a href="main?'的全部字符串，并且替换
         this.requestTarget = process.env.VUE_APP_BASE_API

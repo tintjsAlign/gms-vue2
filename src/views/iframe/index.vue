@@ -68,7 +68,7 @@ export default {
         html = html.replace(/img {/g, '.main img{')
 
         this.html = html
-        console.log('报表HTML html:', html)
+        // console.log('报表HTML html:', html)
       })
     },
     handleClose() {

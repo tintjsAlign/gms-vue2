@@ -125,7 +125,7 @@ export default {
       //   }
       // ]
 
-      requestMain(requestData).then((res) => {
+      requestMain(requestData,'unshow').then((res) => {
         console.log('穿梭框:', typeof res)
         if (typeof res !== 'string') {
           console.log('穿梭框:', res.dataList)

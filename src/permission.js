@@ -35,6 +35,11 @@ router.beforeEach(async (to, from, next) => {
       // console.log('store.getters.roles::', store.getters.roles)
       const hasRoles = store.getters.roles && store.getters.roles.length > 0
       if (hasRoles) {
+        // 
+        // if (to.path === '/tree') {
+        //   console.log('go tree:',to,from)
+        //   next({ ...to, activeMenu: `${from.path}` })
+        // }
         next()
       } else {
         try {

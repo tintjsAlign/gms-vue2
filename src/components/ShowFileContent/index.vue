@@ -36,6 +36,7 @@ export default {
       title: '',
       drawer: false,
       alertType: '',
+      isTree:''
     }
   },
   computed: {},
@@ -43,7 +44,8 @@ export default {
   created() {},
   mounted() {},
   methods: {
-    show(res, title,isTree) {
+    show(res, title, isTree) {
+      console.log('isTree:', isTree)
       if (isTree) {
         this.isTree = isTree
       }
@@ -70,7 +72,7 @@ export default {
       this.drawer = true
     },
     handleClose(done) {
-      if (this.isTree) {
+      if (this.isTree === 'tree') {
         done()
       }else{
         this.reload()

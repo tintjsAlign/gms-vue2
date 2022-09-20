@@ -117,7 +117,7 @@ export default {
           btn[name] = newInputvarof
           btn.condition = btn.condition + '|' + endCondition
         }
-        this.$emit('openDrawer', btn)
+        this.$emit('openDrawer', btn, this.node)
       } else if (btn.operationID === 51) {
         // 查询所有数据,重新渲染表格
         // this.$emit('queryAllData', btn)
@@ -135,6 +135,7 @@ export default {
       } else if (btn.operationID === 204) {
         // 上传文件
         this.$emit('uploadFile', btn)
+        // this.$emit('uploadFile', btnOri)
       } else if (btn.operationID === 16) {
         // 管理树界面
         this.openTreeManage(btn)
@@ -145,7 +146,7 @@ export default {
           // 判断urlParam字符串中是否有=append.
           if (btn.otherProperties.urlParam.indexOf('=append.') > -1) {
             // 若有, 打开抽屉-填表单
-            this.$emit('openDrawer', btn)
+            this.$emit('openDrawer', btn, this.node)
             return
           }
         }
@@ -177,6 +178,17 @@ export default {
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
       }
       Object.assign(data, row)
+
+      if (data.priKey) {
+        let priKey = data.priKey.split('|').filter((i) => i !== '')
+        priKey.forEach((item) => {
+          let key = item.split('=')[0]
+          let value = item.split('=')[1]
+          if (data[key]) {
+            data[key] = value
+          }
+        })
+      }
       requestMain(data).then((res) => {
         console.log('按钮通用请求 res:', res)
         if (typeof res === 'string' && res === 'statusCode:200') {
@@ -224,7 +236,9 @@ export default {
             requestMain(data).then((res) => {
               console.log('展示文件 res:', res)
               // 弹出dialog层
-              this.$emit('fileContentShow', res, data.itemName)
+              let name = data.itemName
+              let type = 'tree'
+              this.$emit('fileContentShow', res, name, type)
             })
           }
         }

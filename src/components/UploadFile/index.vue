@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { requestMain } from '@/api/main'
+// import { requestMain } from '@/api/main'
 import qs from 'qs' //引入qs模块，用于序列化post请求参数
 export default {
   name: '',
@@ -55,18 +55,70 @@ export default {
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
       }
-      Object.assign(data, row)
+      // Object.assign(data, row)
+
+      console.log('uploadFile row:', row)
+      let conditionOri,
+        conditionOri2 = ''
+      let conditionObj = {}
+      if (row.condition.indexOf('|')) {
+        conditionOri = row.condition.split('|')[0]
+        conditionOri2 = row.condition.split('fileName=upload.file|')[1]
+
+        let conditionArr2 = conditionOri2.split('|').filter((i) => i !== '')
+
+        conditionArr2.forEach((i) => {
+          if (i.indexOf('=') > -1) {
+            let key = i.split('=')[0]
+            let value = i.split('=')[1]
+            conditionObj[key] = value
+          }
+        })
+
+        console.log('uploadFile conditionArr2:', conditionArr2)
+        console.log('uploadFile conditionObj:', conditionObj)
+      } else {
+        conditionOri = row.condition
+      }
+      let conditionArr = conditionOri.split(',').filter((i) => i !== '')
+      let condition = ''
+      conditionArr.forEach((i) => {
+        if (i.indexOf('=this.') > -1) {
+          let key = i.split('=this.')[1]
+          let key1 = i.split('=this.')[0]
+          if (conditionObj[key]) {
+            condition += key1 + '=' + conditionObj[key] + '|'
+          } else {
+            condition += key1 + '=' + row[key] + '|'
+          }
+        } else {
+          condition += i + '|'
+        }
+      })
+
+      console.log('uploadFile condition:', condition)
 
       data.type = 'file'
-      data.operationID2 = data.operationID
+      data.operationID2 = row.operationID
       delete data.operationID
       data.operationID = 1205
       data.fileName = this.fileName
-      // data.upfile = this.upfile
+      data.upfile = this.upfile
+
+      data.tblAlias = row.tblAlias
+      data.condition = condition
+      data.resId = row.resId
       // this.uploadData = data
       // 序列化上传数据
       // qs.stringify(object, [options]) 字符串化时，默认情况下，qs 对输出进行 URI 编码，以避免某些特殊字符对某些接口的调用造成请求失败。
       //encode: false 禁用encode编码
+      // 剔除掉config.data中的值是对象的字段
+      for (const key in data) {
+        if (typeof data[key] === 'object' || typeof data[key] === 'function') {
+          delete data[key]
+        }
+      }
+      console.log('uploadFile data: ', data)
       this.uploadData = qs.stringify(data)
       console.log('uploadData:', this.uploadData)
       this.uploadURL = this.uploadURL + '?' + this.uploadData
@@ -110,8 +162,8 @@ export default {
       formData.append('file', file.raw)
       //文件名
       formData.append('fileName', file.name)
-      console.log('formData:', formData.get('file'))
       this.upfile = formData
+      console.log('formData:', formData.get('file'))
 
       this.uploadFile(this.row)
     }

@@ -11,7 +11,7 @@
       destroy-on-close
       :before-close="handleClose"
     > -->
-    <split-pane split="vertical" @resize="resize" style="height: 100vh" :min-percent="20" :max-percent="50" :default-percent="30">
+    <split-pane split="vertical" @resize="resize" :min-percent="20" :max-percent="50" :default-percent="30">
       <template slot="paneL">
         <div class="left-container">
           <el-tree
@@ -20,6 +20,7 @@
             :props="defaultProps"
             lazy
             :load="loadNode"
+            :default-expanded-keys="expandedKeys"
             highlight-current
             node-key="id"
             @node-click="nodeClick"
@@ -61,7 +62,7 @@
           </VueContextMenu> -->
         </div>
       </template>
-      <template slot="paneR" style="height: 100%">
+      <template slot="paneR">
         <!-- <v-contextmenu ref="contextmenu">
           <v-contextmenu-item v-for="(item,index) in recordMenuGrp" :key="index">{{item.itemName}}</v-contextmenu-item>
           <v-contextmenu-submenu title="菜单3">
@@ -71,7 +72,13 @@
         </v-contextmenu>
 
         <div v-contextmenu:contextmenu>右键点击此区域</div> -->
-        <dynamic-drawer ref="drawer" @refresh="refresh" @getDrawerForm="getDrawerForm"></dynamic-drawer>
+        <dynamic-drawer ref="drawer" @refresh="refresh" @refreshNode="refreshNode" @getDrawerForm="getDrawerForm"></dynamic-drawer>
+        <dynamic-drawer-parallel
+          ref="drawerParallel"
+          @refresh="refresh"
+          @refreshNode="refreshNode"
+          @getDrawerForm="getDrawerForm"
+        ></dynamic-drawer-parallel>
       </template>
     </split-pane>
     <!-- </el-dialog> -->
@@ -90,6 +97,7 @@ import splitPane from 'vue-splitpane'
 import { requestMain, getTreeMenu, getRecordMenuGrp, getMenuLvAfter } from '@/api/main'
 
 import dynamicDrawer from '@/components/DynamicDrawer/index.vue'
+import dynamicDrawerParallel from '@/components/DynamicDrawer/index-parallel.vue'
 import RecursionContextmenu from '@/components/RecursionContextmenu/index.vue'
 import showFileContent from '@/components/ShowFileContent'
 import uploadFile from '@/components/UploadFile'
@@ -98,7 +106,17 @@ import drawerMain from '@/views/main/drawer/index.vue'
 
 export default {
   name: 'treeContainer',
-  components: { VueContextMenu, splitPane, dynamicDrawer, RecursionContextmenu, showFileContent, uploadFile, appIframe, drawerMain },
+  components: {
+    VueContextMenu,
+    splitPane,
+    dynamicDrawer,
+    dynamicDrawerParallel,
+    RecursionContextmenu,
+    showFileContent,
+    uploadFile,
+    appIframe,
+    drawerMain
+  },
   props: {},
   data() {
     return {
@@ -112,7 +130,9 @@ export default {
         isLeaf: 'leaf'
       },
       options: [],
-      recordMenuGrp: []
+      recordMenuGrp: [],
+      expandedKeys: [],
+      fileFlag: false
     }
   },
   computed: {
@@ -163,9 +183,18 @@ export default {
           event.target.click()
         })
       })
+
+      let mainHeight = document.querySelector('.app-main').offsetHeight - 100
+      console.log('mainHeight高度:', mainHeight)
+      // console.log(this.$refs.treeContainer)
+      // this.$refs.treeContainer.$el.clientHeight = mainHeight + 'px'
+      document.querySelector('.splitter-pane-resizer.vertical').style.height = mainHeight + 'px'
     })
   },
   methods: {
+    resize() {
+      console.log('resize')
+    },
     goBack() {
       this.$router.go(-1)
     },
@@ -231,7 +260,21 @@ export default {
           i[this.conofName] = this.conof
           i.fatherCondition = { ...res, node, resolve }
         })
-        this.treeData = list
+        if (res.tableName === 'fileLibrary') {
+          this.fileFlag = true
+          let treeList = [
+            {
+              label: res.display,
+              leaf: false,
+              tableName: res.tableName,
+              children: list
+            }
+          ]
+          this.expandedKeys.push(1)
+          this.treeData = treeList
+        } else {
+          this.treeData = list
+        }
       } else {
         list = [
           {
@@ -249,15 +292,21 @@ export default {
     //加载节点的子节点集合
     async loadchildNode(node, resolve) {
       console.log('超过二级的', node)
+      if (node.data.children) return resolve(node.data.children)
 
       // 文件格式处理
-      if (node.data.fatherCondition.tableName === 'fileLibrary') {
+      let tableName = ['fileLibrary', 'fileBakLibrary']
+      if (tableName.includes(node.data.tableName) || tableName.includes(node.data.fatherCondition.tableName)) {
+        // if (node.data.fatherCondition.tableName === 'fileLibrary') {
         // 处理condition
         let condition1 = this.routeRow.condition
-        let conditionArr = condition1.split(',')
+        let conditionArr = condition1.split(',').filter((i) => i !== '')
+        console.log('文档 condition1:', condition1)
+        console.log('文档 conditionArr:', conditionArr)
         let condition2 = []
-        let endCondition,
-          topCondition = ''
+        let endCondition = ''
+        let topCondition = ''
+        let strEndCondition = ''
         conditionArr.forEach((i) => {
           if (i.indexOf('=this.') > -1) {
             let i0 = i.split('=this.')[0]
@@ -271,11 +320,33 @@ export default {
           //   i.split('=')[0] = i.split('=')[1]
           // }
           else {
-            // CHILDCMDI需要动态获取,不拼接
-            if (i.indexOf('CHILDCMDI') === -1) {
-              // 其它的直接用'|'拼接成字符串
-              endCondition += '|' + i
+            if (i.indexOf('resID') > -1) {
+              this.fileResID = i.split('=')[1]
             }
+            // CHILDCMDID需要动态获取,不拼接
+            if (i.indexOf('CHILDCMDID') === -1) {
+              // 其它的直接用'|'拼接成字符串
+              if (node.data.childNum === 0) {
+                endCondition += '|' + i
+              } else {
+                if (i.indexOf('INPUTVAROFfileBakLibrary=') > -1) {
+                  let str = i.split('INPUTVAROFfileBakLibrary=')[1]
+                  let strArr = str.split(';').filter((i) => i !== '')
+                  strArr.forEach((s) => {
+                    if (s.indexOf('=') === -1) {
+                      let value = node.data[s] ? node.data[s] : node.data.fatherCondition[s]
+                      strEndCondition += s + '=' + value + ';'
+                    } else {
+                      strEndCondition += s + ';'
+                    }
+                  })
+                  strEndCondition = '|INPUTVAROFfileBakLibrary=' + strEndCondition
+                } else {
+                  endCondition += '|' + i
+                }
+              }
+            }
+
             if (i.indexOf('tableList') > -1 || i.indexOf('displayRecInfo') > -1) {
               topCondition += ',' + i
             }
@@ -288,7 +359,10 @@ export default {
             condition3 += '|' + `${j}=${i[j]}`
           }
         })
-        endCondition = condition3 + endCondition
+        endCondition = condition3 + endCondition + strEndCondition
+
+        console.log('文档 condition3:', condition3)
+        console.log('文档 endCondition:', endCondition)
 
         let CHILDCMDID
         if (node.data.childNum === 0) {
@@ -296,19 +370,36 @@ export default {
         } else {
           CHILDCMDID = 1
         }
-        topCondition = topCondition + ',' + `CHILDCMDI=${CHILDCMDID}`
-        let fileCondition = `${topCondition}${endCondition}`
+        let nodeName = ''
+        if (node.data.tableName) {
+          nodeName = node.data.tableName
+        } else {
+          nodeName = node.data.fatherCondition.tableName
+        }
+        topCondition = topCondition + ',' + `NODEID=${nodeName},CHILDCMDID=${CHILDCMDID}`
+        console.log('文档 topCondition:', topCondition)
+        let priKey = node.data.priKey ? node.data.priKey : node.data.fatherCondition.priKey
+        let fileCondition = `${topCondition}${endCondition}|${priKey}`
         console.log('fileCondition:', fileCondition)
         // 文件处理
+        // let resId = ''
+        // if (this.fileResID) {
+        //   resId = this.fileResID
+        // } else {
+        //   if (node.data.resID) {resId = node.data.resID}
+        //   if (node.data.fatherCondition.resID) {resId = node.data.fatherCondition.resID}
+        // }
         let fileData = {
           SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
           SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
           objectID: node.data.objectID,
           condition: fileCondition,
-          resId: node.data.resID,
           operationID: this.routeRow.operationID,
-          docFileName: node.data.docFileName
+          docFileName: node.data.docFileName,
+          // resId: resId
+          resId: 3002
         }
+        console.log('文档 fileData:', fileData)
         const res = await getTreeMenu(fileData, 'unshow')
         console.log('超过二级的fileLibrary:', res)
         let list = res.records
@@ -322,10 +413,11 @@ export default {
           this.treeData = list
         } else {
           list = [
-            {
-              label: res.display ? res.display : '',
-              leaf: true // 不走第二级节点
-            }
+            // {
+            //   // label: res.display ? res.display : '',
+            //   label: '',
+            //   leaf: true // 不走第二级节点
+            // }
           ]
 
           this.treeData = list
@@ -634,18 +726,21 @@ export default {
       console.log('nodeClick data:', data)
       let nodeData = this.$_.cloneDeep(data)
       if (nodeData.childNum === 0) {
-        if (data.fatherCondition.tableName === 'fileLibrary') {
+        let tableName = ['fileLibrary', 'fileBakLibrary']
+        if (tableName.includes(data.tableName) || tableName.includes(data.fatherCondition.tableName)) {
           delete nodeData.fatherCondition
+
           let reqData = {
             // ...this.routeRowNO,
             ...nodeData,
             SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
             SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
             operationID: 50,
-            tblAlias: data.tblAlias || '文件档案管理界面',
-            condition: `docFileName=${data.docFileName}`
+            tblAlias: data.docFileName ? '文件档案管理界面' : '文件档案备份管理界面',
+            condition: data.docFileName ? `docFileName=${data.docFileName}` : data.priKey
           }
-          this.$refs.drawer.show(reqData, 'parallel')
+          // this.$refs.drawer.show(reqData, 'parallel')
+          this.$refs.drawerParallel.show(reqData, 'parallel')
         } else {
           delete nodeData.fatherCondition
           delete nodeData.childNum
@@ -661,10 +756,14 @@ export default {
             condition: data.priKey,
             operationID: 50
           }
-          this.$refs.drawer.show(reqData, 'parallel')
+
+          console.log('单击reqData:', reqData)
+          // this.$refs.drawer.show(reqData, 'parallel')
+          this.$refs.drawerParallel.show(reqData, 'parallel')
         }
       } else {
-        this.$refs.drawer.show()
+        // this.$refs.drawer.show()
+        this.$refs.drawerParallel.show()
       }
     },
     // getDrawerForm(data) {
@@ -689,15 +788,19 @@ export default {
       if (nodeData.priKey) {
         priKeyOriginal = nodeData.priKey
       } else {
-        priKeyOriginal = nodeData.fatherCondition.priKey
-      }
-      let prikey = priKeyOriginal.split('|').filter((i) => i !== '')
-      prikey.forEach((i) => {
-        if (i.indexOf('=') !== -1) {
-          prikeyNew[i.split('=')[0]] = i.split('=')[1]
+        if (nodeData.fatherCondition && nodeData.fatherCondition.priKey) {
+          priKeyOriginal = nodeData.fatherCondition.priKey
         }
-      })
-      console.log('prikeyNew:', prikeyNew)
+      }
+      if (priKeyOriginal.length > 0) {
+        let prikey = priKeyOriginal.split('|').filter((i) => i !== '')
+        prikey.forEach((i) => {
+          if (i.indexOf('=') !== -1) {
+            prikeyNew[i.split('=')[0]] = i.split('=')[1]
+          }
+        })
+        console.log('prikeyNew:', prikeyNew)
+      }
 
       for (let key in nodeData.fatherCondition) {
         if (nodeData.fatherCondition[key] && !nodeData[key]) {
@@ -721,20 +824,30 @@ export default {
 
       this.topY = event.pageY
       this.leftX = event.pageX
+
       let reqData = {
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
         SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
-        tblAlias: data.tblAlias,
         meumType: 'form'
       }
       if (nodeData.childNum === 0) {
         delete reqData.meumType
       }
-      if (nodeData.VIEWDEF) {
-        reqData.tblAlias = nodeData.VIEWDEF
+      let tblAlias
+      if (this.fileFlag) {
+        tblAlias = '文件档案管理界面'
+        reqData.tblAlias = tblAlias
+      } else {
+        tblAlias = data.tblAlias
+        reqData.tblAlias = tblAlias
+        if (nodeData.VIEWDEF) {
+          reqData.tblAlias = nodeData.VIEWDEF
+        }
       }
+
       // Object.assign(nodeData, this.drawerForm)
       let res = await getRecordMenuGrp(reqData)
+      console.log('getRecordMenuGrp:', res)
       // resId=990 的,加上children
       res.forEach((i) => {
         if (i.resId === 990) {
@@ -771,8 +884,8 @@ export default {
 
       // this.refreshTree()
     },
-    openDrawer(data) {
-      this.$refs.drawer.show(data, 'float')
+    openDrawer(data, node) {
+      this.$refs.drawer.show(data, 'float', node)
     },
     openReport(data) {
       this.$refs.iframe.show(data)
@@ -781,9 +894,9 @@ export default {
       console.log('queryAllData data:', data)
       this.$refs.appMain.show(data)
     },
-    fileContentShow(res, name) {
+    fileContentShow(res, name, type) {
       console.log('fileContentShow res:', res)
-      this.$refs.showFileContent.show(res, name, 'tree')
+      this.$refs.showFileContent.show(res, name, type)
     },
     // 上传文件
     uploadFile(row) {
@@ -798,8 +911,9 @@ export default {
 .tree-container {
   padding: 20px;
   width: 100%;
+  // height: 100%;
   // 不能滚动
-  overflow: hidden;
+  // overflow: hidden;
 }
 ::v-deep .el-page-header {
   margin-bottom: 20px;
@@ -862,6 +976,7 @@ a {
 }
 .left-container {
   // background-color: #f38181;
+  width: 100%;
   height: 100%;
 }
 .right-container {
