@@ -3,6 +3,28 @@
     <div class="home-text">
       <h3 class="title">密评工具平台</h3>
     </div>
+    <div class="avatar">
+      <el-dropdown>
+        <el-avatar icon="el-icon-user-solid"></el-avatar>
+        <el-dropdown-menu slot="dropdown">
+          <!-- <el-dropdown-item>
+            <div class="">
+              <div class="slotAvatar"></div>
+              <div class="userName">
+                <p>{{ userName }}</p>
+                <p>{{ userRole }}</p>
+              </div>
+            </div>
+          </el-dropdown-item> -->
+          <el-dropdown-item @click.native="refresh">
+            <span><i class="el-icon-refresh-right"></i> 刷新配置</span>
+          </el-dropdown-item>
+          <el-dropdown-item divided @click.native="logout">
+            <span><i class="el-icon-switch-button"></i> 退出登录</span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+    </div>
     <div class="row-container">
       <div>
         <el-row type="flex" justify="center">
@@ -40,7 +62,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getMenuLv1, getMenuLv2 } from '@/api/main'
+import { requestMain, getMenuLv1, getMenuLv2 } from '@/api/main'
 
 export default {
   name: 'home',
@@ -74,6 +96,33 @@ export default {
     })
   },
   methods: {
+    async logout() {
+      await this.$store.dispatch('user/logout')
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    refresh() {
+      requestMain(
+        {
+          operationID: 9990,
+          SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
+          SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        },
+        '.home-container'
+      ).then((res) => {
+        console.log('刷新配置', res)
+        if (res.statusCode === '200') {
+          this.$notify({
+            title: '刷新配置',
+            message: res.message,
+            type: 'success',
+            offset: 50,
+            duration: 2000
+          })
+
+          this.init()
+        }
+      })
+    },
     detectZoom() {
       // js 检测浏览器是否缩放并返回缩放的比例
       var ratio = 0,
@@ -437,5 +486,12 @@ export default {
 .row-bg {
   padding: 10px 0;
   background-color: #f9fafc;
+}
+.avatar {
+  position: absolute;
+  right: 50px;
+  :hover {
+    cursor: pointer;
+  }
 }
 </style>

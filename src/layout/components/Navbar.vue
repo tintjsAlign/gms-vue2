@@ -5,6 +5,14 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
+      <template>
+        <div class="right-menu-item">
+          <div class="right-menu-list">
+            <span>{{ userName }}</span> |
+            <span style="font-size: 13px">{{ userRole }}</span>
+          </div>
+        </div>
+      </template>
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <!-- <span class="userName">user</span> -->
@@ -61,6 +69,9 @@ export default {
   },
   created() {
     this.avatar = require('@/assets/img/touxiang.png')
+
+    this.userName = window.localStorage.getItem('SYSTEMTELLERNO')
+    this.userRole = window.localStorage.getItem('userRole')
     // this.avatar =
     //   'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
   },
@@ -143,6 +154,13 @@ export default {
         &:hover {
           background: rgba(0, 0, 0, 0.025);
         }
+      }
+      .right-menu-list {
+        // display: flex;
+        // flex-direction: column;
+        // span {
+        //   height: 25px;
+        // }
       }
     }
 
