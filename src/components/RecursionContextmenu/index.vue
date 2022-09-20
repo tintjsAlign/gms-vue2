@@ -195,6 +195,7 @@ export default {
           this.$notify({
             title: '成功',
             message: '操作成功!',
+            offset: 50,
             type: 'success'
           })
           // 刷新

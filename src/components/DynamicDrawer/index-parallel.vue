@@ -776,6 +776,7 @@ export default {
                   title: '成功',
                   message: '操作成功!',
                   type: 'success',
+                  offset: 50,
                   duration: 2000
                 })
 

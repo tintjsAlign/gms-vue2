@@ -380,6 +380,7 @@ export default {
                 title: '成功',
                 message: `成功删除${successCount}条记录`,
                 type: 'success',
+                offset: 50,
                 duration: 1500,
                 onClose: () => {
                   if (index === rowLength - 1) {
@@ -416,6 +417,7 @@ export default {
                   title: '成功',
                   message: '成功删除一条记录',
                   type: 'success',
+                  offset: 50,
                   duration: 1500,
                   onClose: () => {
                     this.reload()
@@ -431,6 +433,7 @@ export default {
                     title: '失败',
                     message: errorMsg,
                     type: 'error',
+                    offset: 50,
                     duration: 2500,
                     onClose: () => {
                       // this.reload()

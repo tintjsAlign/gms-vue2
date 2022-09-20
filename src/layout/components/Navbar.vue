@@ -1,10 +1,6 @@
 <template>
   <div class="navbar">
-    <hamburger
-      :is-active="sidebar.opened"
-      class="hamburger-container"
-      @toggleClick="toggleSideBar"
-    />
+    <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <breadcrumb class="breadcrumb-container" />
 
@@ -31,6 +27,9 @@
           >
             <el-dropdown-item>Docs</el-dropdown-item>
           </a> -->
+          <el-dropdown-item @click.native="refresh">
+            <span style="display: block">刷新配置</span>
+          </el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
             <span style="display: block">退出登录</span>
           </el-dropdown-item>
@@ -41,6 +40,7 @@
 </template>
 
 <script>
+import { requestMain } from '@/api/main'
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
@@ -71,6 +71,24 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    refresh() {
+      requestMain({
+        operationID: 9990,
+        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+      }).then((res) => {
+        console.log('刷新配置', res)
+        if (res.statusCode === '200') {
+          this.$notify({
+            title: '刷新配置',
+            message: res.message,
+            type: 'success',
+            offset: 50,
+            duration: 2000
+          })
+        }
+      })
     }
   }
 }
