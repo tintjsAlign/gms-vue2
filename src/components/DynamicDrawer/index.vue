@@ -117,6 +117,7 @@
                         v-model="form[item.valueFldName]"
                         autocomplete="off"
                         :placeholder="item.fldAlais"
+                        :ref="item.valueFldName"
                         clearable
                         autofocus
                         type="textarea"
@@ -144,6 +145,7 @@
                         v-model="form[item.valueFldName]"
                         autocomplete="off"
                         :placeholder="item.fldAlais"
+                        :ref="item.valueFldName"
                         clearable
                         autofocus
                         type="textarea"
@@ -320,6 +322,7 @@
                         v-model="form[item.valueFldName]"
                         autocomplete="off"
                         :placeholder="item.fldAlais"
+                        :ref="item.valueFldName"
                         clearable
                         autofocus
                         type="textarea"
@@ -330,6 +333,7 @@
                         slot="reference"
                         v-model="form[item.valueFldName]"
                         autocomplete="off"
+                        :disabled="textareaDisabled"
                         clearable
                         suffix-icon="el-icon-full-screen"
                         type="text"
@@ -347,6 +351,7 @@
                         v-model="form[item.valueFldName]"
                         autocomplete="off"
                         :placeholder="item.fldAlais"
+                        :ref="item.valueFldName"
                         clearable
                         autofocus
                         type="textarea"
@@ -357,6 +362,7 @@
                         slot="reference"
                         v-model="form[item.valueFldName]"
                         autocomplete="off"
+                        :disabled="textareaDisabled"
                         clearable
                         suffix-icon="el-icon-full-screen"
                         type="text"
@@ -431,7 +437,7 @@ export default {
       optionLoading: false,
       OPENREQMAINDATA: {},
       REQMAINDATA: {},
-
+      textareaDisabled: false,
       oriData: '',
       oriLevel: ''
     }
@@ -442,12 +448,19 @@ export default {
   mounted() {},
   methods: {
     textareaShow(item) {
+      this.textareaDisabled = true
+
       console.log('textarea value:', this.form[item.valueFldName])
       let value = this.$_.cloneDeep(this.form[item.valueFldName])
       let val = this.replaceSeperator2(value, item.otherProperties.textType)
       this.form[item.valueFldName] = val
+      this.$nextTick(() => {
+        // console.log('this.$refs[item.valueFldName]', this.$refs[item.valueFldName])
+        this.$refs[item.valueFldName][0].focus()
+      })
     },
     textareaHide(item) {
+      this.textareaDisabled = false
       console.log('textarea value:', this.form[item.valueFldName])
       let value = this.$_.cloneDeep(this.form[item.valueFldName])
       let val = this.replaceSeperator(value, item.otherProperties.textType)
