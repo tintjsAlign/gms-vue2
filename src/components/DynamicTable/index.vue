@@ -7,6 +7,7 @@
         <dynamic-button
           ref="dynamicButton"
           :requestData="requestData"
+          :searchReqData="searchReqData"
           @openDrawer="openDrawer"
           @queryAllData="queryAllData"
           @getRecordBtn="getRecordBtn"
@@ -354,6 +355,9 @@ export default {
     },
     openDrawer(row) {
       this.$refs.drawer.show(row)
+      if (this.searchReqData) {
+        this.$refs.drawer.searchData(this.searchReqData)
+      }
     },
     //批量删除
     batchDeleteRow() {
@@ -392,7 +396,7 @@ export default {
                 duration: 1500,
                 onClose: () => {
                   if (index === rowLength - 1) {
-                    this.reload()
+                    this.refresh()
                   }
                 }
               })
@@ -428,7 +432,7 @@ export default {
                   offset: 50,
                   duration: 1500,
                   onClose: () => {
-                    this.reload()
+                    this.refresh()
                   }
                 })
               } else {

@@ -41,6 +41,10 @@ export default {
     requestData: {
       type: Object,
       default: () => {}
+    },
+    searchReqData: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -283,7 +287,18 @@ export default {
             requestMain(data).then((res) => {
               // console.log('展示文件 res:', res)
               // 弹出dialog层
-              this.$refs.showFileContent.show(res, data.itemName)
+              let type
+              if (this.treeNode) {
+                type = 'tree'
+                this.$refs.showFileContent.show(res, data.itemName, type)
+              } else {
+                if (this.searchReqData) {
+                  type = this.searchReqData
+                  this.$refs.showFileContent.show(res, data.itemName, type)
+                } else {
+                  this.$refs.showFileContent.show(res, data.itemName)
+                }
+              }
             })
           }
         }

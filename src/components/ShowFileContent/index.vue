@@ -72,8 +72,14 @@ export default {
       this.drawer = true
     },
     handleClose(done) {
-      if (this.isTree === 'tree') {
-        done()
+      if (this.isTree) {
+        if (this.isTree === 'tree') {
+          done()
+        }else {
+          // this.reloadOfSearch(this.isTree)
+          this.$emit('reloadOfSearch', this.isTree)
+          done()
+        }
       }else{
         this.reload()
         done()

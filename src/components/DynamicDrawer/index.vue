@@ -402,7 +402,7 @@
       </div>
     </el-drawer>
 
-    <show-file-content ref="showFileContent"></show-file-content>
+    <show-file-content ref="showFileContent" @reloadOfSearch="reloadOfSearch"></show-file-content>
     <dynamicTransfer ref="transfer" @reSelect="reSelect"></dynamicTransfer>
   </div>
 </template>
@@ -503,6 +503,12 @@ export default {
     },
     reSelect(value, name) {
       this.form[name] = value
+    },
+    searchData(data) {
+      this.searchReqData = data
+    },
+    reloadOfSearch(data){
+      this.$emit('refresh', data)
     },
     show(data, level, node) {
       console.log('抽屉level:', level)
@@ -1053,11 +1059,17 @@ export default {
                     // 弹出dialog层
                     this.loading = false
                     this.dialog = false
+                    let type
                     if (this.treeNode) {
-                      let type = 'tree'
+                      type = 'tree'
                       this.$refs.showFileContent.show(res, this.REQMAINDATA.itemName, type)
                     } else {
-                      this.$refs.showFileContent.show(res, this.REQMAINDATA.itemName)
+                      if (this.searchReqData) {
+                        type = this.searchReqData
+                        this.$refs.showFileContent.show(res, this.REQMAINDATA.itemName, type)
+                      } else {
+                        this.$refs.showFileContent.show(res, this.REQMAINDATA.itemName)
+                      }
                     }
                     if (this.requestData.itemName === '登记被测系统') {
                       this.$router.push('/被测信息系统')
