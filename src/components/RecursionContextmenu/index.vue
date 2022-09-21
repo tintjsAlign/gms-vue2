@@ -11,7 +11,7 @@
             <v-contextmenu-item :key="index" @click="submenuClick(s)">{{ s.itemName }}</v-contextmenu-item>
           </template>
         </v-contextmenu-submenu>
-        <v-contextmenu-item :key="index" v-else-if="item.itemId === 'refresh'" @click="refresh">
+        <v-contextmenu-item :key="index" v-else-if="item.itemId === 'refresh'" @click="refresh()">
           <span><svg-icon icon-class="refresh" /> {{ item.itemName }}</span>
         </v-contextmenu-item>
         <v-contextmenu-item :key="index" v-else @click="submenuClick(item)">
@@ -71,8 +71,12 @@ export default {
         console.log('recordMenuGrp', this.recordMenuGrp)
       })
     },
-    refresh() {
-      this.$emit('refreshNode', this.node)
+    refresh(remove) {
+      if (remove && remove === 'remove') {
+        this.$emit('refreshNode', this.node, remove)
+      } else {
+        this.$emit('refreshNode', this.node)
+      }
     },
     submenuClick(btn) {
       console.log('btn', btn)
@@ -167,11 +171,11 @@ export default {
     },
     // 需要确定的按钮事件 forwardUrl:跳转页面,isNeedConfirm:是否需要确认,operationTitle:提示信息,operationID:操作ID,resId:资源ID,tblAlias:表别名,SYSTEMKEYNAME:系统秘钥名,SYSTEMTELLERNO:系统柜员号,isBtn:是否按钮
     mainEnterConfirm(row) {
-      this.reqLoading = this.$loading({
-        lock: true,
-        text: '请求中,请稍后···',
-        target: '.app-main'
-      })
+      // this.reqLoading = this.$loading({
+      //   lock: true,
+      //   text: '请求中,请稍后···',
+      //   target: '.app-main'
+      // })
 
       let data = {
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
@@ -181,9 +185,10 @@ export default {
 
       if (data.priKey) {
         let priKey = data.priKey.split('|').filter((i) => i !== '')
+        console.log('priKey:', priKey)
         priKey.forEach((item) => {
           let key = item.split('=')[0]
-          let value = item.split('=')[1]
+          let value = item.slice(item.indexOf('=') + 1)
           if (data[key]) {
             data[key] = value
           }
@@ -199,7 +204,13 @@ export default {
             type: 'success'
           })
           // 刷新
-          this.$emit('refresh')
+          // this.$emit('refreshNode')
+          if (data.operationID === 2) {
+            // 删除操作,刷新父节点
+            this.refresh('remove')
+          } else {
+            this.refresh()
+          }
         } else if (typeof res === 'string' && res.indexOf('错误原因') > -1) {
           // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
           // 提取错误原因
@@ -243,7 +254,7 @@ export default {
             })
           }
         }
-        this.reqLoading.close()
+        // this.reqLoading.close()
       })
     },
     // 下载文件
