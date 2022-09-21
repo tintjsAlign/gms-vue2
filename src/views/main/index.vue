@@ -8,6 +8,7 @@
       :originTableData="originTableData"
       :formThead="formThead"
       :requestData="routeParams"
+      :searchReqData="searchReqData"
       @searchResult="searchResult"
     ></dynamic-table>
     <div class="pagination-container">
@@ -165,7 +166,7 @@ export default {
             if (table[item.fldName]) {
               let value = table[item.fldName]
               table[item.fldName] = this.$dayjs(value).format('YYYY-MM-DD')
-            }else {
+            } else {
               return
             }
           })

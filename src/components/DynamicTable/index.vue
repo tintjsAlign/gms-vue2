@@ -113,6 +113,10 @@ export default {
     requestData: {
       type: Object,
       default: () => {}
+    },
+    searchReqData: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -159,7 +163,11 @@ export default {
   },
   methods: {
     refresh() {
-      this.reload()
+      if (this.searchReqData) {
+        this.queryAllData(this.searchReqData)
+      } else {
+        this.reload()
+      }
     },
     // 点击空白处时触发的事件
     clickOutSide() {
@@ -289,7 +297,7 @@ export default {
       // 合并参数
       Object.assign(data, btn)
       data.pageNum = 1
-      data.numPerPage = 5
+      data.numPerPage = 10
       requestMain(data).then((res) => {
         console.log('查询所有数据', res)
         this.$emit('searchResult', res)
