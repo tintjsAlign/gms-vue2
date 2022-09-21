@@ -8,8 +8,10 @@
       <template>
         <div class="right-menu-item">
           <div class="right-menu-list">
-            <span>{{ userName }}</span> |
-            <span style="font-size: 13px">{{ userRole }}</span>
+            <span class="nameTag">{{ userName }}</span>
+            <span class="roleTag"
+              ><el-tag size="mini">{{ userRole }}</el-tag></span
+            >
           </div>
         </div>
       </template>
@@ -21,7 +23,7 @@
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
-            <el-dropdown-item> 首页 </el-dropdown-item>
+            <el-dropdown-item><i class="el-icon-house"></i> 首页 </el-dropdown-item>
           </router-link>
           <!-- <a
             target="_blank"
@@ -36,10 +38,10 @@
             <el-dropdown-item>Docs</el-dropdown-item>
           </a> -->
           <el-dropdown-item @click.native="refresh">
-            <span style="display: block">刷新配置</span>
+            <span style="display: block"><i class="el-icon-refresh-right"></i> 刷新配置</span>
           </el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
-            <span style="display: block">退出登录</span>
+            <span style="display: block"><i class="el-icon-switch-button"></i> 退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -156,11 +158,13 @@ export default {
         }
       }
       .right-menu-list {
-        // display: flex;
-        // flex-direction: column;
-        // span {
-        //   height: 25px;
-        // }
+        .nameTag {
+          color: #80858b;
+        }
+        .roleTag {
+          margin: 5px;
+          // vertical-align: sub;
+        }
       }
     }
 
