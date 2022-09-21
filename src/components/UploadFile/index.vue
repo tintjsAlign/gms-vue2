@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-dialog :title="title" :visible.sync="dialogVisible" style="height: auto">
+    <el-dialog :title="title" :visible.sync="dialogVisible" style="height: auto" :before-close="handleClose">
       <el-upload
         class="upload-demo"
         ref="upload"
@@ -17,8 +17,8 @@
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
       </el-upload>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitUpload">确 定</el-button>
+        <el-button @click="handleClose">取 消</el-button>
+        <el-button type="primary" :loading="loading" @click="submitUpload">{{ loading ? '上传中 ...' : '上 传' }}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -34,6 +34,7 @@ export default {
   data() {
     return {
       dialogVisible: false,
+      loading: false,
       uploadURL: '',
       uploadData: {}
     }
@@ -50,6 +51,14 @@ export default {
 
       this.dialogVisible = true
     },
+    handleClose() {
+      if (this.loading) {
+        this.loading = false
+      }
+      this.$refs.upload.abort()
+      this.$refs.upload.clearFiles()
+      this.dialogVisible = false
+    },
     uploadFile(row) {
       let data = {
         SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
@@ -58,10 +67,11 @@ export default {
       // Object.assign(data, row)
 
       console.log('uploadFile row:', row)
-      let conditionOri,
-        conditionOri2 = ''
+      console.log('uploadFile row.condition:', row.condition)
+      let conditionOri = ''
+      let conditionOri2 = ''
       let conditionObj = {}
-      if (row.condition.indexOf('|')) {
+      if (row.condition.indexOf('|') > -1) {
         conditionOri = row.condition.split('|')[0]
         conditionOri2 = row.condition.split('fileName=upload.file|')[1]
 
@@ -80,7 +90,9 @@ export default {
       } else {
         conditionOri = row.condition
       }
+      console.log('上传文件conditionOri:', conditionOri)
       let conditionArr = conditionOri.split(',').filter((i) => i !== '')
+      console.log('上传文件conditionArr:', conditionArr)
       let condition = ''
       conditionArr.forEach((i) => {
         if (i.indexOf('=this.') > -1) {
@@ -124,6 +136,7 @@ export default {
       this.uploadURL = this.uploadURL + '?' + this.uploadData
     },
     submitUpload() {
+      this.loading = true
       this.$refs.upload.submit()
 
       // console.log('submitUpload upfile:', this.upfile)
@@ -139,6 +152,7 @@ export default {
     },
     success(response, file, fileList) {
       console.log('上传成功:', response)
+      this.loading = false
       if (response.statusCode === '200') {
         this.$message({
           message: '上传成功',
@@ -146,8 +160,9 @@ export default {
         })
         this.dialogVisible = false
       } else {
+        let errorMsg = response.substring(response.indexOf('{') + 1, response.lastIndexOf('|SERVICELOGSSN'))
         this.$message({
-          message: response.message,
+          message: errorMsg,
           type: 'error'
         })
       }

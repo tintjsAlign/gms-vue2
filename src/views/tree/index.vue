@@ -836,6 +836,9 @@ export default {
       let tblAlias
       if (this.fileFlag) {
         tblAlias = '文件档案管理界面'
+        if (data.fatherCondition && data.fatherCondition.tableName === 'fileBakLibrary') {
+          tblAlias = '文件档案备份管理界面'
+        }
         reqData.tblAlias = tblAlias
       } else {
         tblAlias = data.tblAlias
@@ -873,13 +876,18 @@ export default {
       //   console.log('refs v-contextmenu',this.$refs.contextmenu)
       // })
     },
-    refreshNode(nodeOri) {
+    refreshNode(nodeOri, remove) {
       console.log('refreshNode nodeOri:', nodeOri)
-      let node = this.$refs.elTree.getNode(nodeOri)
-      console.log('refreshNode node:', node)
-      if (node) {
-        node.loaded = false
-        node.expand() // 主动调用展开节点方法，重新查询该节点下的所有子节点
+      let node
+      if (remove) {
+        this.$refs.elTree.remove(nodeOri)
+      } else {
+        node = this.$refs.elTree.getNode(nodeOri)
+        console.log('refreshNode node:', node)
+        if (node) {
+          node.loaded = false
+          node.expand() // 主动调用展开节点方法，重新查询该节点下的所有子节点
+        }
       }
 
       // this.refreshTree()
