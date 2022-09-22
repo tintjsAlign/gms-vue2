@@ -357,16 +357,18 @@ export default {
       }
       getMenuLvAfter(data).then((res) => {
         console.log('getMenuLvAfter:', res)
-        if (this.currentRow.length && this.currentRow.length > 1) {
-          console.log('支持批处理的选项')
-          // 只显示支持批量操作的  isOperatorSingleRec !== '1'
-          this.dropdownBtnList = res.filter((item) => {
-            return item.isOperatorSingleRec !== '1' && item.itemName !== '编辑本视图'
-          })
-        } else {
-          this.dropdownBtnList = res.filter((item) => {
-            return item.itemName !== '编辑本视图'
-          })
+        if (res) {
+          if (this.currentRow.length && this.currentRow.length > 1) {
+            console.log('支持批处理的选项')
+            // 只显示支持批量操作的  isOperatorSingleRec !== '1'
+            this.dropdownBtnList = res.filter((item) => {
+              return item.isOperatorSingleRec !== '1' && item.itemName !== '编辑本视图'
+            })
+          } else {
+            this.dropdownBtnList = res.filter((item) => {
+              return item.itemName !== '编辑本视图'
+            })
+          }
         }
       })
     }
