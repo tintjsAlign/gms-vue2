@@ -12,6 +12,7 @@
           @queryAllData="queryAllData"
           @getRecordBtn="getRecordBtn"
           @openReport="openReport"
+          @showFileContent="showFileContent"
           @refresh="refresh"
         ></dynamic-button>
       </div>
@@ -80,6 +81,7 @@
     <!-- </el-card> -->
 
     <dynamic-drawer ref="drawer" @refresh="refresh"></dynamic-drawer>
+    <!-- <show-file-content ref="showFileContent"></show-file-content> -->
     <!-- <app-iframe ref="iframe"></app-iframe> -->
   </div>
 </template>
@@ -87,6 +89,7 @@
 <script>
 import dynamicButton from '@/components/DynamicButton/index.vue'
 import dynamicDrawer from '@/components/DynamicDrawer/index.vue'
+// import showFileContent from '@/components/ShowFileContent'
 // import appIframe from '@/views/iframe'
 
 import { requestMain } from '@/api/main'
@@ -96,6 +99,7 @@ export default {
   components: {
     dynamicButton,
     dynamicDrawer
+    // showFileContent
     // appIframe
   },
   props: {
@@ -143,8 +147,9 @@ export default {
   computed: {},
   watch: {
     tableData: {
-      handler() {
+      handler(newValue, oldValue) {
         this.$nextTick(() => {
+          console.log('表格数据更新', newValue)
           this.$refs.dynamicTable.doLayout()
         })
       },
@@ -179,6 +184,9 @@ export default {
       this.$refs.dynamicButton.replaceButtonGroup('')
       this.showClearBtn = false
       this.showDeleteBtn = false
+    },
+    showFileContent(res, itemName) {
+      this.$refs.showFileContent.show(res, itemName)
     },
     getRecordBtn(data) {
       console.log('记录管理 按钮 父', data)
@@ -353,7 +361,9 @@ export default {
         }
       }
     },
-    openDrawer(row) {
+    openDrawer(row, batchRow) {
+      console.log('openDrawer data:', row)
+      row.batchRowData = batchRow
       this.$refs.drawer.show(row)
       if (this.searchReqData) {
         this.$refs.drawer.searchData(this.searchReqData)

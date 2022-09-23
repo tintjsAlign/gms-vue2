@@ -4,6 +4,7 @@
       <dynamic-search :searchData="searchLists" :currentPage="currentPage" :pageSize="pageSize" @searchResult="searchResult"></dynamic-search>
     </div>
     <dynamic-table
+      v-if="tableShow"
       :tableData="tableDataFinal"
       :originTableData="originTableData"
       :formThead="formThead"
@@ -25,23 +26,29 @@
       >
       </el-pagination>
     </div>
+
+    <show-file-content ref="showFileContent"></show-file-content>
   </div>
 </template>
 
 <script>
+import { Notification } from 'element-ui'
 import { requestMain } from '@/api/main'
 import dynamicTable from '@/components/DynamicTable/index.vue'
 import dynamicSearch from '@/components/DynamicSearch/index.vue'
+import showFileContent from '@/components/ShowFileContent'
 export default {
   name: 'globalPageTemplate',
   inject: ['reload'],
   components: {
     dynamicTable,
-    dynamicSearch
+    dynamicSearch,
+    showFileContent
   },
   props: {},
   data() {
     return {
+      tableShow: true,
       treeQuery: false,
       routeParams: {},
       formThead: [],
@@ -60,6 +67,7 @@ export default {
     }
   },
   created() {
+    Notification.closeAll()
     // 获取路由的参数
     console.log('this.$route::', this.$route)
     if (this.$route.query.meta) {
@@ -196,6 +204,7 @@ export default {
       this.init(this.searchReqData)
     },
     searchResult(searchData, data) {
+      this.tableShow = false
       this.tableDataFinal = []
       if (data) {
         this.searchReqData = data
@@ -207,6 +216,7 @@ export default {
       this.formatEnum(searchData[1].queryFlag)
       this.tableDataFinal = this.tableData
       this.total = Number(searchData[0].totalRecNum)
+      this.tableShow = true
     }
   }
 }

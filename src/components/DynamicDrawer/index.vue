@@ -507,7 +507,7 @@ export default {
     searchData(data) {
       this.searchReqData = data
     },
-    reloadOfSearch(data){
+    reloadOfSearch(data) {
       this.$emit('refresh', data)
     },
     show(data, level, node) {
@@ -544,7 +544,12 @@ export default {
       //   fullscreen: true
       // })
       console.log('openDrawer####', data)
-      this.requestData = data
+      if (data.batchRowData) {
+        this.batchFlagData = data.batchRowData
+        this.requestData = data
+      } else {
+        this.requestData = data
+      }
       if (data.otherProperties && data.otherProperties.urlParam.indexOf('=append.') > -1) {
         this.specialInstructFlag = true
       } else {
@@ -735,15 +740,17 @@ export default {
                 let dateValue = item.otherProperties.defaultValue.replace(/-/g, '')
                 form[item.valueFldName] = item.otherProperties.defaultValue
                 form[item.valueFldName + '_enum'] = dateValue
-              } else if (type.match(/form/gi)) {
-                let value = this.resMap[item.valueFldName]
-                if (value.indexOf('|') > -1) {
-                  value = value.split('|')[0]
-                  form[item.valueFldName] = value
-                } else {
-                  form[item.valueFldName] = this.resMap[item.valueFldName]
-                }
-              } else {
+              }
+              // else if (type.match(/form/gi)) {
+              //   let value = this.resMap[item.valueFldName]
+              //   if (value.indexOf('|') > -1) {
+              //     value = value.split('|')[0]
+              //     form[item.valueFldName] = value
+              //   } else {
+              //     form[item.valueFldName] = this.resMap[item.valueFldName]
+              //   }
+              // }
+              else {
                 // 其它默认值
                 form[item.valueFldName] = item.otherProperties.defaultValue
               }
@@ -921,167 +928,14 @@ export default {
               this.condition = `${this.preCondition},${formData}`
               console.log('true condition:', this.condition)
             }
-
-            // 发送请求
-            let data = {
-              SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-              SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
-            }
-            // if (this.requestData.itemName === '登记被测系统') {
-            if (this.specialInstructFlag === true) {
-              // 替换掉condition
-              data.queryFilePath = '1'
-              data.condition = this.condition
-              Object.assign(data, this.requestData)
-              // let newData = this.$_.cloneDeep(this.requestData)
-              // delete newData.operationID
-              this.REQMAINDATA = {
-                ...data,
-                // ...newData,
-                condition: encodeURI(this.condition)
-              }
+            if (this.batchFlagData) {
+              console.log('批量this.batchFlagData:', this.batchFlagData)
+              this.batchFlagData.forEach((element) => {
+                this.batchMainSubmit(element)
+              })
             } else {
-              // this.form和this.requestData的值合并放入到data中
-
-              // this.requestData
-              for (let key in this.requestData) {
-                data[key] = this.requestData[key]
-              }
-              // 处理this.form中的枚举类型
-              for (let key in this.form) {
-                if (this.form[key + '_enum']) {
-                  data[key] = this.form[key + '_enum']
-                } else {
-                  data[key] = this.form[key]
-                }
-              }
-              // for (let key in this.form) {
-              //   data[key] = this.form[key]
-              // }
-
-              data.condition = encodeURI(this.preCondition)
-              // operationID
-              // if ( this.requestData.operationID === 1 || this.requestData.itemName.indexOf('新增') > -1) {
-              if (this.requestData.operationID === 1) {
-                // 新增
-                data.operationID = '1001'
-                // } else if ( this.requestData.operationID === 50 || this.requestData.itemName.indexOf('修改') > -1) {
-              } else if (this.requestData.operationID === 50) {
-                // 修改
-                data.operationID = '1003'
-                data.operationType = 'update'
-                // } else if ( this.requestData.operationID === 49 || this.requestData.itemName.indexOf('复制') > -1) {
-              } else if (this.requestData.operationID === 49) {
-                // 复制
-                data.operationID = '1001'
-              }
-
-              // 把所有的值拼接成字符串,以#START开头,以#ENDFLAG结尾,以|分割
-              if (!this.levelFlag) {
-                let formData = ''
-                for (let key in data) {
-                  formData += `${key}=${data[key]}|`
-                }
-                data.allResponseFields = `#START${formData}#ENDFLAG`
-              }
-              if (!data.resId && data.objectID) {
-                let resId = data.objectID.split('-')[0]
-                data.resId = resId
-              }
-              this.REQMAINDATA = data
+              this.batchMainSubmit(this.requestData)
             }
-            console.log('$$$$ REQMAINDATA:', this.REQMAINDATA)
-            requestMain(this.REQMAINDATA).then((res) => {
-              console.log('提交请求结果:', res)
-              if (typeof res === 'string' && res === 'statusCode:200') {
-                this.$notify({
-                  title: '成功',
-                  message: '操作成功!',
-                  type: 'success',
-                  offset: 50,
-                  duration: 2000
-                })
-
-                console.log('treeNode: ', this.treeNode)
-                if (this.treeNode && this.requestData.operationID == 1) {
-                  console.log('树目录新增刷新子节点')
-                  this.$emit('refreshNode', this.treeNode)
-                  this.dialog = true
-                  this.loading = false
-                } else {
-                  console.log('非树目录新增')
-                  this.dialog = false
-                  this.loading = false
-                }
-                if (this.requestData.itemName === '登记被测系统') {
-                  this.$router.push('/被测信息系统')
-                } else {
-                  // 刷新
-                  this.$emit('refresh')
-                }
-              } else if (typeof res === 'string' && res.indexOf('message=') > -1) {
-                // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
-                // 提取错误原因
-                let errorMsg = res.match(/message=(.*?)\|/)[1]
-                this.$message.error(errorMsg)
-                this.loading = false
-              } else {
-                // 处理res.fileMessage
-                let name = res.fileMessage.split('&')[0].split('=')[0]
-                let value = res.fileMessage.split('&')[0].split('=')[1]
-                let typeName = res.fileMessage.split('&')[1].split('=')[0]
-                let typeValue = res.fileMessage.split('&')[1].split('=')[1]
-
-                this.REQMAINDATA[name] = value
-                this.REQMAINDATA[typeName] = typeValue
-                this.REQMAINDATA.queryOnlyFileData = '1'
-                if (res.statusCode == '666') {
-                  // “666”后台返回statusCode为操作后有文件带回，并且下载该文件
-
-                  // value 中最后一个 / 后面的值
-                  let fileName = value.split('/')[value.split('/').length - 1]
-                  console.log('fileName:', fileName)
-
-                  if (typeValue === 'download') {
-                    // data[typeName] = typeValue
-                    this.REQMAINDATA[typeName] = 'showFileContent'
-                  }
-                  requestMain(this.REQMAINDATA).then((res) => {
-                    // console.log('下载文件 res:', res)
-                    // 处理数据并下载
-                    // res数据中文乱码
-                    this.downloadFile(res, fileName)
-                  })
-                } else if (res.statusCode === '555') {
-                  //“555”后台返回statusCode为操作后有文件带回，并且展示该文件内容；弹出dialog层
-                  requestMain(this.REQMAINDATA).then((res) => {
-                    console.log('展示文件1 res:', res)
-                    // 弹出dialog层
-                    this.loading = false
-                    this.dialog = false
-                    let type
-                    if (this.treeNode) {
-                      type = 'tree'
-                      this.$refs.showFileContent.show(res, this.REQMAINDATA.itemName, type)
-                    } else {
-                      if (this.searchReqData) {
-                        type = this.searchReqData
-                        this.$refs.showFileContent.show(res, this.REQMAINDATA.itemName, type)
-                      } else {
-                        this.$refs.showFileContent.show(res, this.REQMAINDATA.itemName)
-                      }
-                    }
-                    if (this.requestData.itemName === '登记被测系统') {
-                      this.$router.push('/被测信息系统')
-                    } else {
-                      // 刷新
-                      // this.$emit('refresh')
-                    }
-                  })
-                }
-              }
-              // clearTimeout(this.timer)
-            })
             // this.$refs.drawer.closeDrawer()
           }, 400)
           // }, 1000)
@@ -1089,6 +943,313 @@ export default {
           // .catch((_) => {})
           // clearTimeout(this.timer)
         }
+      })
+    },
+    batchMainSubmit(batchData) {
+      // this.requestData = batchData
+      Object.assign(this.requestData, batchData)
+      // 发送请求
+      let data = {
+        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+      }
+      // if (this.requestData.itemName === '登记被测系统') {
+      if (this.specialInstructFlag === true) {
+        // 替换掉condition
+        data.queryFilePath = '1'
+        data.condition = this.condition
+        Object.assign(data, this.requestData)
+        // let newData = this.$_.cloneDeep(this.requestData)
+        // delete newData.operationID
+        this.REQMAINDATA = {
+          ...data,
+          // ...newData,
+          condition: encodeURI(this.condition)
+        }
+      } else {
+        // this.form和this.requestData的值合并放入到data中
+
+        // this.requestData
+        for (let key in this.requestData) {
+          data[key] = this.requestData[key]
+        }
+        // 处理this.form中的枚举类型
+        for (let key in this.form) {
+          if (this.form[key + '_enum']) {
+            data[key] = this.form[key + '_enum']
+          } else {
+            data[key] = this.form[key]
+          }
+        }
+        // for (let key in this.form) {
+        //   data[key] = this.form[key]
+        // }
+
+        data.condition = encodeURI(this.preCondition)
+        // operationID
+        // if ( this.requestData.operationID === 1 || this.requestData.itemName.indexOf('新增') > -1) {
+        if (this.requestData.operationID === 1) {
+          // 新增
+          data.operationID = '1001'
+          // } else if ( this.requestData.operationID === 50 || this.requestData.itemName.indexOf('修改') > -1) {
+        } else if (this.requestData.operationID === 50) {
+          // 修改
+          data.operationID = '1003'
+          data.operationType = 'update'
+          // } else if ( this.requestData.operationID === 49 || this.requestData.itemName.indexOf('复制') > -1) {
+        } else if (this.requestData.operationID === 49) {
+          // 复制
+          data.operationID = '1001'
+        }
+
+        // 把所有的值拼接成字符串,以#START开头,以#ENDFLAG结尾,以|分割
+        if (!this.levelFlag) {
+          let formData = ''
+          for (let key in data) {
+            formData += `${key}=${data[key]}|`
+          }
+          data.allResponseFields = `#START${formData}#ENDFLAG`
+        }
+        if (!data.resId && data.objectID) {
+          let resId = data.objectID.split('-')[0]
+          data.resId = resId
+        }
+        this.REQMAINDATA = data
+      }
+      console.log('$$$$ REQMAINDATA:', this.REQMAINDATA)
+      if (this.REQMAINDATA.otherProperties.urlParam.indexOf('BACKGROUNDTASK=1') > -1) {
+        // 后台执行,不继续堵塞其它操作
+        this.backstageRequest(this.REQMAINDATA)
+        return
+      }
+      requestMain(this.REQMAINDATA).then((res) => {
+        console.log('提交请求结果:', res)
+        if (typeof res === 'string' && (res === 'statusCode:200' || res === 'statusCode:555')) {
+          this.$notify({
+            title: '成功',
+            message: '操作成功!',
+            type: 'success',
+            offset: 50,
+            duration: 2000
+          })
+          if (this.searchReqData) {
+            console.log()
+            this.reloadOfSearch(this.searchReqData)
+          }
+
+          console.log('treeNode: ', this.treeNode)
+          if (this.treeNode && this.requestData.operationID == 1) {
+            console.log('树目录新增刷新子节点')
+            this.$emit('refreshNode', this.treeNode)
+            this.dialog = true
+            this.loading = false
+          } else {
+            console.log('非树目录新增')
+            if (this.requestData.operationID == 1) {
+              this.loading = false
+            } else {
+              this.dialog = false
+              this.loading = false
+              this.$emit('refresh')
+            }
+          }
+          // if (this.requestData.itemName === '登记被测系统') {
+          //   this.$router.push('/被测信息系统')
+          // } else {
+          //   // 刷新
+          //   this.$emit('refresh')
+          // }
+        } else if (typeof res === 'string' && res.indexOf('message=') > -1) {
+          // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
+          // 提取错误原因
+          let errorMsg = res.match(/message=(.*?)\|/)[1]
+          this.$message.error(errorMsg)
+          this.loading = false
+        } else {
+          // 处理res.fileMessage
+          let name = res.fileMessage.split('&')[0].split('=')[0]
+          let value = res.fileMessage.split('&')[0].split('=')[1]
+          let typeName = res.fileMessage.split('&')[1].split('=')[0]
+          let typeValue = res.fileMessage.split('&')[1].split('=')[1]
+
+          this.REQMAINDATA[name] = value
+          this.REQMAINDATA[typeName] = typeValue
+          this.REQMAINDATA.queryOnlyFileData = '1'
+          if (res.statusCode == '666') {
+            // “666”后台返回statusCode为操作后有文件带回，并且下载该文件
+
+            // value 中最后一个 / 后面的值
+            let fileName = value.split('/')[value.split('/').length - 1]
+            console.log('fileName:', fileName)
+
+            if (typeValue === 'download') {
+              // data[typeName] = typeValue
+              this.REQMAINDATA[typeName] = 'showFileContent'
+            }
+            requestMain(this.REQMAINDATA).then((res) => {
+              // console.log('下载文件 res:', res)
+              // 处理数据并下载
+              // res数据中文乱码
+              this.downloadFile(res, fileName)
+            })
+          } else if (res.statusCode === '555') {
+            //“555”后台返回statusCode为操作后有文件带回，并且展示该文件内容；弹出dialog层
+            requestMain(this.REQMAINDATA).then((res) => {
+              console.log('展示文件1 res:', res)
+              // 弹出dialog层
+              let type
+              let itemName = this.REQMAINDATA.itemName
+              if (this.requestData.operationID == 1) {
+                this.loading = false
+                itemName = this.REQMAINDATA.itemName + '|continuityAdd'
+              } else {
+                this.dialog = false
+                this.loading = false
+              }
+              if (this.treeNode) {
+                type = 'tree'
+                this.$refs.showFileContent.show(res, itemName, type)
+              } else {
+                if (this.searchReqData) {
+                  type = this.searchReqData
+                  this.$refs.showFileContent.show(res, itemName, type)
+                } else {
+                  this.$refs.showFileContent.show(res, itemName)
+                }
+              }
+            })
+          }
+        }
+        // clearTimeout(this.timer)
+      })
+    },
+    backstageRequest(data) {
+      this.$message({
+        showClose: true,
+        message: '任务仍在后台执行，请执行其它操作',
+        type: 'warning',
+        duration: 2000
+      })
+
+      this.backstageNotify = this.$notify({
+        title: '任务后台执行中······',
+        iconClass: 'el-icon-loading',
+        // dangerouslyUseHTMLString: true,
+        position: 'bottom-right',
+        offset: 100,
+        duration: 0
+        // message: '任务仍在后台执行，请执行其它操作'
+      })
+      this.dialog = false
+      this.loading = false
+      requestMain(this.REQMAINDATA, 'unshow').then((res) => {
+        console.log('提交请求结果:', res)
+        this.backstageNotify.close()
+        this.endNotify = this.$notify({
+          title: '后台任务执行完成',
+          position: 'bottom-right',
+          type: 'success',
+          offset: 100,
+          duration: 5000,
+          message: `后台任务执行完成,即将自动关闭`,
+          onClick: () => {
+            if (typeof res === 'string' && res === 'statusCode:200') {
+              this.$notify({
+                title: '成功',
+                message: '操作成功!',
+                type: 'success',
+                offset: 50,
+                duration: 2000
+              })
+              if (this.searchReqData) {
+                console.log()
+                this.reloadOfSearch(this.searchReqData)
+              }
+
+              console.log('treeNode: ', this.treeNode)
+              if (this.treeNode && this.requestData.operationID == 1) {
+                console.log('树目录新增刷新子节点')
+                this.$emit('refreshNode', this.treeNode)
+                this.dialog = true
+                this.loading = false
+              } else {
+                console.log('非树目录新增')
+                this.dialog = false
+                this.loading = false
+              }
+              if (this.requestData.itemName === '登记被测系统') {
+                this.$router.push('/被测信息系统')
+              } else {
+                // 刷新
+                this.$emit('refresh')
+              }
+            } else if (typeof res === 'string' && res.indexOf('message=') > -1) {
+              // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
+              // 提取错误原因
+              let errorMsg = res.match(/message=(.*?)\|/)[1]
+              this.$message.error(errorMsg)
+              this.loading = false
+            } else {
+              // 处理res.fileMessage
+              let name = res.fileMessage.split('&')[0].split('=')[0]
+              let value = res.fileMessage.split('&')[0].split('=')[1]
+              let typeName = res.fileMessage.split('&')[1].split('=')[0]
+              let typeValue = res.fileMessage.split('&')[1].split('=')[1]
+
+              this.REQMAINDATA[name] = value
+              this.REQMAINDATA[typeName] = typeValue
+              this.REQMAINDATA.queryOnlyFileData = '1'
+              if (res.statusCode == '666') {
+                // “666”后台返回statusCode为操作后有文件带回，并且下载该文件
+
+                // value 中最后一个 / 后面的值
+                let fileName = value.split('/')[value.split('/').length - 1]
+                console.log('fileName:', fileName)
+
+                if (typeValue === 'download') {
+                  // data[typeName] = typeValue
+                  this.REQMAINDATA[typeName] = 'showFileContent'
+                }
+                requestMain(this.REQMAINDATA).then((res) => {
+                  // console.log('下载文件 res:', res)
+                  // 处理数据并下载
+                  // res数据中文乱码
+                  this.downloadFile(res, fileName)
+                })
+              } else if (res.statusCode === '555') {
+                //“555”后台返回statusCode为操作后有文件带回，并且展示该文件内容；弹出dialog层
+                requestMain(this.REQMAINDATA).then((res) => {
+                  console.log('展示文件1 res:', res)
+                  // 弹出dialog层
+                  this.loading = false
+                  this.dialog = false
+                  let type
+                  if (this.treeNode) {
+                    type = 'tree'
+                    this.$refs.showFileContent.show(res, this.REQMAINDATA.itemName, type)
+                  } else {
+                    if (this.searchReqData) {
+                      type = this.searchReqData
+                      this.$refs.showFileContent.show(res, this.REQMAINDATA.itemName, type)
+                    } else {
+                      this.$refs.showFileContent.show(res, this.REQMAINDATA.itemName)
+                    }
+                  }
+                  if (this.requestData.itemName === '登记被测系统') {
+                    this.$router.push('/被测信息系统')
+                  } else {
+                    // 刷新
+                    // this.$emit('refresh')
+                  }
+                })
+              }
+            }
+
+            this.endNotify.close()
+          }
+        })
+
+        // clearTimeout(this.timer)
       })
     },
     // 下载文件

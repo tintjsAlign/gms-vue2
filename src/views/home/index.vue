@@ -118,7 +118,10 @@ export default {
             offset: 50,
             duration: 2000
           })
-
+          this.showCPZB = false
+          this.showFABZ = false
+          this.showXCCP = false
+          this.showJGFX = false
           this.init()
         }
       })

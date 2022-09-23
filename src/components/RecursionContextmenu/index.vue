@@ -106,7 +106,9 @@ export default {
           console.log('inputvarofs', inputvarofs)
           inputvarofs.forEach((item) => {
             if (item.indexOf('=') === -1) {
-              newInputvarof = newInputvarof + item + '=' + btn[item] + ';'
+              if (btn[item]) {
+                newInputvarof = newInputvarof + item + '=' + btn[item] + ';'
+              }
             } else {
               if (btn[item.split('=')[1]]) {
                 newInputvarof = newInputvarof + item.split('=')[0] + '=' + btn[item.split('=')[1]] + ';'

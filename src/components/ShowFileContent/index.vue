@@ -46,10 +46,16 @@ export default {
   methods: {
     show(res, title, isTree) {
       console.log('isTree:', isTree)
+      console.log('展示文件 title:', title)
       if (isTree) {
         this.isTree = isTree
       }
-      this.title = title
+      if (title.indexOf('|continuityAdd') > -1) {
+        this.continuityAdd = title.split('|')[1]
+        this.title = title.split('|')[0]
+      }else {
+        this.title = title
+      }
       // 根据文件后缀判断展示图片还是文件或者文本
       if (res.match(/\.(jpg|jpeg|png|gif|bmp|svg)$/)) {
         this.fileType = 'image'
@@ -81,8 +87,16 @@ export default {
           done()
         }
       }else{
-        this.reload()
-        done()
+        if (this.title === '登记被测系统') {
+          this.$router.push('/被测信息系统')
+          done()
+        }else if(this.continuityAdd){
+          done()
+        }
+        else{
+          this.reload()
+          done()
+        }
       }
     }
   }
