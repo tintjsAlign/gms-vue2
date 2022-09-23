@@ -45,7 +45,7 @@
           @current-change="handleCurrentChange"
           @selection-change="handleSelectionChange"
         >
-          <af-table-column type="selection" width="55" reserve-selection> </af-table-column>
+          <af-table-column type="selection" width="55" reserve-selection align="center" fixed="left"> </af-table-column>
           <af-table-column
             v-for="(fruit, index) in formThead"
             align="center"
@@ -194,9 +194,10 @@ export default {
     },
     // 点击空白处时触发的事件
     clickOutSide() {
-      console.log('点击表格之外触发')
       // 取消选中
-      this.$refs.dynamicTable.setCurrentRow()
+      if (this.currentRow) {
+        this.$refs.dynamicTable.setCurrentRow()
+      }
       this.$refs.dynamicTable.clearSelection()
       // 替换回原来的按钮组
       this.$refs.dynamicButton.replaceButtonGroup('')
@@ -352,12 +353,16 @@ export default {
     rowClass({ row, rowIndex }) {
       //对所选行进行样式设置，最终效果就看这里了
       if (this.selectRow.includes(row.objectID)) {
-        console.log('rowClass', row, rowIndex)
         // return { 'background-color': 'rgba(185, 221, 249, 0.75)' }
         return 'slecleRowColor'
       }
     },
     handleSelectionChange(val) {
+      if (val.length === 0) {
+        this.multipleSelection = val
+        this.$refs.dynamicButton.replaceButtonGroup('')
+        return
+      }
       console.log('多选数据(非原始)', val)
       this.multipleSelection = val.map((i) => {
         let mapItem
