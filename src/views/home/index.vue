@@ -226,7 +226,7 @@ export default {
     routerGo(role) {
       // 根据点击的按钮，赋予不同的权限
       // this.$store.commit('user/SET_ROLES', [role])
-      let userRole = window.localStorage.getItem('userRole')
+      let userRole = window.sessionStorage.getItem('userRole')
       // 把userRole和role的值, 放进同一个数组
       let roles = []
       roles.push(role)

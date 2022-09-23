@@ -68,7 +68,7 @@ service.interceptors.request.use(
     }
     // 取到本地存储中的用户信息 getItem
     // 再还原成 JSON格式，就可用点方法调用
-    // var user = JSON.parse(window.localStorage.getItem('user'))
+    // var user = JSON.parse(window.sessionStorage.getItem('user'))
     // 如果有登录用户信息（不为空），则统一设置 token
 
     // 属性名和值一般看接口的要求

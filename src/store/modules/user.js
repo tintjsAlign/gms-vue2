@@ -143,9 +143,9 @@ const actions = {
       removeToken() // must remove  token  first
       resetRouter()
       commit('RESET_STATE')
-      window.localStorage.removeItem('SYSTEMKEYNAME')
-      window.localStorage.removeItem('SYSTEMTELLERNO')
-      window.localStorage.removeItem('userRole')
+      window.sessionStorage.removeItem('SYSTEMKEYNAME')
+      window.sessionStorage.removeItem('SYSTEMTELLERNO')
+      window.sessionStorage.removeItem('userRole')
       window.sessionStorage.removeItem('sessionToken')
       resolve()
       // })
