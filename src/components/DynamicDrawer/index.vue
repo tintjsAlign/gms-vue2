@@ -1062,9 +1062,9 @@ export default {
         } else if (typeof res === 'string' && res.indexOf('message=') > -1) {
           // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
           // 提取错误原因
+          this.loading = false
           let errorMsg = res.match(/message=(.*?)\|/)[1]
           this.$message.error(errorMsg)
-          this.loading = false
         } else {
           // 处理res.fileMessage
           let name = res.fileMessage.split('&')[0].split('=')[0]
@@ -1186,9 +1186,9 @@ export default {
             } else if (typeof res === 'string' && res.indexOf('message=') > -1) {
               // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
               // 提取错误原因
+              this.loading = false
               let errorMsg = res.match(/message=(.*?)\|/)[1]
               this.$message.error(errorMsg)
-              this.loading = false
             } else {
               // 处理res.fileMessage
               let name = res.fileMessage.split('&')[0].split('=')[0]

@@ -495,6 +495,8 @@ export default {
               return item.itemName !== '编辑本视图'
             })
           }
+        } else {
+          this.getDropdownBtn(item)
         }
       })
     }
