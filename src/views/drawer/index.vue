@@ -71,8 +71,8 @@ export default {
       //   tblAlias: tblAlias,
       //   // isOperatorSingleRec: '0',
       //   queryOnlyFlag: '1',
-      //   SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-      //   SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+      //   SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+      //   SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
       // }
       // requestMain(requestMainData).then((res) => {
       //   console.log('requestMain:', res)

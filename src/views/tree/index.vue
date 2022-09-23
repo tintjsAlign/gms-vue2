@@ -211,8 +211,8 @@ export default {
     //加载第一级节点
     async loadFirstNode(node, resolve) {
       let data = {
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
       }
       Object.assign(data, this.routeRow)
       const res = await getTreeMenu(data)
@@ -390,8 +390,8 @@ export default {
         //   if (node.data.fatherCondition.resID) {resId = node.data.fatherCondition.resID}
         // }
         let fileData = {
-          SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-          SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+          SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+          SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
           objectID: node.data.objectID,
           condition: fileCondition,
           operationID: this.routeRow.operationID,
@@ -607,8 +607,8 @@ export default {
       }
 
       let data = {
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
       }
       // 判断node.data.childNum是否为0，如果为0，则加载子节点
       let CHILDCMDID
@@ -733,8 +733,8 @@ export default {
           let reqData = {
             // ...this.routeRowNO,
             ...nodeData,
-            SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-            SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+            SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+            SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
             operationID: 50,
             tblAlias: data.docFileName ? '文件档案管理界面' : '文件档案备份管理界面',
             condition: data.docFileName ? `docFileName=${data.docFileName}` : data.priKey
@@ -751,8 +751,8 @@ export default {
           let reqData = {
             // ...this.routeRowNO,
             ...nodeData,
-            SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-            SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+            SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+            SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
             condition: data.priKey,
             operationID: 50
           }
@@ -826,8 +826,8 @@ export default {
       this.leftX = event.pageX
 
       let reqData = {
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
         meumType: 'form'
       }
       if (nodeData.childNum === 0) {

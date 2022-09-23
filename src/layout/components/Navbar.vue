@@ -72,8 +72,8 @@ export default {
   created() {
     this.avatar = require('@/assets/img/touxiang.png')
 
-    this.userName = window.localStorage.getItem('SYSTEMTELLERNO')
-    this.userRole = window.localStorage.getItem('userRole')
+    this.userName = window.sessionStorage.getItem('SYSTEMTELLERNO')
+    this.userRole = window.sessionStorage.getItem('userRole')
     // this.avatar =
     //   'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
   },
@@ -88,8 +88,8 @@ export default {
     refresh() {
       requestMain({
         operationID: 9990,
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
       }).then((res) => {
         console.log('刷新配置', res)
         if (res.statusCode === '200') {

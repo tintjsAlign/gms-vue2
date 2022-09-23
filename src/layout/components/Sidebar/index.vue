@@ -83,8 +83,8 @@ export default {
       let menuRouterLists = []
       getMenuLvAfter({
         tblAlias: route.tblAlias,
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
       }).then((res) => {
         // console.log('查子路由getMenuLvAfter:', res)
         // 处理子路由

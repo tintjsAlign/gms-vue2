@@ -43,8 +43,8 @@ export default {
     },
     init(row) {
       let data = {
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
       }
       let objCondition = row.condition.split(',').filter((i) => i !== '')
       let conditionArr = ''

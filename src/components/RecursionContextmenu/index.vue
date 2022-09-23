@@ -57,8 +57,8 @@ export default {
     subMouseenter(sub) {
       let reqData = {
         tblAlias: sub.tblAlias,
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
       }
       getMenuLvAfter(reqData).then((res) => {
         console.log('子菜单res', res)
@@ -180,8 +180,8 @@ export default {
       // })
 
       let data = {
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
       }
       Object.assign(data, row)
 

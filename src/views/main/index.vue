@@ -100,8 +100,8 @@ export default {
       let requestMainData = {
         pageNum: this.currentPage,
         numPerPage: this.pageSize,
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
         // tblAlias: this.routeParams.tblAlias,
         // resId: this.routeParams.resId,
         // operationID: this.routeParams.operationID,
@@ -157,8 +157,8 @@ export default {
         if (item.otherProperties.textType === 'enum') {
           // console.log('item value:', value)
           requestMain({
-            SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-            SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+            SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+            SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
             operationID: item.otherProperties.operationIDForSuggest,
             condition: item.condition
           }).then((res) => {
@@ -204,7 +204,7 @@ export default {
       this.currentPage = val
       this.init(this.searchReqData)
     },
-    refreshMain(){
+    refreshMain() {
       this.init()
     },
     searchResult(searchData, data) {

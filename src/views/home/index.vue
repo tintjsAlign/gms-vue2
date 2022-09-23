@@ -104,8 +104,8 @@ export default {
       requestMain(
         {
           operationID: 9990,
-          SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-          SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+          SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+          SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
         },
         '.home-container'
       ).then((res) => {
@@ -158,8 +158,8 @@ export default {
       window.sessionStorage.removeItem('gatInfoTree')
 
       let data = {
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
       }
       getMenuLv1(data).then((res) => {
         console.log('getMenuLv1:', res)
@@ -266,8 +266,8 @@ export default {
         }
       ]
       getMenuLv2({
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
         menuGrpName: menuLv1Name
       }).then((res) => {
         console.log('getMenuLv2:', res)

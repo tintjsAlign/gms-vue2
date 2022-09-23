@@ -67,9 +67,9 @@ const actions = {
             return
           }
           console.log(response)
-          window.localStorage.setItem('SYSTEMKEYNAME', response.SYSTEMKEYNAME)
-          window.localStorage.setItem('SYSTEMTELLERNO', response.SYSTEMTELLERNO)
-          window.localStorage.setItem('userRole', response.TELLERROLE)
+          window.sessionStorage.setItem('SYSTEMKEYNAME', response.SYSTEMKEYNAME)
+          window.sessionStorage.setItem('SYSTEMTELLERNO', response.SYSTEMTELLERNO)
+          window.sessionStorage.setItem('userRole', response.TELLERROLE)
 
           window.sessionStorage.setItem('sessionToken', response.SERVICELOGSSN)
           // const { data } = response

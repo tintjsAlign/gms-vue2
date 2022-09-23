@@ -318,8 +318,8 @@ export default {
     },
     queryAllData(btn) {
       let data = {
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
       }
       // 合并参数
       Object.assign(data, btn)
@@ -411,8 +411,8 @@ export default {
       }).then(() => {
         // 删除操作
         let data = {
-          SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-          SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+          SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+          SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
         }
 
         // 循环发送删除请求
@@ -451,8 +451,8 @@ export default {
         .then(() => {
           // 删除操作
           let data = {
-            SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-            SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+            SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+            SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
           }
           // 合并data和row
           Object.assign(data, row)

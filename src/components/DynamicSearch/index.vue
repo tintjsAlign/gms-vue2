@@ -134,8 +134,8 @@ export default {
     search(command) {
       console.log('search:', this.form)
       let data = {
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
       }
       // 合并表单数据
       Object.assign(data, this.form)
@@ -170,8 +170,8 @@ export default {
       // console.log('查询选择框参数', item)
       this.readName = item.otherProperties.fldName
       let data = {
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
         // operationID: item.otherProperties.operationIDForSuggest,
         // readName: item.otherProperties.readFld,
         // condition:

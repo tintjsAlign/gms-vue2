@@ -599,8 +599,8 @@ export default {
         // tblAlias: tblAlias,
         // isOperatorSingleRec: '0',
         // queryOnlyFlag: '1',
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
         queryOnlyFlag: '1'
       }
       // if (this.requestData.itemName === '登记被测系统') {
@@ -826,8 +826,8 @@ export default {
       // console.log('查询选择框参数', item)
       this.readName = item.otherProperties.readFld
       let data = {
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
         // operationID: item.otherProperties.operationIDForSuggest,
         // readName: item.otherProperties.readFld,
         // condition:
@@ -950,8 +950,8 @@ export default {
       Object.assign(this.requestData, batchData)
       // 发送请求
       let data = {
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
       }
       // if (this.requestData.itemName === '登记被测系统') {
       if (this.specialInstructFlag === true) {

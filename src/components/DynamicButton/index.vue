@@ -84,8 +84,8 @@ export default {
         rel: this.requestData.itemName,
         tblAlias: this.requestData.tblAlias,
         // isOperatorSingleRec: '0',
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
         isBtn: '1'
       }
       requestMain(requestMainData).then((res) => {
@@ -112,8 +112,8 @@ export default {
     querySelectItemButtonList() {
       let requestMainData = {
         tblAlias: this.requestData.tblAlias,
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
       }
       getRecordMenuGrp(requestMainData).then((res) => {
         console.log('getRecordMenuGrp Btn:', res)
@@ -138,8 +138,8 @@ export default {
         resId: condition.resId,
         operationID: condition.operationID,
         tblAlias: condition.tblAlias,
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
         isBtn: '1'
       }
       requestMain(requestMainData).then((res) => {
@@ -252,8 +252,8 @@ export default {
     // 需要确定的按钮事件 forwardUrl:跳转页面,isNeedConfirm:是否需要确认,operationTitle:提示信息,operationID:操作ID,resId:资源ID,tblAlias:表别名,SYSTEMKEYNAME:系统秘钥名,SYSTEMTELLERNO:系统柜员号,isBtn:是否按钮
     mainEnterConfirm(row) {
       let data = {
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
       }
       Object.assign(data, row)
 
@@ -477,8 +477,8 @@ export default {
     getDropdownBtn(item) {
       this.dropdownBtnList = []
       let data = {
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO'),
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
         tblAlias: item.tblAlias
       }
       getMenuLvAfter(data).then((res) => {

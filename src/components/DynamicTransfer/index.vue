@@ -82,8 +82,8 @@ export default {
       this.itemName = params.valueFldName
       this.drawerTitle = params.fldAlais
       let requestData = {
-        SYSTEMKEYNAME: window.localStorage.getItem('SYSTEMKEYNAME'),
-        SYSTEMTELLERNO: window.localStorage.getItem('SYSTEMTELLERNO')
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
         // queryTransferFlag: '1'
       }
       Object.assign(requestData, data)
@@ -125,7 +125,7 @@ export default {
       //   }
       // ]
 
-      requestMain(requestData,'unshow').then((res) => {
+      requestMain(requestData, 'unshow').then((res) => {
         console.log('穿梭框:', typeof res)
         if (typeof res !== 'string') {
           console.log('穿梭框:', res.dataList)
