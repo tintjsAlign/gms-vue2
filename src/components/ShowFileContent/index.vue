@@ -94,7 +94,8 @@ export default {
           done()
         }
         else{
-          this.reload()
+          // this.reload()
+          this.$emit('reloadOfSearch')
           done()
         }
       }

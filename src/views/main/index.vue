@@ -11,6 +11,7 @@
       :requestData="routeParams"
       :searchReqData="searchReqData"
       @searchResult="searchResult"
+      @refreshMain="refreshMain"
     ></dynamic-table>
     <div class="pagination-container">
       <el-pagination
@@ -202,6 +203,9 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val
       this.init(this.searchReqData)
+    },
+    refreshMain(){
+      this.init()
     },
     searchResult(searchData, data) {
       this.tableShow = false

@@ -1,84 +1,86 @@
 <template>
-  <div class="table-container" v-click-outside="clickOutSide">
-    <!-- <el-card class="box-card"> -->
-    <!-- 按钮组 -->
-    <div class="button-group">
-      <div class="dynamic">
-        <dynamic-button
-          ref="dynamicButton"
-          :requestData="requestData"
-          :searchReqData="searchReqData"
-          @openDrawer="openDrawer"
-          @queryAllData="queryAllData"
-          @getRecordBtn="getRecordBtn"
-          @openReport="openReport"
-          @showFileContent="showFileContent"
-          @refresh="refresh"
-        ></dynamic-button>
+  <div class="table-container">
+    <!-- <div v-click-outside="clickOutSide"> -->
+    <div>
+      <!-- 按钮组 -->
+      <div class="button-group">
+        <div class="dynamic">
+          <dynamic-button
+            ref="dynamicButton"
+            :requestData="requestData"
+            :searchReqData="searchReqData"
+            @openDrawer="openDrawer"
+            @queryAllData="queryAllData"
+            @getRecordBtn="getRecordBtn"
+            @openReport="openReport"
+            @showFileContent="showFileContent"
+            @refresh="refresh"
+          ></dynamic-button>
+        </div>
+        <div class="otherBotton">
+          <el-row>
+            <!-- <el-tooltip class="item" effect="dark" content="删除选中" placement="top"> -->
+            <el-button v-if="showDeleteBtn" type="danger" icon="el-icon-delete" size="small" @click="batchDeleteRow">删除所选</el-button>
+            <!-- </el-tooltip> -->
+            <!-- <el-tooltip class="item" effect="dark" content="清空选中" placement="top"> -->
+            <el-button v-if="showClearBtn" icon="el-icon-refresh-left" type="info" size="small" @click="clickOutSide">取消选择</el-button>
+            <!-- </el-tooltip> -->
+          </el-row>
+        </div>
       </div>
-      <div class="otherBotton">
-        <el-row>
-          <!-- <el-tooltip class="item" effect="dark" content="删除选中" placement="top"> -->
-          <el-button v-if="showDeleteBtn" type="danger" icon="el-icon-delete" size="small" @click="batchDeleteRow">删除所选</el-button>
-          <!-- </el-tooltip> -->
-          <!-- <el-tooltip class="item" effect="dark" content="清空选中" placement="top"> -->
-          <el-button v-if="showClearBtn" icon="el-icon-refresh-left" type="info" size="small" @click="clickOutSide">取消选择</el-button>
-          <!-- </el-tooltip> -->
-        </el-row>
+      <div class="dynamic-table">
+        <el-table
+          :data="tableData"
+          ref="dynamicTable"
+          border
+          fit
+          highlight-current-row
+          style="width: 100%"
+          class="table-fixed"
+          size="mini"
+          :max-height="elTableHeight"
+          :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
+          :row-class-name="rowClass"
+          :row-key="getRowKeys"
+          @current-change="handleCurrentChange"
+          @selection-change="handleSelectionChange"
+        >
+          <af-table-column type="selection" width="55" reserve-selection> </af-table-column>
+          <af-table-column
+            v-for="(fruit, index) in formThead"
+            align="center"
+            show-overflow-tooltip
+            :sortable="false"
+            :key="index"
+            :label="fruit.fldAlais"
+            :prop="fruit.queryFldName"
+          >
+            <template slot-scope="scope">
+              {{ scope.row[fruit.queryFldName] }}
+            </template>
+          </af-table-column>
+          <af-table-column
+            label="操作"
+            width="180"
+            align="center"
+            fixed="right"
+            v-if="tableData.length > 0 && recordBtnGroup.length > 0"
+            show-overflow-tooltip
+          >
+            <template slot-scope="scope">
+              <el-button-group>
+                <span v-for="(btn, i) in recordBtnGroup" :key="i" class="btnsClass">
+                  <!-- <el-tooltip class="item" effect="dark" :content="btn.itemName" open-delay="700" placement="top-start"> -->
+                  <el-button size="mini" type="text" @click.native="handleMain(scope.row, btn)">
+                    {{ btn.itemName }}
+                  </el-button>
+                </span>
+              </el-button-group>
+            </template>
+          </af-table-column>
+        </el-table>
       </div>
     </div>
-    <div class="dynamic-table">
-      <el-table
-        :data="tableData"
-        ref="dynamicTable"
-        border
-        stripe
-        fit
-        highlight-current-row
-        style="width: 100%"
-        class="table-fixed"
-        size="mini"
-        :max-height="elTableHeight"
-        :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
-        @current-change="handleCurrentChange"
-        @selection-change="handleSelectionChange"
-      >
-        <af-table-column type="selection" width="55"> </af-table-column>
-        <af-table-column
-          v-for="(fruit, index) in formThead"
-          align="center"
-          show-overflow-tooltip
-          :sortable="false"
-          :key="index"
-          :label="fruit.fldAlais"
-          :prop="fruit.queryFldName"
-        >
-          <template slot-scope="scope">
-            {{ scope.row[fruit.queryFldName] }}
-          </template>
-        </af-table-column>
-        <af-table-column
-          label="操作"
-          width="180"
-          align="center"
-          fixed="right"
-          v-if="tableData.length > 0 && recordBtnGroup.length > 0"
-          show-overflow-tooltip
-        >
-          <template slot-scope="scope">
-            <el-button-group>
-              <span v-for="(btn, i) in recordBtnGroup" :key="i" class="btnsClass">
-                <!-- <el-tooltip class="item" effect="dark" :content="btn.itemName" open-delay="700" placement="top-start"> -->
-                <el-button size="mini" type="text" @click.native="handleMain(scope.row, btn)">
-                  {{ btn.itemName }}
-                </el-button>
-              </span>
-            </el-button-group>
-          </template>
-        </af-table-column>
-      </el-table>
-    </div>
-    <!-- </el-card> -->
 
     <dynamic-drawer ref="drawer" @refresh="refresh"></dynamic-drawer>
     <!-- <show-file-content ref="showFileContent"></show-file-content> -->
@@ -135,13 +137,18 @@ export default {
       currentPage: 1, //当前页
       paginationData: [], //分页数组
       pageSize: 5, //每页数据
+      selectRow: [],
       currentRow: null, //当前行数据
       multipleSelection: [], //多选数据
       recordBtnGroup: [], //操作按钮组
       // table 高度
       elTableHeight: 450,
       showDeleteBtn: false, //是否显示删除按钮
-      showClearBtn: false //是否显示清除按钮
+      showClearBtn: false, //是否显示清除按钮
+
+      getRowKeys(row) {
+        return row.objectID
+      }
     }
   },
   computed: {},
@@ -154,6 +161,15 @@ export default {
         })
       },
       deep: true
+    },
+    multipleSelection(data) {
+      //存储选中的row
+      this.selectRow = []
+      if (data.length > 0) {
+        data.forEach((item, index) => {
+          this.selectRow.push(item.objectID)
+        })
+      }
     }
   },
   created() {},
@@ -172,11 +188,13 @@ export default {
       if (this.searchReqData) {
         this.queryAllData(this.searchReqData)
       } else {
-        this.reload()
+        // this.reload()
+        this.$emit('refreshMain')
       }
     },
     // 点击空白处时触发的事件
     clickOutSide() {
+      console.log('点击表格之外触发')
       // 取消选中
       this.$refs.dynamicTable.setCurrentRow()
       this.$refs.dynamicTable.clearSelection()
@@ -330,6 +348,14 @@ export default {
       console.log('原始单选数据', oriVal)
       this.$refs.dynamicButton.replaceButtonGroup(oriVal)
       this.showClearBtn = true
+    },
+    rowClass({ row, rowIndex }) {
+      //对所选行进行样式设置，最终效果就看这里了
+      if (this.selectRow.includes(row.objectID)) {
+        console.log('rowClass', row, rowIndex)
+        // return { 'background-color': 'rgba(185, 221, 249, 0.75)' }
+        return 'slecleRowColor'
+      }
     },
     handleSelectionChange(val) {
       console.log('多选数据(非原始)', val)
@@ -514,7 +540,10 @@ export default {
 ::v-deep .el-table__body tr.current-row > td {
   background: #d5eafe !important;
 }
-
+//table选中高亮
+::v-deep .el-table__body .slecleRowColor {
+  background: #d5eafe !important;
+}
 .btnsClass {
   margin-left: 10px;
 }
