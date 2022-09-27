@@ -23,7 +23,7 @@
             <el-button v-if="showDeleteBtn" type="danger" icon="el-icon-delete" size="small" @click="batchDeleteRow">删除所选</el-button>
             <!-- </el-tooltip> -->
             <!-- <el-tooltip class="item" effect="dark" content="清空选中" placement="top"> -->
-            <el-button v-if="showClearBtn" icon="el-icon-refresh-left" type="info" size="small" @click="clickOutSide">取消选择</el-button>
+            <el-button v-if="showClearBtn" icon="el-icon-close" type="info" size="small" @click="clickOutSide">取消选择</el-button>
             <!-- </el-tooltip> -->
           </el-row>
         </div>
@@ -43,9 +43,13 @@
           :row-class-name="rowClass"
           :row-key="getRowKeys"
           @current-change="handleCurrentChange"
+          @row-click="nodeClick"
           @selection-change="handleSelectionChange"
+          @select="handleSelection"
+          @select-all="handleSelectionAll"
         >
-          <af-table-column type="selection" width="55" reserve-selection align="center" fixed="left"> </af-table-column>
+          <!-- <af-table-column type="selection" width="55" reserve-selection align="center" fixed="left"> </af-table-column> -->
+          <af-table-column type="selection" width="55" align="center" fixed="left"> </af-table-column>
           <af-table-column
             v-for="(fruit, index) in formThead"
             align="center"
@@ -156,8 +160,15 @@ export default {
     tableData: {
       handler(newValue, oldValue) {
         this.$nextTick(() => {
-          console.log('表格数据更新', newValue)
+          console.log('表格数据更新', newValue, this.mapIndex)
           this.$refs.dynamicTable.doLayout()
+          if (this.mapIndex) {
+            this.mapIndex.forEach((index) => {
+              this.$refs.dynamicTable.toggleRowSelection(this.tableData[index], true)
+            })
+          } else {
+            this.$refs.dynamicTable.clearSelection()
+          }
         })
       },
       deep: true
@@ -195,9 +206,7 @@ export default {
     // 点击空白处时触发的事件
     clickOutSide() {
       // 取消选中
-      if (this.currentRow) {
-        this.$refs.dynamicTable.setCurrentRow()
-      }
+      this.$refs.dynamicTable.setCurrentRow()
       this.$refs.dynamicTable.clearSelection()
       // 替换回原来的按钮组
       this.$refs.dynamicButton.replaceButtonGroup('')
@@ -350,6 +359,16 @@ export default {
       this.$refs.dynamicButton.replaceButtonGroup(oriVal)
       this.showClearBtn = true
     },
+    nodeClick(row, column, event) {
+      console.log('单击行$$', row)
+      this.mapIndex = []
+      this.originTableData.find((item, index) => {
+        if (row.objectID === item.objectID) {
+          this.mapIndex.push(index)
+        }
+      })
+      console.log('手动单选index:', this.mapIndex)
+    },
     rowClass({ row, rowIndex }) {
       //对所选行进行样式设置，最终效果就看这里了
       if (this.selectRow.includes(row.objectID)) {
@@ -357,24 +376,72 @@ export default {
         return 'slecleRowColor'
       }
     },
-    handleSelectionChange(val) {
-      if (val.length === 0) {
-        this.multipleSelection = val
-        this.$refs.dynamicButton.replaceButtonGroup('')
-        return
-      }
-      console.log('多选数据(非原始)', val)
+    handleSelection(val) {
+      console.log('handleSelection:', val)
       this.multipleSelection = val.map((i) => {
         let mapItem
-        this.originTableData.find((item) => {
+        this.originTableData.find((item, index) => {
           if (i.objectID === item.objectID) {
             mapItem = item
+            // this.mapIndex.push(index)
           }
         })
         return mapItem
       })
+      this.mapIndex = []
+      val.forEach((i) => {
+        this.originTableData.find((item, index) => {
+          if (i.objectID === item.objectID) {
+            this.mapIndex.push(index)
+          }
+        })
+      })
+      console.log('手动勾选index:', this.mapIndex)
+    },
+    handleSelectionAll(val) {
+      console.log('handleSelectionAll:', val)
+      this.multipleSelection = val.map((i) => {
+        let mapItem
+        this.originTableData.find((item, index) => {
+          if (i.objectID === item.objectID) {
+            mapItem = item
+            // this.mapIndex.push(index)
+          }
+        })
+        return mapItem
+      })
+      this.mapIndex = []
+      val.forEach((i) => {
+        this.originTableData.find((item, index) => {
+          if (i.objectID === item.objectID) {
+            this.mapIndex.push(index)
+          }
+        })
+      })
+      console.log('手动勾选index:', this.mapIndex)
+    },
+    handleSelectionChange(val) {
+      if (val.length === 0) {
+        this.multipleSelection = val
+        this.clickOutSide()
+        return
+      }
+      console.log('多选数据(非原始)', val)
+      // this.mapIndex = []
+      this.multipleSelection = val.map((i) => {
+        let mapItem
+        this.originTableData.find((item, index) => {
+          if (i.objectID === item.objectID) {
+            mapItem = item
+            // this.mapIndex.push(index)
+          }
+        })
+        return mapItem
+      })
+      // this.multipleSelection = this.multipleSelection.filter(i => i !== '')
 
       console.log('多选数据(原始):', this.multipleSelection)
+      // console.log('多选数据(原始)index:', this.mapIndex)
       // 所选数据只有一条时,
       this.showClearBtn = true
       if (this.multipleSelection.length === 1) {
