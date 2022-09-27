@@ -107,7 +107,12 @@ export default {
   watch: {},
   created() {
     // 获取路由的参数
-    this.routeParams = this.$route.meta
+    console.log('搜索路由参数:', this.$route)
+    if(this.$route.query && this.$route.query.meta){
+      this.routeParams = this.$route.query.meta
+    }else {
+      this.routeParams = this.$route.meta
+    }
     console.log('搜索routeParams:', this.routeParams)
   },
   mounted() {},
@@ -136,11 +141,13 @@ export default {
       let data = {
         SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
         SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
+        tblAlias: this.routeParams.tblAlias,
+        resId: this.routeParams.resId,
       }
+      // 合并路由参数
+      // Object.assign(data, this.routeParams)
       // 合并表单数据
       Object.assign(data, this.form)
-      // 合并路由参数
-      Object.assign(data, this.routeParams)
       // data.pageNum = 1
       data.pageNum = this.currentPage
       data.numPerPage = this.pageSize
@@ -149,6 +156,10 @@ export default {
       if (command === 'accurate') {
         data.UI_ACCURATEQUERY = '1'
         
+      }
+
+      if(data.condition){
+        delete data.condition
       }
       console.log('searchData:', data)
       // 发送请求
