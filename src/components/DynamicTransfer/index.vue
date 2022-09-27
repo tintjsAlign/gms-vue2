@@ -79,6 +79,7 @@ export default {
   methods: {
     show(data, params, value) {
       console.log('transfer参数', data, params, value)
+      this.paramsReadFld = params.otherProperties.readFld
       this.itemName = params.valueFldName
       this.drawerTitle = params.fldAlais
       let requestData = {
@@ -134,7 +135,7 @@ export default {
           res.dataList.forEach((item) => {
             this.data.push({
               key: ++i,
-              label: item.attr128LenValue1 ? item.attr128LenValue1 : item.compName
+              label: item[this.paramsReadFld]
             })
           })
           console.log('穿梭框数据:', this.data)
