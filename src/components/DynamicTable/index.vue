@@ -218,80 +218,6 @@ export default {
     },
     getRecordBtn(data) {
       console.log('记录管理 按钮 父', data)
-      // 数组中添加对应的icon
-      // data.forEach((item) => {
-      //   // 根据按钮名字,自定义按钮图标和按钮状态
-      //   switch (item.itemName) {
-      //     case '查看':
-      //       item.icon = 'el-icon-view'
-      //       item.type = 'primary'
-      //       break
-      //     case '修改':
-      //       item.icon = 'el-icon-edit'
-      //       item.type = 'success'
-      //       break
-      //     case '删除':
-      //       item.icon = 'el-icon-delete'
-      //       item.type = 'danger'
-      //       break
-      //     case '添加':
-      //       item.icon = 'el-icon-plus'
-      //       item.type = 'success'
-      //       break
-      //     case '提交':
-      //       item.icon = 'el-icon-check'
-      //       item.type = 'success'
-      //       break
-      //     case '审核':
-      //       item.icon = 'el-icon-check'
-      //       item.type = 'success'
-      //       break
-      //     case '取消':
-      //       item.icon = 'el-icon-close'
-      //       item.type = 'danger'
-      //       break
-      //     case '打印':
-      //       item.icon = 'el-icon-printer'
-      //       item.type = 'success'
-      //       break
-      //     case '导出':
-      //       item.icon = 'el-icon-download'
-      //       item.type = 'success'
-      //       break
-      //     case '导入':
-      //       item.icon = 'el-icon-upload'
-      //       item.type = 'success'
-      //       break
-      //     case '刷新':
-      //       item.icon = 'el-icon-refresh'
-      //       item.type = 'success'
-      //       break
-      //     case '查询':
-      //       item.icon = 'el-icon-view'
-      //       item.type = 'primary'
-      //       break
-      //     case '重置':
-      //       item.icon = 'el-icon-refresh'
-      //       item.type = 'success'
-      //       break
-      //     case '新增':
-      //       item.icon = 'el-icon-plus'
-      //       item.type = 'success'
-      //       break
-      //     case '保存':
-      //       item.icon = 'el-icon-save'
-      //       item.type = 'success'
-      //       break
-      //     case '复制':
-      //       item.icon = 'el-icon-document-copy'
-      //       item.type = 'info'
-      //       break
-      //     default:
-      //       item.icon = 'el-icon-view'
-      //       item.type = 'primary'
-      //       break
-      //   }
-      // })
       // 替换表格操作按钮组
       this.recordBtnGroup = data
     },
@@ -356,7 +282,11 @@ export default {
         })
       }
       console.log('原始单选数据', oriVal)
-      this.$refs.dynamicButton.replaceButtonGroup(oriVal)
+      if (this.multipleSelection.length > 1) {
+        // this.$refs.dynamicButton.replaceButtonGroup(oriVal)
+      }else {
+        this.$refs.dynamicButton.replaceButtonGroup(oriVal)
+      }
       this.showClearBtn = true
     },
     nodeClick(row, column, event) {
@@ -378,6 +308,7 @@ export default {
     },
     handleSelection(val) {
       console.log('handleSelection:', val)
+      this.$refs.dynamicTable.setCurrentRow()
       this.multipleSelection = val.map((i) => {
         let mapItem
         this.originTableData.find((item, index) => {
