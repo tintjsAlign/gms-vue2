@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-drawer :title="title" size="50%" :visible.sync="drawer" :direction="rtl" :before-close="handleClose">
+    <el-drawer :title="title" size="50%" :visible.sync="drawer" :append-to-body="true" :direction="rtl" :before-close="handleClose">
       <!-- 展示区域 -->
       <!-- 根据文件后缀判断展示图片还是文本 -->
       <div class="content">

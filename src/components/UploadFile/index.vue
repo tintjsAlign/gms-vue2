@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-dialog :title="title" :visible.sync="dialogVisible" style="height: auto" :before-close="handleClose">
+    <el-dialog :title="title" :visible.sync="dialogVisible" :append-to-body="true" style="height: auto" :before-close="handleClose">
       <el-upload
         class="upload-demo"
         ref="upload"
