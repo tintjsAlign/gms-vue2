@@ -27,7 +27,7 @@
                 </el-col>
                 <!-- query类型(只可选择)--选择框 end ↑↑↑-->
                 <!-- query类型（可创建）--选择框 ↓↓↓-->
-                <el-col span="12" v-else-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === ''">
+                <!-- <el-col span="12" v-else-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === ''">
                   <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
@@ -43,6 +43,23 @@
                     >
                       <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
                     </el-select>
+                  </el-form-item>
+                </el-col> -->
+                <!-- query类型（可创建）--选择框 end ↑↑↑-->
+                <!-- query类型（可创建）--选择框 ↓↓↓-->
+                <el-col span="12" v-else-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === ''">
+                  <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
+                    <el-autocomplete
+                      v-model="form[item.valueFldName]"
+                      placeholder="请选择"
+                      :fetch-suggestions="querySearch.bind(this, item)"
+                      style="width: 100%"
+                      clearable
+                      filterable
+                      allow-create
+                      default-first-option
+                    >
+                    </el-autocomplete>
                   </el-form-item>
                 </el-col>
                 <!-- query类型（可创建）--选择框 end ↑↑↑-->
@@ -232,7 +249,7 @@
                 </el-col>
                 <!-- query类型(只可选择)--选择框 end ↑↑↑-->
                 <!-- query类型（可创建）--选择框 ↓↓↓-->
-                <el-col span="12" v-else-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === ''">
+                <!-- <el-col span="12" v-else-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === ''">
                   <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
@@ -248,6 +265,23 @@
                     >
                       <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
                     </el-select>
+                  </el-form-item>
+                </el-col> -->
+                <!-- query类型（可创建）--选择框 end ↑↑↑-->
+                <!-- query类型（可创建）--选择框 ↓↓↓-->
+                <el-col span="12" v-else-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === ''">
+                  <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
+                    <el-autocomplete
+                      v-model="form[item.valueFldName]"
+                      placeholder="请选择"
+                      :fetch-suggestions="querySearch.bind(this, item)"
+                      style="width: 100%"
+                      clearable
+                      filterable
+                      allow-create
+                      default-first-option
+                    >
+                    </el-autocomplete>
                   </el-form-item>
                 </el-col>
                 <!-- query类型（可创建）--选择框 end ↑↑↑-->
@@ -814,11 +848,83 @@ export default {
     },
     cancelForm() {
       this.loading = false
-      this.dialog = false
-      clearTimeout(this.timer)
+      if (this.requestData.itemName === '登记被测系统') {
+        this.dialog = false
+        this.$router.go(-1)
+      } else {
+        this.dialog = false
+      }
     },
     changeType(e) {
       this.isTextarea = !this.isTextarea
+    },
+    querySearch(item, queryString, cb) {
+      // if (this.restaurants) {
+      //   cb(this.restaurants)
+      //   return
+      // }
+      // this.options = []
+      // this.optionLoading = true
+      // console.log('查询选择框参数', item)
+      this.readName = item.otherProperties.readFld
+      let data = {
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
+        // operationID: item.otherProperties.operationIDForSuggest,
+        // readName: item.otherProperties.readFld,
+        // condition:
+      }
+      // 如果this.form有值,则加入到data中
+      if (this.form) {
+        for (let key in this.form) {
+          data[key] = this.form[key]
+        }
+      }
+      data.operationID = item.otherProperties.operationIDForSuggest
+      data.condition = encodeURI(item.value)
+      data.readName = item.otherProperties.readFld
+      requestMain(data, 'unshow').then((res) => {
+        if (res === []) {
+          // 清空选择框和输入框
+          this.options = []
+          this.form[item.valueFldName] = ''
+        }
+        console.log('查询选择框数据', res)
+        let options = []
+        if (item.otherProperties.textType.match(/enum/gi)) {
+          // 拼装枚举options
+          res.forEach((item) => {
+            options.push({
+              value: item.value,
+              label: item.remark
+            })
+          })
+        } else {
+          // 拼装options
+          res.forEach((item) => {
+            options.push({
+              value: item[this.readName],
+              label: item[this.readName]
+            })
+          })
+        }
+        this.restaurants = options
+        // this.optionLoading = false
+        var restaurants = this.restaurants
+        console.log('restaurants:', restaurants)
+        // var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+        var results = restaurants
+        // 调用 callback 返回建议列表的数据
+        cb(results)
+
+        // if (item.otherProperties.textType === 'query' && item.otherProperties.otherCon === '') {
+        // }
+      })
+    },
+    createFilter(queryString) {
+      return (restaurant) => {
+        return restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+      }
     },
     async queryOption(item) {
       this.options = []
@@ -868,6 +974,9 @@ export default {
         }
         this.options = options
         this.optionLoading = false
+
+        // if (item.otherProperties.textType === 'query' && item.otherProperties.otherCon === '') {
+        // }
       })
     },
     getChange(e, item, index) {

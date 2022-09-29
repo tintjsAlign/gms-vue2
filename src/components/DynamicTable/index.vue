@@ -291,6 +291,9 @@ export default {
     },
     nodeClick(row, column, event) {
       console.log('单击行$$', row)
+      if (this.multipleSelection.length > 1) {
+        return
+      }
       this.mapIndex = []
       this.originTableData.find((item, index) => {
         if (row.objectID === item.objectID) {

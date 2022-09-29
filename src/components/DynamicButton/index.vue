@@ -451,7 +451,7 @@ export default {
       // this.$refs.treeManage.show(row)
     },
     openIframeManage(row) {
-      // 打开树管理界面
+      // 打开展示报表界面
       this.$router.push({
         path: `/iframe`,
         query: {
