@@ -54,7 +54,8 @@ const actions = {
       let data = {
         userID: username.trim(),
         password: encryptionPsw,
-        keySvrName: 'SevaluationManagement_TASS',
+        // keySvrName: 'SevaluationManagement_TASS', // 旧后台
+        keySvrName: 'SevaluationManagement_TASSAL', // 新后台-阿里云
         svrName: '密评辅助工具',
         svrMainMenuName: 'Splenwise密评工具平台主工作界面',
         useMenuItemButton: '2'
