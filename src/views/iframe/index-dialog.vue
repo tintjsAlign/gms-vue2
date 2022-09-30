@@ -6,7 +6,20 @@
         <el-button type="info" plain circle icon="el-icon-close" @click="handleClose"></el-button>
       </div>
     </div> -->
-    <el-dialog
+    <el-drawer
+      :visible.sync="dialogVisible"
+      :title="title"
+      :before-close="handleClose"
+      custom-class="drawerBox"
+      style="position: absolute"
+      direction="rtl"
+      ref="drawer"
+      size="100%"
+      :modal="false"
+      :wrapperClosable="false"
+      destroy-on-close
+    >
+      <!-- <el-dialog
       :visible.sync="dialogVisible"
       class="abow_dialog"
       :title="title"
@@ -16,14 +29,15 @@
       top="0"
       fullscreen
       :show-close="true"
-      destroy-on-close
       lock-scroll
+      destroy-on-close
       :before-close="handleClose"
-    >
+    > -->
       <!-- <div style="height:50px"></div> -->
       <!-- <div v-html="html"></div> -->
       <iframe :srcdoc="html" width="100%" :height="iframeH" scrolling="yes" frameborder="0"></iframe>
-    </el-dialog>
+      <!-- </el-dialog> -->
+    </el-drawer>
   </div>
 </template>
 
@@ -37,13 +51,15 @@ export default {
     return {
       dialogVisible: false,
       html: '',
-      iframeH: '600px'
+      iframeH: '600px',
+      drawerSize: '0px'
     }
   },
   computed: {},
   watch: {},
   created() {
     let mainHeight = document.querySelector('.app-main').offsetHeight - 150
+    this.drawerSize = document.querySelector('.app-main').offsetWidth + 'px'
     console.log('mainHeight高度:', mainHeight)
     this.iframeH = mainHeight + 'px'
   },
@@ -83,15 +99,12 @@ export default {
 <style scoped lang="scss">
 .iframe-container {
   width: 100%;
+  // position: relative;
   // overflow: hidden;
 }
 // ::v-deep .el-dialog {
 //   height: 100%;
 // }
-::v-deep .el-dialog__wrapper {
-  position: absolute !important;
-  margin-top: 50px;
-}
 
 //  ::v-deep .iframe-dialog {
 //     height: 100%;
@@ -124,7 +137,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: Center;
-  overflow: hidden;
+  // overflow: hidden;
   ::v-deep .el-dialog {
     margin: 0 auto !important;
     height: 100%;
@@ -141,5 +154,15 @@ export default {
       overflow-y: scroll;
     }
   }
+}
+
+::v-deep .el-drawer {
+  // height: calc(100% - 50px);
+  min-height: calc(100vh - 50px);
+  margin-top: 50px;
+}
+::v-deep .el-drawer__wrapper {
+  position: fixed !important;
+  z-index: 8 !important;
 }
 </style>

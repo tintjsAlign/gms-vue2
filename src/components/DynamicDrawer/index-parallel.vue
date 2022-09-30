@@ -213,7 +213,7 @@ export default {
   props: {},
   data() {
     return {
-      showContainer: true,
+      showContainer: false,
       dialog: false,
       loading: false,
       drawerData: [],
@@ -918,7 +918,7 @@ export default {
     // 固定在底部
     position: fixed;
     bottom: 10px;
-    right: 20px;
+    right: 40px;
     width: 100%;
     // 底部按钮
     .el-button {

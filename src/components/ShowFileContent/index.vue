@@ -84,6 +84,7 @@ export default {
         }else {
           // this.reloadOfSearch(this.isTree)
           this.$emit('reloadOfSearch', this.isTree)
+          this.$emit('refresh',this.isTree)
           done()
         }
       }else{
@@ -96,6 +97,7 @@ export default {
         else{
           // this.reload()
           this.$emit('reloadOfSearch')
+          this.$emit('refresh')
           done()
         }
       }
