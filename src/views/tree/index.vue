@@ -63,7 +63,8 @@
         </div>
       </template>
       <template slot="paneR">
-        <!-- <v-contextmenu ref="contextmenu">
+        <div class="right-container">
+          <!-- <v-contextmenu ref="contextmenu">
           <v-contextmenu-item v-for="(item,index) in recordMenuGrp" :key="index">{{item.itemName}}</v-contextmenu-item>
           <v-contextmenu-submenu title="菜单3">
             <v-contextmenu-item>子菜单1</v-contextmenu-item>
@@ -72,13 +73,14 @@
         </v-contextmenu>
 
         <div v-contextmenu:contextmenu>右键点击此区域</div> -->
-        <dynamic-drawer ref="drawer" @refresh="refresh" @refreshNode="refreshNode" @getDrawerForm="getDrawerForm"></dynamic-drawer>
-        <dynamic-drawer-parallel
-          ref="drawerParallel"
-          @refresh="refresh"
-          @refreshNode="refreshNode"
-          @getDrawerForm="getDrawerForm"
-        ></dynamic-drawer-parallel>
+          <dynamic-drawer ref="drawer" @refresh="refresh" @refreshNode="refreshNode" @getDrawerForm="getDrawerForm"></dynamic-drawer>
+          <dynamic-drawer-parallel
+            ref="drawerParallel"
+            @refresh="refresh"
+            @refreshNode="refreshNode"
+            @getDrawerForm="getDrawerForm"
+          ></dynamic-drawer-parallel>
+        </div>
       </template>
     </split-pane>
     <!-- </el-dialog> -->
@@ -189,6 +191,10 @@ export default {
       // console.log(this.$refs.treeContainer)
       // this.$refs.treeContainer.$el.clientHeight = mainHeight + 'px'
       document.querySelector('.splitter-pane-resizer.vertical').style.height = mainHeight + 'px'
+      document.querySelector('.splitter-pane.vertical.splitter-paneL').style.height = mainHeight + 'px'
+      document.querySelector('.splitter-pane.vertical.splitter-paneR').style.height = mainHeight + 'px'
+      document.querySelector('.splitter-pane.vertical.splitter-paneL').style.overflow = 'auto'
+      document.querySelector('.splitter-pane.vertical.splitter-paneR').style.overflow = 'auto'
     })
   },
   methods: {
@@ -935,7 +941,9 @@ export default {
 // ::v-deep .v-modal {
 //   position: absolute !important;
 // }
-
+.splitter-pane.vertical.splitter-paneL, .splitter-pane.vertical.splitter-paneR {
+  overflow: auto !important;
+}
 // 右键会选中文字，为了美观将它禁用
 #el-tree {
   user-select: none;
@@ -981,24 +989,5 @@ a {
 
 .right-menu a:hover {
   background: #99a9bf;
-}
-.left-container {
-  // background-color: #f38181;
-  width: 100%;
-  height: 100%;
-}
-.right-container {
-  background-color: #fce38a;
-  height: 200px;
-}
-.top-container {
-  background-color: #fce38a;
-  width: 100%;
-  height: 100%;
-}
-.bottom-container {
-  width: 100%;
-  background-color: #95e1d3;
-  height: 100%;
 }
 </style>
