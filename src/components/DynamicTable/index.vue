@@ -163,9 +163,13 @@ export default {
           console.log('表格数据更新', newValue, this.mapIndex)
           this.$refs.dynamicTable.doLayout()
           if (this.mapIndex) {
-            this.mapIndex.forEach((index) => {
-              this.$refs.dynamicTable.toggleRowSelection(this.tableData[index], true)
-            })
+            if (this.mapIndex.length === 1) {
+              this.$refs.singleTable.setCurrentRow(this.tableData[index])
+            } else {
+              this.mapIndex.forEach((index) => {
+                this.$refs.dynamicTable.toggleRowSelection(this.tableData[index], true)
+              })
+            }
           } else {
             this.$refs.dynamicTable.clearSelection()
           }
@@ -282,16 +286,16 @@ export default {
         })
       }
       console.log('原始单选数据', oriVal)
-      if (this.multipleSelection.length > 1) {
+      if (this.multipleSelection.length >= 1) {
         // this.$refs.dynamicButton.replaceButtonGroup(oriVal)
-      }else {
+      } else {
         this.$refs.dynamicButton.replaceButtonGroup(oriVal)
       }
       this.showClearBtn = true
     },
     nodeClick(row, column, event) {
       console.log('单击行$$', row)
-      if (this.multipleSelection.length > 1) {
+      if (this.multipleSelection.length >= 1) {
         return
       }
       this.mapIndex = []
