@@ -164,7 +164,7 @@ export default {
           this.$refs.dynamicTable.doLayout()
           if (this.mapIndex) {
             if (this.mapIndex.length === 1) {
-              this.$refs.singleTable.setCurrentRow(this.tableData[index])
+              this.$refs.dynamicTable.setCurrentRow(this.tableData[this.mapIndex])
             } else {
               this.mapIndex.forEach((index) => {
                 this.$refs.dynamicTable.toggleRowSelection(this.tableData[index], true)

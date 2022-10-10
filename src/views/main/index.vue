@@ -162,7 +162,7 @@ export default {
             operationID: item.otherProperties.operationIDForSuggest,
             condition: item.condition
           }).then((res) => {
-            console.log('queryEnum枚举:', res)
+            console.log(`queryEnum枚举[${item.remark}]:`, res)
             this.enumRes = res
             this.queryEnum(item)
           })
