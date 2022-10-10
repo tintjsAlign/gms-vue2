@@ -185,6 +185,12 @@ export default {
       }
       Object.assign(data, row)
 
+      if (row.otherProperties.urlParam.indexOf('BACKGROUNDTASK=1') > -1) {
+        // 后台执行,不继续堵塞其它操作
+        this.backstageRequest(data)
+        return
+      }
+
       if (data.priKey) {
         let priKey = data.priKey.split('|').filter((i) => i !== '')
         console.log('priKey:', priKey)
@@ -257,6 +263,108 @@ export default {
           }
         }
         // this.reqLoading.close()
+      })
+    },
+        backstageRequest(data) {
+      this.$message({
+        showClose: true,
+        message: '任务仍在后台执行，请执行其它操作',
+        type: 'warning',
+        duration: 2000
+      })
+
+      this.backstageNotify = this.$notify({
+        title: '任务后台执行中······',
+        iconClass: 'el-icon-loading',
+        // dangerouslyUseHTMLString: true,
+        position: 'bottom-right',
+        offset: 100,
+        duration: 0
+        // message: '任务仍在后台执行，请执行其它操作'
+      })
+
+      requestMain(data, 'unshow').then((res) => {
+        console.log('按钮通用请求 res:', res)
+        if (res) {
+          this.backstageNotify.close()
+          this.endNotify = this.$notify({
+            title: '后台任务执行完成',
+            position: 'bottom-right',
+            type: 'success',
+            offset: 100,
+            duration: 5000,
+            message: `后台任务执行完成,即将自动关闭`,
+            onClick: () => {
+              console.log('后台执行结果:', res)
+              if (typeof res === 'string' && res === 'statusCode:200') {
+                this.$notify({
+                  title: '成功',
+                  message: '操作成功!',
+                  offset: 50,
+                  type: 'success'
+                })
+                // 刷新
+                this.$emit('refresh', this.searchReqData)
+              } else if (typeof res === 'string' && res.indexOf('message=') > -1) {
+                // ModelAndView: reference to view with name 'template/main'; model is {message=错误原因=表记录没有找到|SERVICELOGSSN=202208031017080807980003|, statusCode=300}
+                // 提取错误原因
+                let errorMsg = res.match(/message=(.*?)\|/)[1]
+                this.$message.error(errorMsg)
+              } else {
+                // 处理res.fileMessage
+                let name = res.fileMessage.split('&')[0].split('=')[0]
+                let value = res.fileMessage.split('&')[0].split('=')[1]
+                let typeName = res.fileMessage.split('&')[1].split('=')[0]
+                let typeValue = res.fileMessage.split('&')[1].split('=')[1]
+
+                data[name] = value
+                data[typeName] = typeValue
+                data.queryOnlyFileData = '1'
+                if (res.statusCode == '666') {
+                  // “666”后台返回statusCode为操作后有文件带回，并且下载该文件
+
+                  // value 中最后一个 / 后面的值
+                  let fileName = value.split('/')[value.split('/').length - 1]
+                  console.log('fileName:', fileName)
+
+                  if (typeValue === 'download') {
+                    // data[typeName] = typeValue
+                    data[typeName] = 'showFileContent'
+                  }
+                  requestMain(data).then((res) => {
+                    // console.log('下载文件 res:', res)
+                    // 处理数据并下载
+                    // res数据中文乱码
+                    this.downloadFile(res, fileName)
+                  })
+                } else if (res.statusCode === '555') {
+                  //“555”后台返回statusCode为操作后有文件带回，并且展示该文件内容；弹出dialog层
+                  requestMain(data).then((res) => {
+                    // console.log('展示文件 res:', res)
+                    // 弹出dialog层
+                    let type
+                    let itemName = data.itemName ? data.itemName : '后台执行结果'
+                    if (this.treeNode) {
+                      type = 'tree'
+                      this.$refs.showFileContent.show(res, itemName, type)
+                    } else {
+                      if (this.searchReqData) {
+                        type = this.searchReqData
+                        this.$refs.showFileContent.show(res, itemName, type)
+                      } else {
+                        console.log('this', this)
+                        this.$refs.showFileContent.show(res, itemName)
+                        // this.$emit('showFileContent', res, itemName)
+                      }
+                    }
+                  })
+                }
+              }
+
+              this.endNotify.close()
+            }
+          })
+        }
       })
     },
     // 下载文件
