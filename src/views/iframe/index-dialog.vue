@@ -10,7 +10,7 @@
       :visible.sync="dialogVisible"
       :title="title"
       :before-close="handleClose"
-      custom-class="drawerBox"
+      custom-class="abow_dialog"
       style="position: absolute"
       direction="rtl"
       ref="drawer"
@@ -159,6 +159,7 @@ export default {
 ::v-deep .el-drawer {
   // height: calc(100% - 50px);
   min-height: calc(100vh - 50px);
+  width: calc(100% - 210px) !important;
   margin-top: 50px;
 }
 ::v-deep .el-drawer__wrapper {
