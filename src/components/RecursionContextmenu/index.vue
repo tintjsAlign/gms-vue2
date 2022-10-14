@@ -265,7 +265,7 @@ export default {
         // this.reqLoading.close()
       })
     },
-        backstageRequest(data) {
+    backstageRequest(data) {
       this.$message({
         showClose: true,
         message: '任务仍在后台执行，请执行其它操作',
@@ -404,6 +404,7 @@ export default {
     },
     queryAllData(btn) {
       console.log('查询所有,', btn)
+
       // keyName--  ''+tableName
       let conofName = 'CONOF' + btn.tableName
       let inputvarofName = 'INPUTVAROF' + btn.tableName
@@ -460,10 +461,14 @@ export default {
       }
       console.log('conofType:', conofType)
 
-      // let condition = `${conditionNext}${conofType}|${conof}${inputvarof}`
-      let condition = `${conditionNext}${conofType}|${inputvarof}`
+      let condition = `${conditionNext}${conofType}|${inputvarof}${conof}`
+      // let condition = `${conditionNext}${conofType}|${inputvarof}`
 
-      btnData.condition = condition
+      if (btn.tableName.match(/file/g)) {
+        // this.fileCondition = btn.condition
+      } else {
+        btnData.condition = condition
+      }
 
       // this.$router.push({
       //   path: `/main`,

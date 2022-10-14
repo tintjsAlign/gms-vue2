@@ -232,11 +232,23 @@ export default {
       //     this.endCondition += '|' + `${i}=${res[i]}`
       //   }
       // }
+      let rowCondition = ''
+      let preCondition = this.preCondition.split(',').filter((i) => i !== '')
+      preCondition.forEach((item) => {
+        if (item.indexOf('=this.') > -1){
+          let key = item.split('=this.')[0]
+          let value = item.split('=this.')[1]
+          rowCondition += key + '=' + this.routeRow[value] + '|'
+        }else {
+          rowCondition += item + '|'
+        }
+      })
       // 把this.preCondition(string)中的全部逗号换成|
-      this.rowCondition = this.preCondition.replace(/,/g, '|')
-      // 截取取出DISPLAYFIRSTNODE后面的值(包括DISPLAYFIRSTNODE)
-      let displayFirstNode = this.rowCondition.substring(this.rowCondition.indexOf('DISPLAYFIRSTNODE'))
-      this.rowCondition = displayFirstNode
+      // this.rowCondition = this.preCondition.replace(/,/g, '|')
+      // // 截取取出DISPLAYFIRSTNODE后面的值(包括DISPLAYFIRSTNODE)
+      // let displayFirstNode = this.rowCondition.substring(this.rowCondition.indexOf('DISPLAYFIRSTNODE'))
+      // this.rowCondition = displayFirstNode
+      this.rowCondition = rowCondition
       console.log('rowCondition:', this.rowCondition)
       // 处理res.CONOF 或 INPUTVAROF
       let conof
@@ -635,8 +647,8 @@ export default {
         'CHILDCMDID=' +
         CHILDCMDID +
         ',' +
-        this.priKey +
-        '|' +
+        // this.priKey +
+        // '|' +
         this.rowCondition +
         this.conofName +
         '=' +
@@ -668,8 +680,8 @@ export default {
           'CHILDCMDID=' +
           CHILDCMDID +
           ',' +
-          this.priKey +
-          '|' +
+          // this.priKey +
+          // '|' +
           this.rowCondition +
           this.conofName +
           '=' +
@@ -842,7 +854,7 @@ export default {
       let tblAlias
       if (this.fileFlag) {
         tblAlias = '文件档案管理界面'
-        if (data.fatherCondition && data.fatherCondition.tableName === 'fileBakLibrary') {
+        if (data.tableName === 'fileBakLibrary') {
           tblAlias = '文件档案备份管理界面'
         }
         reqData.tblAlias = tblAlias
