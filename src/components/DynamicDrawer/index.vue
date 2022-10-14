@@ -626,8 +626,15 @@ export default {
         // 截取appendFld中以';'分割的字符串
         let appendArr = append.split(';')
 
+        let drawerTitle = ''
         tblAlias = appendArr[0]
-        this.drawerTitle = appendArr[1]
+        if (appendArr[1].indexOf(',') > -1) {
+          drawerTitle = appendArr[1].split(',')[0]
+          this.appendArrEnd = appendArr[1].split(',')[1]
+        } else {
+          drawerTitle = appendArr[1]
+        }
+        this.drawerTitle = drawerTitle
         // console.log('drawerTitle:', this.drawerTitle)
       }
 
@@ -1039,7 +1046,11 @@ export default {
               }
               formData = formData.substring(0, formData.length - 1)
               // 拼接preCondition和formData
-              this.condition = `${this.preCondition},${formData}`
+              if (this.appendArrEnd) {
+                this.condition = `${this.preCondition},${formData},${this.appendArrEnd}`
+              } else {
+                this.condition = `${this.preCondition},${formData}`
+              }
               console.log('true condition:', this.condition)
             }
             if (this.batchFlagData) {
@@ -1160,7 +1171,7 @@ export default {
         this.backstageRequest(this.REQMAINDATA)
         return
       }
-      requestMain(this.REQMAINDATA).then((res) => {
+      requestMain(this.REQMAINDATA, 'unshow').then((res) => {
         console.log('提交请求结果:', res)
         if (typeof res === 'string' && (res === 'statusCode:200' || res === 'statusCode:555')) {
           this.$notify({

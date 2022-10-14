@@ -647,8 +647,8 @@ export default {
         'CHILDCMDID=' +
         CHILDCMDID +
         ',' +
-        // this.priKey +
-        // '|' +
+        this.priKey +
+        '|' +
         this.rowCondition +
         this.conofName +
         '=' +
@@ -680,8 +680,8 @@ export default {
           'CHILDCMDID=' +
           CHILDCMDID +
           ',' +
-          // this.priKey +
-          // '|' +
+          this.priKey +
+          '|' +
           this.rowCondition +
           this.conofName +
           '=' +
