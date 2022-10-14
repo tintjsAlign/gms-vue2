@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vue-cli-service serve",
     "commit": "cz",
-    "deployment": "vue-cli-service build && rm -rf ~/tomcat7/webapps/passwordEvaluationToolAL/* && cp -rf ./dist/* ~/tomcat7/webapps/passwordEvaluationToolAL/ && echo '--部署完成-- [https://www.paytunnel.cn/passwordEvaluationToolAL]'",
-    "deployment__Old": "vue-cli-service build && rm -rf ~/tomcat7/webapps/passwordEvaluationTool/* && cp -rf ./dist/* ~/tomcat7/webapps/passwordEvaluationTool/ && echo '--部署完成-- [https://www.paytunnel.cn/passwordEvaluationTool]'",
+    "deployment": "vue-cli-service build && rm -rf ~/tomcat7/webapps/passwordEvaluationTool/* && cp -rf ./dist/* ~/tomcat7/webapps/passwordEvaluationTool/ && echo '--部署完成-- [https://www.paytunnel.cn/passwordEvaluationTool]'",
+    "deployment__Ali": "vue-cli-service build && rm -rf ~/tomcat7/webapps/passwordEvaluationToolAL/* && cp -rf ./dist/* ~/tomcat7/webapps/passwordEvaluationToolAL/ && echo '--部署完成-- [https://www.paytunnel.cn/passwordEvaluationToolAL]'",
     "build:prod": "vue-cli-service build",
     "build:stage": "vue-cli-service build --mode staging",
     "preview": "node build/index.js --preview",
