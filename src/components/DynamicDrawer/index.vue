@@ -217,7 +217,7 @@
       :visible.sync="dialog"
       custom-class="drawerBox"
       direction="rtl"
-      size="720px"
+      size="750px"
       ref="drawer"
       :append-to-body="true"
       destroy-on-close
@@ -418,11 +418,18 @@
                 <!-- 普通类型--输入框 ↓↓↓-->
                 <el-col span="12" v-else>
                   <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
-                    <el-input v-model="form[item.valueFldName]" autocomplete="off" clearable></el-input>
+                    <el-input v-model="form[item.valueFldName]" autocomplete="off" type="text" clearable></el-input>
                   </el-form-item>
                 </el-col>
                 <!-- 普通类型--输入框 end ↑↑↑-->
               </div>
+              <!-- 对象标识 类型--只读不可修改框 ↓↓↓-->
+              <el-col span="12" v-if="requestData.operationID !== 1">
+                <el-form-item label="对象标识">
+                  <el-input v-model="requestData.objectID" autocomplete="off" clearable type="text" :disabled="true" autosize></el-input>
+                </el-form-item>
+              </el-col>
+              <!-- 对象标识 类型--只读不可修改框 end ↑↑↑-->
             </el-form>
           </el-col>
         </el-row>
@@ -755,7 +762,7 @@ export default {
               }
             } else {
               // 其它默认值,与resMap对应
-              form[item.valueFldName] = this.resMap[item.valueFldName]
+              form[item.valueFldName] = this.resMap[item.valueFldName] ? this.resMap[item.valueFldName] : ''
               // form[item.valueFldName] = item.otherProperties.fldRemark
             }
           })
@@ -764,30 +771,28 @@ export default {
           let form = {}
           this.drawerData.forEach((item) => {
             let type = item.otherProperties.textType
-            if (item.otherProperties.textType) {
-              if (item.otherProperties.textType.match(/enum/gi)) {
-                // 枚举类型特殊处理
-                form[item.valueFldName] = item.otherProperties.fldRemark
-                form[item.valueFldName + '_enum'] = item.otherProperties.defaultValue
-              } else if (type.match(/date/gi)) {
-                // 日期类型特殊处理(去掉-)
-                let dateValue = item.otherProperties.defaultValue.replace(/-/g, '')
-                form[item.valueFldName] = item.otherProperties.defaultValue
-                form[item.valueFldName + '_enum'] = dateValue
-              }
-              // else if (type.match(/form/gi)) {
-              //   let value = this.resMap[item.valueFldName]
-              //   if (value.indexOf('|') > -1) {
-              //     value = value.split('|')[0]
-              //     form[item.valueFldName] = value
-              //   } else {
-              //     form[item.valueFldName] = this.resMap[item.valueFldName]
-              //   }
-              // }
-              else {
-                // 其它默认值
-                form[item.valueFldName] = item.otherProperties.defaultValue
-              }
+            if (item.otherProperties.textType.match(/enum/gi)) {
+              // 枚举类型特殊处理
+              form[item.valueFldName] = item.otherProperties.fldRemark
+              form[item.valueFldName + '_enum'] = item.otherProperties.defaultValue
+            } else if (type.match(/date/gi)) {
+              // 日期类型特殊处理(去掉-)
+              let dateValue = item.otherProperties.defaultValue.replace(/-/g, '')
+              form[item.valueFldName] = item.otherProperties.defaultValue
+              form[item.valueFldName + '_enum'] = dateValue
+            }
+            // else if (type.match(/form/gi)) {
+            //   let value = this.resMap[item.valueFldName]
+            //   if (value.indexOf('|') > -1) {
+            //     value = value.split('|')[0]
+            //     form[item.valueFldName] = value
+            //   } else {
+            //     form[item.valueFldName] = this.resMap[item.valueFldName]
+            //   }
+            // }
+            else {
+              // 其它默认值
+              form[item.valueFldName] = item.otherProperties.defaultValue ? item.otherProperties.defaultValue : ''
             }
           })
           this.form = JSON.parse(JSON.stringify(form))
@@ -1067,9 +1072,18 @@ export default {
         // 替换掉condition
         data.queryFilePath = '1'
         data.condition = this.condition
-        Object.assign(data, this.requestData)
+        // if (this.requestData.operationID !== 1) {
+        // }
         // let newData = this.$_.cloneDeep(this.requestData)
         // delete newData.operationID
+        // for (let key in this.form) {
+        //   if (this.form[key + '_enum']) {
+        //     data[key] = this.form[key + '_enum']
+        //   } else {
+        //     data[key] = this.form[key]
+        //   }
+        // }
+        Object.assign(data, this.requestData)
         this.REQMAINDATA = {
           ...data,
           // ...newData,
@@ -1079,6 +1093,8 @@ export default {
         // this.form和this.requestData的值合并放入到data中
 
         // this.requestData
+        console.log('this.requestData submit', this.requestData)
+
         for (let key in this.requestData) {
           data[key] = this.requestData[key]
         }
@@ -1125,8 +1141,21 @@ export default {
         }
         this.REQMAINDATA = data
       }
+      if (this.REQMAINDATA.INPUTVAROF) {
+        let inp = this.REQMAINDATA.INPUTVAROF.split(';').filter((i) => i !== '')
+        inp.forEach((item) => {
+          if (item.indexOf('=this.') === -1) {
+            if (item.indexOf('=') > -1) {
+              let key = item.split('=')[0]
+              let value = item.split('=')[1]
+              this.REQMAINDATA[key] = value
+            }
+          }
+        })
+      }
       console.log('$$$$ REQMAINDATA:', this.REQMAINDATA)
-      if (this.REQMAINDATA.otherProperties.urlParam.indexOf('BACKGROUNDTASK=1') > -1) {
+      console.log('$$$$ this.form:', this.form)
+      if (this.requestData.otherProperties.urlParam.indexOf('BACKGROUNDTASK=1') > -1) {
         // 后台执行,不继续堵塞其它操作
         this.backstageRequest(this.REQMAINDATA)
         return
@@ -1438,8 +1467,8 @@ export default {
   align-items: center;
 }
 ::v-deep .el-form-item {
-  max-width: 290px;
-  min-width: 290px;
+  max-width: 300px;
+  min-width: 300px;
 }
 ::v-deep .el-input {
   width: 100%;

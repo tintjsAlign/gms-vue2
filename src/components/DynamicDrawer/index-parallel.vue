@@ -184,6 +184,13 @@
                 </el-col>
                 <!-- 普通类型--输入框 end ↑↑↑-->
               </div>
+              <!-- 对象标识 类型--只读不可修改框 ↓↓↓-->
+              <el-col span="12" v-if="requestData.operationID !== 1">
+                <el-form-item label="对象标识">
+                  <el-input v-model="requestData.objectID" autocomplete="off" clearable type="text" :disabled="true" autosize></el-input>
+                </el-form-item>
+              </el-col>
+              <!-- 对象标识 类型--只读不可修改框 end ↑↑↑-->
             </el-form>
           </el-col>
         </el-row>
@@ -436,14 +443,14 @@ export default {
       }
       console.log('抽屉form请求数据:', this.OPENREQMAINDATA)
 
-      if (this.requestData.itemName === '增加风险项') {
-        let value1 = this.OPENREQMAINDATA.attr128LenValue1
-        let value2 = this.OPENREQMAINDATA.attr128LenValue2
-        let value6 = this.OPENREQMAINDATA.attr128LenValue6
-        this.OPENREQMAINDATA.attr128LenValue1 = value1 ? value1 : '中国国家标准化管理委员会'
-        this.OPENREQMAINDATA.attr128LenValue6 = value6 ? value6 : 'GB/T 39786-2021 信息安全技术 信息系统密码应用基本要求'
-        this.OPENREQMAINDATA.attr128LenValue2 = value2 ? value2 : '信息系统安全等级保护标准'
-      }
+      // if (this.requestData.itemName === '增加风险项') {
+      //   let value1 = this.OPENREQMAINDATA.attr128LenValue1
+      //   let value2 = this.OPENREQMAINDATA.attr128LenValue2
+      //   let value6 = this.OPENREQMAINDATA.attr128LenValue6
+      //   this.OPENREQMAINDATA.attr128LenValue1 = value1 ? value1 : '中国国家标准化管理委员会'
+      //   this.OPENREQMAINDATA.attr128LenValue6 = value6 ? value6 : 'GB/T 39786-2021 信息安全技术 信息系统密码应用基本要求'
+      //   this.OPENREQMAINDATA.attr128LenValue2 = value2 ? value2 : '信息系统安全等级保护标准'
+      // }
 
       requestMain(this.OPENREQMAINDATA, loadingtag).then((res) => {
         console.log('抽屉requestMain:', res)
@@ -506,7 +513,7 @@ export default {
               }
             } else {
               // 其它默认值,与resMap对应
-              form[item.valueFldName] = this.resMap[item.valueFldName]
+              form[item.valueFldName] = this.resMap[item.valueFldName] ? this.resMap[item.valueFldName] : ''
               // form[item.valueFldName] = item.otherProperties.fldRemark
             }
           })
@@ -535,7 +542,7 @@ export default {
                 }
               } else {
                 // 其它默认值
-                form[item.valueFldName] = item.otherProperties.defaultValue
+                form[item.valueFldName] = item.otherProperties.defaultValue ? item.otherProperties.defaultValue : ''
               }
             }
           })
@@ -952,8 +959,8 @@ export default {
   align-items: center;
 }
 ::v-deep .el-form-item {
-  max-width: 290px;
-  min-width: 290px;
+  max-width: 300px;
+  min-width: 300px;
 }
 ::v-deep .el-input {
   width: 100%;
