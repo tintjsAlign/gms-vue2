@@ -424,7 +424,7 @@
                 <!-- 普通类型--输入框 end ↑↑↑-->
               </div>
               <!-- 对象标识 类型--只读不可修改框 ↓↓↓-->
-              <el-col span="12" v-if="requestData.operationID !== 1">
+              <el-col span="12" v-if="requestData.operationID !== 1 && specialInstructFlag === false">
                 <el-form-item label="对象标识">
                   <el-input v-model="requestData.objectID" autocomplete="off" clearable type="text" :disabled="true" autosize></el-input>
                 </el-form-item>
