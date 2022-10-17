@@ -47,9 +47,11 @@ const actions = {
   // user login
   login({ commit }, { userInfo, rsaParams }) {
     const { username, password } = userInfo
-    const { pkbase64, modulus, exponent } = rsaParams
+    // const { pkbase64, modulus, exponent } = rsaParams
+    const { modulus, exponent } = rsaParams
     return new Promise((resolve, reject) => {
-      let encryptionPsw = encryption(pkbase64, modulus, exponent, password)
+      // let encryptionPsw = encryption(pkbase64, modulus, exponent, password)
+      let encryptionPsw = encryption('', modulus, exponent, password)
       // console.log('encryptionPsw:', encryptionPsw)
       let data = {
         userID: username.trim(),
