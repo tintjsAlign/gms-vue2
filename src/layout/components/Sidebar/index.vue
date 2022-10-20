@@ -12,6 +12,7 @@
         :collapse-transition="true"
         mode="vertical"
         @open="handleOpen"
+        @select="handleSelect"
       >
         <sidebar-item v-for="(route, index) in permission_routes" :key="index" :item="route" :base-path="route.path" />
       </el-menu>
@@ -53,6 +54,15 @@ export default {
     }
   },
   methods: {
+    handleSelect(key, keyPath) {
+      console.log('handleSelect点击侧边栏', key, keyPath)
+      this.$router.push({
+        path: keyPath,
+        query: {
+          t: +new Date() //保证每次点击路由的query项都是不一样的，确保会重新刷新view
+        }
+      })
+    },
     handleOpen(key, keyPath) {
       // console.log('点击侧边栏', key, keyPath)
       // console.log('点击侧边栏 旧路由表 ALL:', this.permission_routes)
