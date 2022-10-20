@@ -896,12 +896,12 @@ export default {
       data.condition = encodeURI(item.value)
       data.readName = item.otherProperties.readFld
       requestMain(data, 'unshow').then((res) => {
-        if (res === []) {
+        console.log('查询选择框数据', res)
+        if (!res) {
           // 清空选择框和输入框
           this.options = []
           this.form[item.valueFldName] = ''
         }
-        console.log('查询选择框数据', res)
         let options = []
         if (item.otherProperties.textType.match(/enum/gi)) {
           // 拼装枚举options
@@ -960,12 +960,14 @@ export default {
       data.condition = encodeURI(item.value)
       data.readName = item.otherProperties.readFld
       requestMain(data, 'unshow').then((res) => {
-        if (res === []) {
+        console.log('查询选择框数据', res)
+        if (!res) {
           // 清空选择框和输入框
           this.options = []
           this.form[item.valueFldName] = ''
+          this.optionLoading = false
+          return 
         }
-        console.log('查询选择框数据', res)
         let options = []
         if (item.otherProperties.textType.match(/enum/gi)) {
           // 拼装枚举options
