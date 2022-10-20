@@ -57,7 +57,7 @@ export default {
     handleSelect(key, keyPath) {
       console.log('handleSelect点击侧边栏', key, keyPath)
       this.$router.push({
-        path: keyPath,
+        keyPath,
         query: {
           t: +new Date() //保证每次点击路由的query项都是不一样的，确保会重新刷新view
         }
