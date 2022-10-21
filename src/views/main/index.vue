@@ -62,8 +62,9 @@ export default {
   },
   computed: {},
   watch: {
-    $route() {
+    $route(newValue, oldValue) {
       // 此处写router变化时，想要初始化或者是执行的方法......
+      // console.log('Main router变化:', newValue, oldValue)
       this.reload()
     }
   },
@@ -97,6 +98,7 @@ export default {
       this.$router.go(-1)
     },
     init(searchReqData) {
+      this.tableShow = false
       let requestMainData = {
         pageNum: this.currentPage,
         numPerPage: this.pageSize,
@@ -114,15 +116,18 @@ export default {
         requestMainData.pageNum = this.currentPage
         requestMainData.numPerPage = this.pageSize
       }
-      requestMain(requestMainData).then((res) => {
-        console.log('requestMain:', res)
-        if (res[0].list.length > this.pageSize) {
-          this.init()
-        } else {
+      requestMain(requestMainData)
+        .then((res) => {
+          console.log('requestMain:', res)
+          // if (res[0].list.length > this.pageSize) {
+          //   this.init()
+          // } else {
           this.tableData = res[0].list
           this.formThead = res[1].sqlFlag
           this.searchLists = res[1].queryFlag
           this.total = Number(res[0].totalRecNum)
+
+          this.tableShow = true
 
           this.originTableData = this.$_.cloneDeep(this.tableData)
           console.log('初始tableData:', this.originTableData)
@@ -130,16 +135,20 @@ export default {
           console.log('total:', this.total)
           let originSearchLists = JSON.parse(JSON.stringify(this.searchLists))
           this.formatEnum(originSearchLists)
+          this.formatDate(this.formThead)
 
           this.searchLists = this.formatSearchLists(this.searchLists)
 
           console.log('searchLists:', this.searchLists)
           this.tableDataFinal = this.tableData
-        }
-        // this.thead.forEach((item) => {
-        //   this[item.key] = item.value
-        // })
-      })
+          // }
+          // this.thead.forEach((item) => {
+          //   this[item.key] = item.value
+          // })
+        })
+        .catch((err) => {
+          this.tableShow = true
+        })
     },
     formatSearchLists(list) {
       // 处理搜索列表,去掉remark的冒号
@@ -156,25 +165,47 @@ export default {
       data.forEach((item) => {
         if (item.otherProperties.textType === 'enum') {
           // console.log('item value:', value)
-          requestMain({
-            SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
-            SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
-            operationID: item.otherProperties.operationIDForSuggest,
-            condition: item.condition
-          }).then((res) => {
+          requestMain(
+            {
+              SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+              SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
+              operationID: item.otherProperties.operationIDForSuggest,
+              condition: item.condition
+            },
+            'unshow'
+          ).then((res) => {
             console.log(`queryEnum枚举[${item.remark}]:`, res)
             this.enumRes = res
             this.queryEnum(item)
           })
         }
 
-        if (item.remark.indexOf('日期') > -1) {
+        // if (item.remark.indexOf('日期') > -1) {
+        //   console.log('formatEnum日期格式化:',item)
+        //   // 对日期数据进行处理
+        //   this.tableData.forEach((table) => {
+        //     // 替换tableData中的值
+        //     if (table[item.fldName]) {
+        //       let value = table[item.fldName]
+        //       table[item.fldName] = this.$dayjs(value).format('YYYY-MM-DD')
+        //     } else {
+        //       return
+        //     }
+        //   })
+        // }
+      })
+    },
+    formatDate(data) {
+      console.log('formatDate data:', data)
+      data.forEach((item) => {
+        if (item.fldAlais.indexOf('日期') > -1) {
+          console.log('formatDate日期格式化:', item)
           // 对日期数据进行处理
           this.tableData.forEach((table) => {
             // 替换tableData中的值
-            if (table[item.fldName]) {
-              let value = table[item.fldName]
-              table[item.fldName] = this.$dayjs(value).format('YYYY-MM-DD')
+            if (table[item.queryFldName]) {
+              let value = table[item.queryFldName]
+              table[item.queryFldName] = this.$dayjs(value).format('YYYY-MM-DD')
             } else {
               return
             }

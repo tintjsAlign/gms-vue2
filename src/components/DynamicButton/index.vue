@@ -88,7 +88,7 @@ export default {
         SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
         isBtn: '1'
       }
-      requestMain(requestMainData).then((res) => {
+      requestMain(requestMainData, 'unshow').then((res) => {
         console.log('requestMain Btn:', res)
         // 剔除'编辑本视图'按钮
         let btnLists = res.filter((item) => {
@@ -142,7 +142,7 @@ export default {
         SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO'),
         isBtn: '1'
       }
-      requestMain(requestMainData).then((res) => {
+      requestMain(requestMainData, 'unshow').then((res) => {
         console.log('记录操作 Btn:', res)
         // 传回给父组件
         this.$emit('getRecordBtn', res)
