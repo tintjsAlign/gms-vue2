@@ -30,7 +30,7 @@
         <el-row type="flex" justify="center">
           <el-col :span="5" v-if="showCPZB">
             <div class="grid-content bg-purple" @click="toDashboard('测评准备', 'router_ready')">
-              <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/pczb.png')" fit="fit"></el-image>
+              <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/cpzb.png')" fit="fit"></el-image>
               <div class="titleName">测评准备</div>
             </div>
           </el-col>
@@ -50,7 +50,7 @@
           </el-col>
           <el-col :span="5" v-if="showJGFX">
             <div class="grid-content bg-purple" @click="toDashboard('结果分析', 'router_result')">
-              <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/pcjg.png')" fit="fit"></el-image>
+              <el-image style="width: 60px; height: 60px" :src="require('@/assets/img/jgfx.png')" fit="fit"></el-image>
               <div class="titleName">结果分析</div>
             </div>
           </el-col>
@@ -408,7 +408,8 @@ export default {
 .home {
   &-container {
     height: 100%;
-    background-color: #202a3c;
+    // background-color: #202a3c;
+    background-color: #1c2333;
     background-image: url('bg.png');
     background-repeat: repeat;
     background-position: left top;
@@ -448,8 +449,9 @@ export default {
 }
 .el-col {
   width: 280px;
-  height: 164px;
+  height: 250px;
   border-radius: 4px;
+  box-shadow: '0 0 15px 10px #1c2333';
   margin: 30px 50px;
   background-image: url('borderBg.png');
   background-repeat: no-repeat;

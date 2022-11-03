@@ -3,8 +3,8 @@
     <img src="@/assets/img/loginimg.png" alt="" class="loginBG" />
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
       <div class="title-container">
-        <h3 class="title">用户登录</h3>
-        <h5 class="title">USER LOGIN</h5>
+        <h3 class="title">密评工具平台</h3>
+        <h5 class="title1">用户登录 USER LOGIN</h5>
       </div>
 
       <el-form-item prop="username">
@@ -185,7 +185,8 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg: #2d3a4b;
+// $bg: #2d3a4b;
+$bg: #1c2333;
 $dark_gray: #889aa4;
 $light_gray: #eee;
 
@@ -236,7 +237,14 @@ $light_gray: #eee;
     position: relative;
 
     .title {
-      font-size: 26px;
+      font-size: 36px;
+      color: $light_gray;
+      margin: 0px auto 40px auto;
+      text-align: center;
+      font-weight: bold;
+    }
+    .title1 {
+      font-size: 24px;
       color: $light_gray;
       margin: 0px auto 40px auto;
       text-align: center;
