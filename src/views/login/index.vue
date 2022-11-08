@@ -200,9 +200,9 @@ $light_gray: #eee;
   align-items: center;
 
   .loginBG {
-    width: 30%;
+    width: 40%;
     height: 80%;
-    margin-left: 15%;
+    margin-left: 10%;
   }
   .login-form {
     position: relative;

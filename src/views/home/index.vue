@@ -409,7 +409,7 @@ export default {
   &-container {
     height: 100%;
     // background-color: #202a3c;
-    background-color: #1c2333;
+    background-color: #181515;
     background-image: url('bg.png');
     background-repeat: repeat;
     background-position: left top;
@@ -448,10 +448,10 @@ export default {
   }
 }
 .el-col {
-  width: 280px;
+  width: 300px;
   height: 250px;
   border-radius: 4px;
-  box-shadow: '0 0 15px 10px #1c2333';
+  // box-shadow: '0 0 15px 10px #1c2333';
   margin: 30px 50px;
   background-image: url('borderBg.png');
   background-repeat: no-repeat;
