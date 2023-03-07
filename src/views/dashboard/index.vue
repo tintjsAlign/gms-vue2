@@ -28,13 +28,13 @@ export default {
     this.routeParams = this.$route.meta
     console.log('routeParams:', this.routeParams)
     if (this.routeParams.title === '测评准备') {
-      this.imageSrc = require('@/assets/img/CPZB.png')
+      this.imageSrc = require('@/assets/img/cpzb01.png')
     } else if (this.routeParams.title === '方案编制') {
-      this.imageSrc = require('@/assets/img/FABZ.png')
+      this.imageSrc = require('@/assets/img/fabz01.png')
     } else if (this.routeParams.title === '现场测评') {
-      this.imageSrc = require('@/assets/img/XCCP.png')
+      this.imageSrc = require('@/assets/img/xccp01.png')
     } else if (this.routeParams.title === '结果分析') {
-      this.imageSrc = require('@/assets/img/JGFX.png')
+      this.imageSrc = require('@/assets/img/jgfx01.png')
     }
   },
   methods: {
@@ -56,6 +56,7 @@ export default {
   align-items: center;
   margin: 0 auto;
 }
+
 .imgBG {
   width: 70%;
   height: 90vh;
