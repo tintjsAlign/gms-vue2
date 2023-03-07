@@ -37,7 +37,25 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    before: require('./mock/mock-server.js')
+    before: require('./mock/mock-server.js'),
+    proxy: {
+      '/secretassessment/dev_api': {
+        target: 'https://www.paytunnel.cn/secretassessment', // 代理地址，这里设置的地址会代替axios中设置的baseURL
+        changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
+        ws: true,
+        pathRewrite: {
+          '^/secretassessment/dev_api': ''
+        },
+        onProxyReq: function (proxyReq, req, res, options) {
+          if (req.body) {
+            let bodyData = qs.stringify(req.body) // incase if content-type is application/x-www-form-urlencoded -> we need to change to application/json
+            proxyReq.setHeader('Content-Type', 'application/x-www-form-urlencoded')
+            proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData)) // stream the content
+            proxyReq.write(bodyData)
+          }
+        }
+      }
+    }
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

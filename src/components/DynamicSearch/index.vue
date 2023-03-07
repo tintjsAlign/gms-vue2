@@ -1,41 +1,19 @@
 <template>
   <div class="search-container">
-    <el-row :gutter="20" style="margin: 10px;width:100%" >
-      <el-col
-        :span="5"
-        v-for="(input, index) in searchData"
-        :key="index"
-        style="margin-top: 10px"
-      >
-        <el-tooltip class="item" effect="dark" :content="input.remark" open-delay="500" placement="top-start">
-        
-         <!-- enum类型--枚举选择框 ↓↓↓-->
+    <el-row :gutter="20" style="margin: 10px;width:100%">
+      <el-col :span="5" v-for="(input, index) in searchData" :key="index" style="margin-top: 10px">
+        <el-tooltip class="item" effect="dark" :content="input.remark" open-delay="500" placement="top-start" />
 
-          <el-select
-            v-model="form[input.fldName]"
-            :placeholder="input.remark"
-            style="width: 100%"
-            size="mini"
-            @focus="queryOption(input)"
-            @change="getChange($event, input, index)"
-            v-if="input.otherProperties.textType.match(/enum/g)"
-          >
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-              ></el-option>
-            </el-select>
+        <!-- enum类型--枚举选择框 ↓↓↓-->
+
+        <el-select v-model="form[input.fldName]" :placeholder="input.remark" style="width: 100%" size="mini"
+                   @focus="queryOption(input)" @change="getChange($event, input, index)"
+                   v-if="input.otherProperties.textType.match(/enum/g)">
+          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        </el-select>
         <!-- enum类型--枚举选择框 end ↑↑↑-->
         <!-- 普通类型--输入框 ↓↓↓-->
-        <el-input
-          v-model="form[input.fldName]"
-          :placeholder="input.remark"
-          size="mini"
-          clearable
-          v-else
-        >
+        <el-input v-model="form[input.fldName]" :placeholder="input.remark" size="mini" clearable v-else>
         </el-input>
         <!-- 普通类型--输入框 end ↑↑↑-->
       </el-col>
@@ -43,36 +21,22 @@
     <el-row :gutter="5" style="margin: 10px" class="bottonBox">
       <el-col :span="12">
         <el-dropdown size="small" placement="bottom" @command="handleCommand">
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          plain
-          @click="search"
-          style="margin-top: 10px"
-        >
-          搜索
-        </el-button>
+          <el-button type="primary" icon="el-icon-search" size="mini" plain @click="search" style="margin-top: 10px">
+            搜索
+          </el-button>
 
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item icon="el-icon-search" command="accurate">精确搜索</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item icon="el-icon-search" command="accurate">精确搜索</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </el-col>
-        <!-- 重置 -->
+      <!-- 重置 -->
       <el-col :span="12">
-        <el-button
-          type="info"
-          icon="el-icon-refresh"
-          size="mini"
-          plain
-          @click="reset"
-          style="margin-top: 10px"
-        >
+        <el-button type="info" icon="el-icon-refresh" size="mini" plain @click="reset" style="margin-top: 10px">
           重置
         </el-button>
       </el-col>
-      
+    </el-row>
   </div>
 </template>
 
@@ -80,11 +44,11 @@
 import { requestMain } from '@/api/main'
 export default {
   name: '',
-  components: {  },
+  components: {},
   props: {
     searchData: {
       type: Object,
-      default: () => {}
+      default: () => { }
     },
     currentPage: {
       type: Number,
@@ -108,14 +72,14 @@ export default {
   created() {
     // 获取路由的参数
     console.log('搜索路由参数:', this.$route)
-    if(this.$route.query && this.$route.query.meta){
+    if (this.$route.query && this.$route.query.meta) {
       this.routeParams = this.$route.query.meta
-    }else {
+    } else {
       this.routeParams = this.$route.meta
     }
     console.log('搜索routeParams:', this.routeParams)
   },
-  mounted() {},
+  mounted() { },
   methods: {
     onFocus(input, index) {
       // 获取焦点时,展示当前prepend
@@ -152,13 +116,13 @@ export default {
       data.pageNum = this.currentPage
       data.numPerPage = this.pageSize
       data.operationID = 51
-      data.isBlur= '1'
+      data.isBlur = '1'
       if (command === 'accurate') {
         data.UI_ACCURATEQUERY = '1'
-        
+
       }
 
-      if(data.condition){
+      if (data.condition) {
         delete data.condition
       }
       console.log('searchData:', data)
@@ -237,12 +201,13 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+
   .bottonBox {
     // 从上到下排列
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    
+
   }
 }
 </style>
