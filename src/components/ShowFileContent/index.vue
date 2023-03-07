@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
-    <el-drawer :title="title" size="50%" :visible.sync="drawer" :append-to-body="true" :direction="rtl" :before-close="handleClose">
+    <el-drawer :title="title" size="50%" :visible.sync="drawer" :append-to-body="true" :direction="rtl"
+               :before-close="handleClose">
       <!-- 展示区域 -->
       <!-- 根据文件后缀判断展示图片还是文本 -->
       <div class="content">
@@ -8,7 +9,7 @@
           <el-image style="width: 100%" :src="fileUrl" fit="cover"></el-image>
         </div>
         <div v-else-if="fileType === 'doc'">
-          <el-alert :closable="false" :title="title" show-icon>
+          <el-alert :closable="false" :title="title" show-icon />
           <el-alert :closable="false">
             <div v-html="fileContent"></div>
           </el-alert>
@@ -36,13 +37,13 @@ export default {
       title: '',
       drawer: false,
       alertType: '',
-      isTree:''
+      isTree: ''
     }
   },
   computed: {},
   watch: {},
-  created() {},
-  mounted() {},
+  created() { },
+  mounted() { },
   methods: {
     show(res, title, isTree) {
       console.log('isTree:', isTree)
@@ -53,7 +54,7 @@ export default {
       if (title.indexOf('|continuityAdd') > -1) {
         this.continuityAdd = title.split('|')[1]
         this.title = title.split('|')[0]
-      }else {
+      } else {
         this.title = title
       }
       // 根据文件后缀判断展示图片还是文件或者文本
@@ -81,20 +82,20 @@ export default {
       if (this.isTree) {
         if (this.isTree === 'tree') {
           done()
-        }else {
+        } else {
           // this.reloadOfSearch(this.isTree)
           this.$emit('reloadOfSearch', this.isTree)
-          this.$emit('refresh',this.isTree)
+          this.$emit('refresh', this.isTree)
           done()
         }
-      }else{
+      } else {
         if (this.title === '登记被测系统') {
           this.$router.push('/被测信息系统')
           done()
-        }else if(this.continuityAdd){
+        } else if (this.continuityAdd) {
           done()
         }
-        else{
+        else {
           // this.reload()
           this.$emit('reloadOfSearch')
           this.$emit('refresh')
