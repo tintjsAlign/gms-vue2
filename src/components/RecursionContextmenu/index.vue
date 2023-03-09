@@ -8,13 +8,13 @@
           </template>
           <template v-for="(s, index) in item.children">
             <!-- <Recursion :recordMenuGrp="item.children"></Recursion> -->
-            <v-contextmenu-item :key="index" @click="submenuClick(s)">{{ s.itemName }}</v-contextmenu-item>
+            <v-contextmenu-item @click="submenuClick(s)">{{ s.itemName }}</v-contextmenu-item>
           </template>
         </v-contextmenu-submenu>
-        <v-contextmenu-item :key="index" v-else-if="item.itemId === 'refresh'" @click="refresh()">
+        <v-contextmenu-item v-else-if="item.itemId === 'refresh'" @click="refresh()">
           <span><svg-icon icon-class="refresh" /> {{ item.itemName }}</span>
         </v-contextmenu-item>
-        <v-contextmenu-item :key="index" v-else @click="submenuClick(item)">
+        <v-contextmenu-item v-else @click="submenuClick(item)">
           <span><svg-icon icon-class="shezhi01" /> {{ item.itemName }}</span>
         </v-contextmenu-item>
       </div>
@@ -382,7 +382,9 @@ export default {
       this.$router.replace({
         path: '/redirect' + fullPath,
         query: {
-          row: row
+          row: row,
+          metaMain: this.$route.query.metaMain,
+          fatherPath: fullPath
         }
       })
     },
