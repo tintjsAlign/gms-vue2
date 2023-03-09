@@ -33,6 +33,7 @@ export default {
   props: {},
   data() {
     return {
+      title: '',
       dialogVisible: false,
       loading: false,
       uploadURL: '',

@@ -33,7 +33,8 @@ export default {
       const first = matched[0]
       if (first && first.path === '/dashboard') {
         this.pageTitle = first.meta.title
-        this.firstMatched = [{ path: '/home', meta: { title: `首页` } }].concat([{ path: '/dashboard', meta: { title: `${this.pageTitle}` } }])
+        // this.firstMatched = [{ path: '/home', meta: { title: `首页` } }].concat([{ path: '/dashboard', meta: { title: `${this.pageTitle}` } }])
+        this.firstMatched = [{ path: '/', meta: { title: `首页` } }]
       }
 
       if (!this.isDashboard(first)) {

@@ -61,6 +61,7 @@ export default {
       return data
     }
     return {
+      drawerTitle: '',
       innerDrawer: false,
       loading: false,
       // data: generateData(),

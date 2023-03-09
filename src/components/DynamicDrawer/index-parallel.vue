@@ -2,15 +2,15 @@
   <div class="drawer-container" v-if="showContainer">
     <div>
       <div class="demo-drawer__content">
-        <el-row gutter="20">
-          <el-col span="24">
+        <el-row :gutter="20">
+          <el-col :span="24">
             <el-form :model="form" ref="dynamicTableRef" label-position="top" size="small">
               <!-- el-row 每行最多两个输入框 -->
 
               <div v-for="(item, index) in drawerData" :key="index">
                 <!-- <el-row gutter="24" :key="index" v-if="index % 2 == 0"> -->
                 <!-- query类型(只可选择)--选择框 ↓↓↓-->
-                <el-col span="12" v-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === 'readonly'">
+                <el-col :span="12" v-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === 'readonly'">
                   <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
@@ -27,7 +27,7 @@
                 </el-col>
                 <!-- query类型(只可选择)--选择框 end ↑↑↑-->
                 <!-- query类型（可创建）--选择框 ↓↓↓-->
-                <el-col span="12" v-else-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === ''">
+                <el-col :span="12" v-else-if="item.otherProperties.textType === 'query' && item.otherProperties.otherCon === ''">
                   <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
@@ -47,7 +47,7 @@
                 </el-col>
                 <!-- query类型（可创建）--选择框 end ↑↑↑-->
                 <!-- dateTime类型--日期选择框 ↓↓↓-->
-                <el-col span="12" v-else-if="item.otherProperties.textType === 'dateTime'">
+                <el-col :span="12" v-else-if="item.otherProperties.textType === 'dateTime'">
                   <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-date-picker
                       v-model="form[item.valueFldName]"
@@ -62,7 +62,7 @@
                 </el-col>
                 <!-- dateTime类型--日期选择框 end ↑↑↑-->
                 <!-- enum类型--枚举选择框 ↓↓↓-->
-                <el-col span="12" v-else-if="item.otherProperties.textType === 'enum'">
+                <el-col :span="12" v-else-if="item.otherProperties.textType === 'enum'">
                   <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
@@ -79,7 +79,7 @@
                 </el-col>
                 <!-- enum类型--枚举选择框 end ↑↑↑-->
                 <!-- form类型--多选穿梭框 ↓↓↓-->
-                <el-col span="12" v-else-if="item.otherProperties.textType === 'form'">
+                <el-col :span="12" v-else-if="item.otherProperties.textType === 'form'">
                   <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-input
                       v-model="form[item.valueFldName]"
@@ -93,7 +93,7 @@
                 </el-col>
                 <!-- form类型--多选穿梭框 end ↑↑↑-->
                 <!-- queryArea 类型--地区选择框 ↓↓↓-->
-                <el-col span="12" v-else-if="item.otherProperties.textType === 'queryArea'">
+                <el-col :span="12" v-else-if="item.otherProperties.textType === 'queryArea'">
                   <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-select
                       v-model="form[item.valueFldName]"
@@ -110,7 +110,7 @@
                 </el-col>
                 <!-- queryArea 类型--地区选择框 end ↑↑↑-->
                 <!-- multirow 类型--多行输入框 ↓↓↓-->
-                <el-col span="12" v-else-if="item.otherProperties.textType === 'multirow'">
+                <el-col :span="12" v-else-if="item.otherProperties.textType === 'multirow'">
                   <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-popover placement="bottom" width="300" trigger="click" @show="textareaShow(item)" @hide="textareaHide(item)">
                       <el-input
@@ -139,7 +139,7 @@
                 </el-col>
                 <!-- multirow 类型--多行输入框 end ↑↑↑-->
                 <!-- condition 类型--多行输入框 ↓↓↓-->
-                <el-col span="12" v-else-if="item.otherProperties.textType === 'condition'">
+                <el-col :span="12" v-else-if="item.otherProperties.textType === 'condition'">
                   <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-popover placement="bottom" width="300" trigger="click" @show="textareaShow(item)" @hide="textareaHide(item)">
                       <el-input
@@ -169,7 +169,7 @@
                 <!-- condition 类型--多行输入框 end ↑↑↑-->
 
                 <!-- readOnly 类型--只读不可修改框 ↓↓↓-->
-                <el-col span="12" v-else-if="item.otherProperties.textType === 'notshow' || item.otherProperties.textType.match(/readOnly/gi)">
+                <el-col :span="12" v-else-if="item.otherProperties.textType === 'notshow' || item.otherProperties.textType.match(/readOnly/gi)">
                   <el-form-item :label="item.fldAlais">
                     <el-input v-model="form[item.valueFldName]" autocomplete="off" clearable type="text" :disabled="true" autosize></el-input>
                   </el-form-item>
@@ -177,7 +177,7 @@
                 <!-- readOnly 类型--只读不可修改框 end ↑↑↑-->
 
                 <!-- 普通类型--输入框 ↓↓↓-->
-                <el-col span="12" v-else>
+                <el-col :span="12" v-else>
                   <el-form-item :rules="requiredRules(item)" :prop="item.valueFldName" :label="item.fldAlais">
                     <el-input v-model="form[item.valueFldName]" autocomplete="off" clearable></el-input>
                   </el-form-item>
@@ -185,7 +185,7 @@
                 <!-- 普通类型--输入框 end ↑↑↑-->
               </div>
               <!-- 对象标识 类型--只读不可修改框 ↓↓↓-->
-              <el-col span="12" v-if="requestData.operationID !== 1">
+              <el-col :span="12" v-if="requestData.operationID !== 1">
                 <el-form-item label="对象标识">
                   <el-input v-model="requestData.objectID" autocomplete="off" clearable type="text" :disabled="true" autosize></el-input>
                 </el-form-item>
@@ -220,6 +220,7 @@ export default {
   props: {},
   data() {
     return {
+      specialInstructFlag: false,
       showContainer: false,
       dialog: false,
       loading: false,

@@ -1,7 +1,6 @@
 <template>
   <div class="app-container">
-    <el-drawer :title="title" size="50%" :visible.sync="drawer" :append-to-body="true" :direction="rtl"
-               :before-close="handleClose">
+    <el-drawer :title="title" size="50%" :visible.sync="drawer" :append-to-body="true" direction="rtl" :before-close="handleClose">
       <!-- 展示区域 -->
       <!-- 根据文件后缀判断展示图片还是文本 -->
       <div class="content">
@@ -15,8 +14,7 @@
           </el-alert>
         </div>
         <div v-else>
-          <el-alert :closable="false" :title="title" :type="alertType" show-icon>
-          </el-alert>
+          <el-alert :closable="false" :title="title" :type="alertType" show-icon> </el-alert>
           <el-alert :closable="false" :type="alertType">
             <div v-html="fileContent"></div>
           </el-alert>
@@ -35,6 +33,8 @@ export default {
   data() {
     return {
       title: '',
+      fileType: '',
+      fileContent: '',
       drawer: false,
       alertType: '',
       isTree: ''
@@ -42,8 +42,8 @@ export default {
   },
   computed: {},
   watch: {},
-  created() { },
-  mounted() { },
+  created() {},
+  mounted() {},
   methods: {
     show(res, title, isTree) {
       console.log('isTree:', isTree)
@@ -94,8 +94,7 @@ export default {
           done()
         } else if (this.continuityAdd) {
           done()
-        }
-        else {
+        } else {
           // this.reload()
           this.$emit('reloadOfSearch')
           this.$emit('refresh')
