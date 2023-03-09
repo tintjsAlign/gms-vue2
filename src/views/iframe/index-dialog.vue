@@ -49,6 +49,7 @@ export default {
   props: {},
   data() {
     return {
+      title: '',
       dialogVisible: false,
       html: '',
       iframeH: '600px',

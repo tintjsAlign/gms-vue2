@@ -19,6 +19,7 @@ export default {
   props: {},
   data() {
     return {
+      title: '',
       dialog: false
     }
   },

@@ -441,10 +441,12 @@ export default {
       console.log('openTreeManage:', this.$route)
       // 打开树管理界面
       this.$router.push({
-        // path: `/tree`,
-        path: `${fatherPath}/tree`,
+        path: `/tree/:${fatherPath}`,
+        // path: `${fatherPath}/tree`,
         query: {
-          row: row
+          row: row,
+          metaMain: this.$route.query.metaMain,
+          fatherPath: this.fatherPath
         },
         meta: { activeMenu: `${this.fatherPath}` }
       })
@@ -453,7 +455,7 @@ export default {
     openIframeManage(row) {
       // 打开展示报表界面
       this.$router.push({
-        path: `/iframe`,
+        path: `/iframe/:${row.tblAlias}`,
         query: {
           row: row
         }
@@ -503,6 +505,6 @@ export default {
   }
 }
 </script>
-isNeedConfirm
+<!-- isNeedConfirm -->
 
 <style scoped lang="scss"></style>

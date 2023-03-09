@@ -73,13 +73,15 @@
         </v-contextmenu>
 
         <div v-contextmenu:contextmenu>右键点击此区域</div> -->
-          <dynamic-drawer ref="drawer" @refresh="refresh" @refreshNode="refreshNode" @getDrawerForm="getDrawerForm"></dynamic-drawer>
+          <dynamic-drawer ref="drawer" @refreshNode="refreshNode"></dynamic-drawer>
+          <dynamic-drawer-parallel ref="drawerParallel" @refreshNode="refreshNode"></dynamic-drawer-parallel>
+          <!-- <dynamic-drawer ref="drawer" @refresh="refresh" @refreshNode="refreshNode" @getDrawerForm="getDrawerForm"></dynamic-drawer>
           <dynamic-drawer-parallel
             ref="drawerParallel"
             @refresh="refresh"
             @refreshNode="refreshNode"
             @getDrawerForm="getDrawerForm"
-          ></dynamic-drawer-parallel>
+          ></dynamic-drawer-parallel> -->
         </div>
       </template>
     </split-pane>
@@ -150,6 +152,7 @@ export default {
   created() {
     // 获取路由的参数
     this.routeRow = this.$route.query.row
+    console.log('this.$route:', this.$route)
     console.log('routeRow:', this.routeRow)
     this.title = this.routeRow.itemName
     let pre = this.routeRow.condition
@@ -202,7 +205,13 @@ export default {
       console.log('resize')
     },
     goBack() {
-      this.$router.go(-1)
+      // this.$router.go(-1)
+      this.$router.push({
+        path: this.$route.query.fatherPath,
+        query: {
+          metaMain: this.$route.query.metaMain
+        }
+      })
     },
     loadNode(node, resolve) {
       //如果展开第一级节点，从后台加载一级节点列表
@@ -235,11 +244,11 @@ export default {
       let rowCondition = ''
       let preCondition = this.preCondition.split(',').filter((i) => i !== '')
       preCondition.forEach((item) => {
-        if (item.indexOf('=this.') > -1){
+        if (item.indexOf('=this.') > -1) {
           let key = item.split('=this.')[0]
           let value = item.split('=this.')[1]
           rowCondition += key + '=' + this.routeRow[value] + '|'
-        }else {
+        } else {
           rowCondition += item + '|'
         }
       })
@@ -953,7 +962,8 @@ export default {
 // ::v-deep .v-modal {
 //   position: absolute !important;
 // }
-.splitter-pane.vertical.splitter-paneL, .splitter-pane.vertical.splitter-paneR {
+.splitter-pane.vertical.splitter-paneL,
+.splitter-pane.vertical.splitter-paneR {
   overflow: auto !important;
 }
 // 右键会选中文字，为了美观将它禁用

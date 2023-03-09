@@ -71,6 +71,32 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/iframe/:id',
+    component: Layout,
+    redirect: '/iframe',
+    hidden: true,
+    children: [
+      {
+        path: '',
+        name: 'iframe',
+        component: () => import('@/views/iframe/index')
+      }
+    ]
+  },
+  {
+    path: '/tree/:id',
+    component: Layout,
+    redirect: '/tree',
+    hidden: true,
+    children: [
+      {
+        path: '',
+        name: 'tree',
+        component: () => import('@/views/tree/index')
+      }
+    ]
+  },
 
   {
     path: '/404',

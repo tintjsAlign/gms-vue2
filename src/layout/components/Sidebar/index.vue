@@ -56,13 +56,13 @@ export default {
   methods: {
     handleSelect(key, keyPath) {
       // console.log('handleSelect点击侧边栏,路由跳转:', key, keyPath)
-      // this.$router.push({
-      //   // keyPath,
-      //   // path: key,
-      //   query: {
-      //     t: +new Date() //保证每次点击路由的query项都是不一样的，确保会重新刷新view
-      //   }
-      // })
+      this.$router.push({
+        // keyPath,
+        // path: key,
+        query: {
+          t: +new Date() //保证每次点击路由的query项都是不一样的，确保会重新刷新view
+        }
+      })
     },
     handleOpen(key, keyPath) {
       console.log('点击侧边栏', key, keyPath)
