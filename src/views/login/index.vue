@@ -47,7 +47,7 @@
 <script>
 import { validUsername } from '@/utils/validate'
 
-import { getRsaParams } from '@/api/main'
+import { getRsaParams, getMenuLv1 } from '@/api/main'
 
 export default {
   name: 'Login',
@@ -90,8 +90,38 @@ export default {
   },
   created() {
     this.rsaEncryption()
+    let o = this.getParams('keySvrName')
+    console.log(o)
   },
   methods: {
+    /**
+     * @param string 参数名
+     * @return string | string[] 参数值
+     **/
+    getParams(name) {
+      //获取拼接的参数
+      const paramStr = window.location.search.substring(1)
+      //第一次分割
+      const paramsArr = paramStr.split('&')
+      const obj = {}
+      paramsArr.forEach((param) => {
+        //第二次分割
+        const paramArr = param.split('=')
+        const pKey = paramArr[0]
+        const pValue = paramArr[1]
+        if (!obj[pKey]) {
+          obj[pKey] = pValue
+        } else {
+          //考虑下数组参数
+          if (Array.isArray(obj[pKey])) {
+            obj[pKey].push(pValue)
+          } else {
+            obj[pKey] = [obj[pKey], pValue]
+          }
+        }
+      })
+      return obj[name]
+    },
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -112,7 +142,8 @@ export default {
             .then(() => {
               // this.$router.push({ path: this.redirect || '/' })
               // this.testPassword()
-              this.$router.push({ path: '/home' })
+              this.init()
+              // this.$router.push({ path: '/' })
               this.$message({
                 message: '登录成功',
                 type: 'success'
@@ -131,6 +162,161 @@ export default {
     rsaEncryption() {
       getRsaParams().then((res) => {
         this.rsaParams = { ...res }
+      })
+    },
+    init() {
+      window.sessionStorage.removeItem('gatInfoRoles')
+      window.sessionStorage.removeItem('gatInfoTree')
+
+      let data = {
+        SYSTEMKEYNAME: window.sessionStorage.getItem('SYSTEMKEYNAME'),
+        SYSTEMTELLERNO: window.sessionStorage.getItem('SYSTEMTELLERNO')
+      }
+      getMenuLv1(data).then((res) => {
+        console.log('login:getMenuLv1:', res)
+        this.menuLv1 = res
+        let menuRouterLists = [
+          {
+            path: '/',
+            component: 'layout',
+            redirect: '/dashboard',
+            children: [
+              {
+                breadcrumb: false,
+                path: 'dashboard',
+                name: '首页',
+                component: 'dashboard',
+                meta: { title: '首页', icon: 'dashboard' }
+              }
+            ]
+          }
+        ]
+        this.menuLv1.forEach((item) => {
+          let role = 'admin'
+          menuRouterLists.push({
+            path: `/${item.menuGrpName}`,
+            component: 'layout',
+            alwaysShow: true,
+            redirect: 'noRedirect',
+            meta: {
+              title: item.menuGrpName,
+              // icon: this.getIcon(item.itemName),
+              icon: '',
+              roles: [role],
+              menuGrpName: item.menuGrpName,
+              menuName: item.menuName,
+              otherProperties: item.otherProperties
+            }
+          })
+        })
+        // this.menuLv1.forEach((item) => {
+        //   let componentOf
+        //   let role = 'admin'
+        //   if (item.itemName === '登记被测系统') {
+        //     componentOf = 'drawer'
+        //   } else {
+        //     if (item.resId === 990) {
+        //       componentOf = ''
+        //     } else {
+        //       componentOf = 'main'
+        //     }
+        //   }
+        //   let children = [
+        //     {
+        //       path: '',
+        //       // component: `() => import('@/views/currency')`,
+        //       //如果menuRouterLists中itemName为登记被测系统,则component为drawer
+        //       component: componentOf,
+        //       name: item.itemName,
+        //       meta: {
+        //         title: item.itemName,
+        //         // icon: this.getIcon(item.itemName),
+        //         icon: '',
+        //         roles: [role],
+        //         itemName: item.itemName,
+        //         tblAlias: item.tblAlias,
+        //         operationID: item.operationID,
+        //         resId: item.resId,
+        //         otherProperties: item.otherProperties
+        //       }
+        //     }
+        //   ]
+        //   if (item.resId === 990) {
+        //     menuRouterLists.push({
+        //       path: `/${item.itemName}`,
+        //       component: 'layout',
+        //       alwaysShow: true,
+        //       redirect: 'noRedirect',
+        //       meta: {
+        //         title: item.itemName,
+        //         // icon: this.getIcon(item.itemName),
+        //         icon: '',
+        //         roles: [role],
+        //         itemName: item.itemName,
+        //         tblAlias: item.tblAlias,
+        //         operationID: item.operationID,
+        //         resId: item.resId,
+        //         otherProperties: item.otherProperties
+        //       }
+        //     })
+        //   } else {
+        //     menuRouterLists.push({
+        //       path: `/${item.itemName}`,
+        //       component: 'layout',
+        //       name: item.tblAlias,
+        //       meta: {
+        //         breadcrumb: false,
+        //         title: item.itemName,
+        //         // icon: this.getIcon(item.itemName),
+        //         icon: '',
+        //         roles: [role]
+        //       },
+        //       children: children
+        //     })
+        //   }
+
+        // })
+
+        // menuRouterLists.forEach((item) => {
+        //   if (item.children) {
+        //     item.children.push(
+        //       {
+        //         // path: `tree/:id(\\d+)`,
+        //         path: `tree`,
+        //         component: 'tree',
+        //         name: 'tree',
+        //         meta: { activeMenu: item.path },
+        //         hidden: true
+        //       },
+        //       {
+        //         // path: `tree/:id(\\d+)`,
+        //         path: `iframe`,
+        //         component: 'iframe',
+        //         name: 'iframe',
+        //         meta: { activeMenu: item.path },
+        //         hidden: true
+        //       }
+        //     )
+        //   }
+        // })
+
+        console.log('*****menuRouterLists*****1级:', menuRouterLists)
+        this.routerListsss = menuRouterLists
+
+        this.$store.commit('user/SET_ROUTERS', JSON.parse(JSON.stringify(menuRouterLists)))
+
+        window.sessionStorage.setItem('gatInfoTree', JSON.stringify(this.routerListsss))
+        this.$store
+          .dispatch('user/changeRoles', {
+            roles: ['admin'],
+            // role: [role],
+            tree: this.routerListsss
+          })
+          .then(() => {
+            this.$emit('change')
+            // this.$router.push(`/?${role}`)
+            this.$router.push('/')
+          })
       })
     }
   }
@@ -204,6 +390,7 @@ $light_gray: #eee;
     height: 80%;
     margin-left: 10%;
   }
+
   .login-form {
     position: relative;
     width: 520px;
@@ -243,6 +430,7 @@ $light_gray: #eee;
       text-align: center;
       font-weight: bold;
     }
+
     .title1 {
       font-size: 24px;
       color: $light_gray;

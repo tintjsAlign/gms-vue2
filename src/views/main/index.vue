@@ -54,6 +54,9 @@ export default {
       routeParams: {},
       formThead: [],
       tableData: [],
+      searchLists: [],
+      searchReqData: {},
+      tableDataFinal: [],
       total: 0, //数组总数
       currentPage: 1, //当前页
       pageSize: 10, //每页数据
@@ -76,6 +79,8 @@ export default {
       this.routeParams = this.$route.query.meta
       this.treeQuery = true
       this.title = this.routeParams.itemName
+    } else if (this.$route.query.metaMain) {
+      this.routeParams = this.$route.query.metaMain
     } else {
       this.routeParams = this.$route.meta
     }
@@ -116,6 +121,8 @@ export default {
         requestMainData.pageNum = this.currentPage
         requestMainData.numPerPage = this.pageSize
       }
+
+      console.log('requestMainData!!!', requestMainData)
       requestMain(requestMainData)
         .then((res) => {
           console.log('requestMain:', res)

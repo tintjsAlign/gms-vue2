@@ -59,7 +59,7 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/main',
+    path: '/main/:id',
     component: Layout,
     redirect: '/main',
     hidden: true,
@@ -67,7 +67,7 @@ export const constantRoutes = [
       {
         path: '',
         name: 'main',
-        component: () => import('@/views/main/index'),
+        component: () => import('@/views/main/index')
       }
     ]
   },
