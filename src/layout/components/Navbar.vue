@@ -40,6 +40,9 @@
           <el-dropdown-item @click.native="refresh">
             <span style="display: block"><i class="el-icon-refresh-right"></i> 刷新配置</span>
           </el-dropdown-item>
+          <el-dropdown-item @click.native="changePageStyle">
+            <span style="display: block"><i class="el-icon-open" /> 布局设置</span>
+          </el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
             <span style="display: block"><i class="el-icon-switch-button"></i> 退出登录</span>
           </el-dropdown-item>
@@ -67,7 +70,10 @@ export default {
     ...mapGetters([
       'sidebar'
       // 'avatar'
-    ])
+    ]),
+    showSettings() {
+      return this.$store.state.settings.showSettings
+    }
   },
   created() {
     this.avatar = require('@/assets/img/touxiang.png')
@@ -101,6 +107,13 @@ export default {
             duration: 2000
           })
         }
+      })
+    },
+    changePageStyle() {
+      let show = !this.showSettings
+      this.$store.dispatch('settings/changeSetting', {
+        key: 'showSettings',
+        value: show
       })
     }
   }

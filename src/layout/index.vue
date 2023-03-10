@@ -14,16 +14,18 @@
         <tags-view v-if="needTagsView" />
       </div>
       <app-main />
-      <!-- <right-panel v-if="showSettings">
+      <right-panel v-if="showSettings">
         <settings />
-      </right-panel> -->
+      </right-panel>
     </div>
   </div>
 </template>
 
 <script>
-import { Navbar, Sidebar, AppMain, TagsView } from './components'
+import { Navbar, Sidebar, Settings, AppMain, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
+import RightPanel from '@/components/RightPanel'
+import { mapState } from 'vuex'
 
 export default {
   name: 'Layout',
@@ -31,22 +33,31 @@ export default {
     Navbar,
     Sidebar,
     AppMain,
-    TagsView
+    TagsView,
+    RightPanel,
+    Settings
   },
   mixins: [ResizeMixin],
   computed: {
-    sidebar() {
-      return this.$store.state.app.sidebar
-    },
-    device() {
-      return this.$store.state.app.device
-    },
-    fixedHeader() {
-      return this.$store.state.settings.fixedHeader
-    },
-    needTagsView() {
-      return this.$store.state.settings.tagsView
-    },
+    // sidebar() {
+    //   return this.$store.state.app.sidebar
+    // },
+    // device() {
+    //   return this.$store.state.app.device
+    // },
+    // fixedHeader() {
+    //   return this.$store.state.settings.fixedHeader
+    // },
+    // needTagsView() {
+    //   return this.$store.state.settings.tagsView
+    // },
+    ...mapState({
+      sidebar: (state) => state.app.sidebar,
+      device: (state) => state.app.device,
+      showSettings: (state) => state.settings.showSettings,
+      needTagsView: (state) => state.settings.tagsView,
+      fixedHeader: (state) => state.settings.fixedHeader
+    }),
     classObj() {
       return {
         hideSidebar: !this.sidebar.opened,
