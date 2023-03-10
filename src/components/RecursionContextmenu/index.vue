@@ -37,7 +37,11 @@ export default {
   data() {
     return {}
   },
-  computed: {},
+  computed: {
+    editThisView() {
+      return this.$store.state.settings.editThisView
+    }
+  },
   watch: {
     recordMenuGrp(newData) {
       this.recordMenuGrp = newData
@@ -62,8 +66,13 @@ export default {
       }
       getMenuLvAfter(reqData).then((res) => {
         console.log('子菜单res', res)
-        // 过滤编辑本视图
-        let newSub = res.filter((item) => item.itemName !== '编辑本视图')
+        let newSub
+        if (this.editThisView) {
+          newSub = res
+        } else {
+          // 过滤编辑本视图
+          newSub = res.filter((item) => item.itemName !== '编辑本视图')
+        }
         // 将res值赋值给recordMenuGrp对应item.children
         this.recordMenuGrp[this.recordMenuGrp.findIndex((item) => item.tblAlias === sub.tblAlias)].children = newSub
 

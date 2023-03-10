@@ -140,6 +140,9 @@ export default {
     }
   },
   computed: {
+    editThisView() {
+      return this.$store.state.settings.editThisView
+    }
     // cascaderProps() {
     //   return {
     //     lazy: true,
@@ -884,7 +887,12 @@ export default {
           i.children = []
         }
       })
-      let newRes = res.filter((i) => i.itemName !== '编辑本视图')
+      let newRes
+      if (this.editThisView) {
+        newRes = res
+      } else {
+        newRes = res.filter((i) => i.itemName !== '编辑本视图')
+      }
       // 添加'刷新该节点'，位置在第一个
       newRes.unshift({
         ...data,

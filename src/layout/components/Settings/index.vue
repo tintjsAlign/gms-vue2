@@ -23,10 +23,10 @@
         <el-switch v-model="sidebarLogo" class="drawer-switch" />
       </div>
 
-      <!-- <div class="drawer-item">
+      <div class="drawer-item">
         <span>开启 编辑本视图</span>
-        <el-switch v-model="sidebarLogo" class="drawer-switch" />
-      </div> -->
+        <el-switch v-model="editThisView" class="drawer-switch" />
+      </div>
     </div>
   </div>
 </template>
@@ -69,6 +69,17 @@ export default {
       set(val) {
         this.$store.dispatch('settings/changeSetting', {
           key: 'sidebarLogo',
+          value: val
+        })
+      }
+    },
+    editThisView: {
+      get() {
+        return this.$store.state.settings.editThisView
+      },
+      set(val) {
+        this.$store.dispatch('settings/changeSetting', {
+          key: 'editThisView',
           value: val
         })
       }

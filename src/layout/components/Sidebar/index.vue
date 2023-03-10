@@ -51,6 +51,9 @@ export default {
     },
     isCollapse() {
       return !this.sidebar.opened
+    },
+    editThisView() {
+      return this.$store.state.settings.editThisView
     }
   },
   methods: {
@@ -105,17 +108,30 @@ export default {
         // 处理子路由
         res.forEach((item) => {
           let componentOf
-          if (item.itemName === '登记被测系统') {
-            componentOf = 'drawer'
-          } else if (item.itemName === '编辑本视图') {
-            return
-          } else {
-            if (item.resId === 990) {
-              componentOf = ''
+          if (this.editThisView) {
+            if (item.itemName === '登记被测系统') {
+              componentOf = 'drawer'
             } else {
-              componentOf = 'main'
+              if (item.resId === 990) {
+                componentOf = ''
+              } else {
+                componentOf = 'main'
+              }
+            }
+          } else {
+            if (item.itemName === '登记被测系统') {
+              componentOf = 'drawer'
+            } else if (item.itemName === '编辑本视图') {
+              return
+            } else {
+              if (item.resId === 990) {
+                componentOf = ''
+              } else {
+                componentOf = 'main'
+              }
             }
           }
+
           // let t = +new Date()
           menuRouterLists.push({
             path: `/${route.menuGrpName}_${item.itemName}`,
@@ -189,15 +205,27 @@ export default {
         // 处理子路由
         res.forEach((item) => {
           let componentOf
-          if (item.itemName === '登记被测系统') {
-            componentOf = 'drawer'
-          } else if (item.itemName === '编辑本视图') {
-            return
-          } else {
-            if (item.resId === 990) {
-              componentOf = ''
+          if (this.editThisView) {
+            if (item.itemName === '登记被测系统') {
+              componentOf = 'drawer'
             } else {
-              componentOf = 'main'
+              if (item.resId === 990) {
+                componentOf = ''
+              } else {
+                componentOf = 'main'
+              }
+            }
+          } else {
+            if (item.itemName === '登记被测系统') {
+              componentOf = 'drawer'
+            } else if (item.itemName === '编辑本视图') {
+              return
+            } else {
+              if (item.resId === 990) {
+                componentOf = ''
+              } else {
+                componentOf = 'main'
+              }
             }
           }
           // let t = +new Date()

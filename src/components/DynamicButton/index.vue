@@ -58,6 +58,9 @@ export default {
   computed: {
     operationTarget() {
       return this.$store.state.settings.operationTarget
+    },
+    editThisView() {
+      return this.$store.state.settings.editThisView
     }
   },
   watch: {},
@@ -90,10 +93,15 @@ export default {
       }
       requestMain(requestMainData, 'unshow').then((res) => {
         console.log('requestMain Btn:', res)
-        // 剔除'编辑本视图'按钮
-        let btnLists = res.filter((item) => {
-          return item.itemName !== '编辑本视图'
-        })
+        let btnLists
+        if (this.editThisView) {
+          btnLists = res
+        } else {
+          // 剔除'编辑本视图'按钮
+          btnLists = res.filter((item) => {
+            return item.itemName !== '编辑本视图'
+          })
+        }
         // 对比数组中的对象进行去重
         var a = {}
         btnLists.map((item) => {
@@ -489,13 +497,23 @@ export default {
           if (this.currentRow.length && this.currentRow.length > 1) {
             console.log('支持批处理的选项')
             // 只显示支持批量操作的  isOperatorSingleRec !== '1'
-            this.dropdownBtnList = res.filter((item) => {
-              return item.isOperatorSingleRec !== '1' && item.itemName !== '编辑本视图'
-            })
+            if (this.editThisView) {
+              this.dropdownBtnList = res.filter((item) => {
+                return item.isOperatorSingleRec !== '1'
+              })
+            } else {
+              this.dropdownBtnList = res.filter((item) => {
+                return item.isOperatorSingleRec !== '1' && item.itemName !== '编辑本视图'
+              })
+            }
           } else {
-            this.dropdownBtnList = res.filter((item) => {
-              return item.itemName !== '编辑本视图'
-            })
+            if (this.editThisView) {
+              this.dropdownBtnList = res
+            } else {
+              this.dropdownBtnList = res.filter((item) => {
+                return item.itemName !== '编辑本视图'
+              })
+            }
           }
         } else {
           this.getDropdownBtn(item)
