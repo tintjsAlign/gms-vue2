@@ -129,10 +129,12 @@ export default {
         let operationBtn = res.filter((item) => {
           return item.itemName === '记录管理'
         })
-        this.operationBtn = operationBtn[0]
-        console.log('operationBtn:', this.operationBtn)
-        // 通过this.operationBtn查询通用操作按钮列表
-        this.queryCommonButtonList(this.operationBtn)
+        if (operationBtn[0]) {
+          this.operationBtn = operationBtn[0]
+          console.log('operationBtn:', this.operationBtn)
+          // 通过this.operationBtn查询通用操作按钮列表
+          this.queryCommonButtonList(this.operationBtn)
+        }
 
         let btnLists = res.filter((item) => {
           return item.itemName !== '记录管理'
@@ -453,8 +455,10 @@ export default {
         // path: `${fatherPath}/tree`,
         query: {
           row: row,
-          metaMain: this.$route.query.metaMain,
           fatherPath: this.fatherPath
+        },
+        params: {
+          metaMain: this.$route.params.metaMain
         },
         meta: { activeMenu: `${this.fatherPath}` }
       })

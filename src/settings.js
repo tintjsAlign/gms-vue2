@@ -24,7 +24,7 @@ module.exports = {
   sidebarLogo: true,
   /**
    * @type {boolean} true | false
-   * @description Whether show the logo in sidebar
+   * @description Whether show the logo in editThisView
    */
-  editThisView: false
+  editThisView: true
 }

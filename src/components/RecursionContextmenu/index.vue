@@ -392,8 +392,10 @@ export default {
         path: '/redirect' + fullPath,
         query: {
           row: row,
-          metaMain: this.$route.query.metaMain,
           fatherPath: fullPath
+        },
+        params: {
+          metaMain: this.$route.params.metaMain
         }
       })
     },

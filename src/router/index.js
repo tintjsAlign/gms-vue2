@@ -97,6 +97,20 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/dashboard',
+    hidden: true,
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/views/dashboard/index'),
+        name: 'Dashboard',
+        meta: { title: 'Dashboard', affix: true }
+      }
+    ]
+  },
 
   {
     path: '/404',

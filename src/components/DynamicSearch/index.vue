@@ -75,8 +75,8 @@ export default {
     console.log('搜索路由参数:', this.$route)
     if (this.$route.query && this.$route.query.meta) {
       this.routeParams = this.$route.query.meta
-    } else if (this.$route.query.metaMain && this.$route.query.metaMain !== '[object Object]') {
-      this.routeParams = this.$route.query.metaMain
+    } else if (this.$route.params.metaMain && this.$route.params.metaMain !== '[object Object]') {
+      this.routeParams = this.$route.params.metaMain
     } else {
       this.routeParams = this.$route.meta
     }

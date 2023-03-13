@@ -27,15 +27,18 @@ router.beforeEach(async (to, from, next) => {
       // if is logged in, redirect to the home page
       next()
       NProgress.done() // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939
-    } else if (to.path === '/home') {
+    } else if (to.path === '/') {
+      next()
+      NProgress.done()
+    } else if (to.path === '/dashboard') {
       next()
       NProgress.done()
     } else {
       // determine whether the user has obtained his permission roles through getInfo
       // console.log('store.getters.roles::', store.getters.roles)
-      const hasRoles = store.getters.roles && store.getters.roles.length > 0
+      const hasRoles = store.getters.roles && store.getters.roles.length > 0 && store.getters.roles != ''
       if (hasRoles) {
-        // 
+        //
         if (to.path.indexOf('/tree/tree') > -1) {
           // to.path = from.path
           console.log('go 套娃tree:', to, from)
@@ -51,7 +54,6 @@ router.beforeEach(async (to, from, next) => {
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
 
           if (window.sessionStorage.getItem('gatInfoRoles')) {
-
             const roles = await JSON.parse(window.sessionStorage.getItem('gatInfoRoles'))
             const tree = await JSON.parse(window.sessionStorage.getItem('gatInfoTree'))
             console.log('getInfo roles::', roles)

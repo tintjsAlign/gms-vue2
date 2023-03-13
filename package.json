@@ -35,7 +35,7 @@
     "splitpanes": "^2.4.1",
     "v-contextmenu": "^2.9.0",
     "vue": "2.6.14",
-    "vue-router": "3.0.6",
+    "vue-router": "^3.0.6",
     "vue-runtime-helpers": "^1.1.2",
     "vue-splitpane": "^1.0.6",
     "vuex": "3.1.0",

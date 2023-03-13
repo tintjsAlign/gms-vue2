@@ -90,17 +90,86 @@ export default {
   },
   created() {
     this.rsaEncryption()
-    let o = this.getParams('keySvrName')
-    console.log(o)
   },
   methods: {
+    showPwd() {
+      if (this.passwordType === 'password') {
+        this.passwordType = ''
+      } else {
+        this.passwordType = 'password'
+      }
+      this.$nextTick(() => {
+        this.$refs.password.focus()
+      })
+    },
+    handleLogin() {
+      this.$refs.loginForm.validate((valid) => {
+        if (valid) {
+          this.loading = true
+          // console.log('rsaParams:', this.rsaParams)
+          let keySvrName, svrName, svrMainMenuName, useMenuItemButton
+          if (window.sessionStorage.getItem('keySvrName') && window.sessionStorage.getItem('svrMainMenuName')) {
+            keySvrName = window.sessionStorage.getItem('keySvrName')
+            svrName = window.sessionStorage.getItem('svrName')
+            svrMainMenuName = window.sessionStorage.getItem('svrMainMenuName')
+            useMenuItemButton = window.sessionStorage.getItem('useMenuItemButton')
+          } else {
+            if (decodeURI(window.location.href).indexOf('?') > -1) {
+              keySvrName = decodeURI(this.getParams('keySvrName'))
+              svrName = decodeURI(this.getParams('svrName'))
+              svrMainMenuName = decodeURI(this.getParams('svrMainMenuName'))
+              useMenuItemButton = decodeURI(this.getParams('useMenuItemButton'))
+
+              // 存入
+              window.sessionStorage.setItem('keySvrName', keySvrName)
+              window.sessionStorage.setItem('svrName', svrName)
+              window.sessionStorage.setItem('svrMainMenuName', svrMainMenuName)
+              window.sessionStorage.setItem('useMenuItemButton', useMenuItemButton)
+            } else {
+              keySvrName = 'SevaluationManagement_TASS'
+              svrName = '密评辅助工具'
+              svrMainMenuName = 'Splenwise密评工具平台主工作界面'
+              useMenuItemButton = '2'
+            }
+          }
+
+          let loginOther = {
+            keySvrName,
+            svrName,
+            svrMainMenuName,
+            useMenuItemButton
+          }
+          let loginInfo = { ...this.loginForm, ...loginOther }
+          this.$store
+            .dispatch('user/login', { userInfo: loginInfo, rsaParams: this.rsaParams })
+            .then(() => {
+              // this.$router.push({ path: this.redirect || '/' })
+              // this.testPassword()
+              // this.init()
+              this.$router.push({ path: '/' })
+              this.$message({
+                message: '登录成功',
+                type: 'success'
+              })
+              this.loading = false
+            })
+            .catch(() => {
+              this.loading = false
+            })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
     /**
      * @param string 参数名
      * @return string | string[] 参数值
      **/
     getParams(name) {
       //获取拼接的参数
-      const paramStr = window.location.search.substring(1)
+      // const paramStr = window.location.search.substring(1)
+      const paramStr = window.location.href.substring(1)
       //第一次分割
       const paramsArr = paramStr.split('&')
       const obj = {}
@@ -121,43 +190,6 @@ export default {
         }
       })
       return obj[name]
-    },
-    showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = ''
-      } else {
-        this.passwordType = 'password'
-      }
-      this.$nextTick(() => {
-        this.$refs.password.focus()
-      })
-    },
-    handleLogin() {
-      this.$refs.loginForm.validate((valid) => {
-        if (valid) {
-          this.loading = true
-          // console.log('rsaParams:', this.rsaParams)
-          this.$store
-            .dispatch('user/login', { userInfo: this.loginForm, rsaParams: this.rsaParams })
-            .then(() => {
-              // this.$router.push({ path: this.redirect || '/' })
-              // this.testPassword()
-              this.init()
-              // this.$router.push({ path: '/' })
-              this.$message({
-                message: '登录成功',
-                type: 'success'
-              })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
     },
     rsaEncryption() {
       getRsaParams().then((res) => {

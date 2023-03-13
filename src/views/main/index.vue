@@ -79,8 +79,9 @@ export default {
       this.routeParams = this.$route.query.meta
       this.treeQuery = true
       this.title = this.routeParams.itemName
-    } else if (this.$route.query.metaMain && this.$route.query.metaMain !== '[object Object]') {
-      this.routeParams = this.$route.query.metaMain
+    } else if (this.$route.params.metaMain && this.$route.params.metaMain !== '[object Object]') {
+      console.log('MAIN routeParams this.$route.params.metaMain:', this.$route.params.metaMain)
+      this.routeParams = this.$route.params.metaMain
     } else {
       this.routeParams = this.$route.meta
     }

@@ -46,21 +46,22 @@ const mutations = {
 const actions = {
   // user login
   login({ commit }, { userInfo, rsaParams }) {
-    const { username, password } = userInfo
+    const { username, password, keySvrName, svrName, svrMainMenuName, useMenuItemButton } = userInfo
     // const { pkbase64, modulus, exponent } = rsaParams
     const { modulus, exponent } = rsaParams
     return new Promise((resolve, reject) => {
       // let encryptionPsw = encryption(pkbase64, modulus, exponent, password)
       let encryptionPsw = encryption('', modulus, exponent, password)
       // console.log('encryptionPsw:', encryptionPsw)
+
       let data = {
         userID: username.trim(),
         password: encryptionPsw,
-        keySvrName: 'SevaluationManagement_TASS', // 旧后台
+        keySvrName: keySvrName, // 旧后台
         // keySvrName: 'SevaluationManagement_TASSAL', // 新后台-阿里云
-        svrName: '密评辅助工具',
-        svrMainMenuName: 'Splenwise密评工具平台主工作界面',
-        useMenuItemButton: '2'
+        svrName: svrName,
+        svrMainMenuName: svrMainMenuName,
+        useMenuItemButton: useMenuItemButton
       }
       loginByUsername(data)
         .then((response) => {
@@ -101,7 +102,6 @@ const actions = {
       //     })
     })
   },
-
   // get user info
   getInfo({ commit, state }) {
     console.log('getInfo!!!!', state)
