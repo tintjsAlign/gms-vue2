@@ -90,8 +90,46 @@ export default {
   },
   created() {
     this.rsaEncryption()
+    this.getLoginOther()
   },
   methods: {
+    getLoginOther() {
+      let keySvrName, svrName, svrMainMenuName, useMenuItemButton
+
+      if (decodeURI(window.location.href).indexOf('?') > -1 && decodeURI(window.location.href).indexOf('keySvrName') > -1) {
+        if (decodeURI(this.getParams('keySvrName'))) {
+          keySvrName = decodeURI(this.getParams('keySvrName'))
+          svrName = decodeURI(this.getParams('svrName'))
+          svrMainMenuName = decodeURI(this.getParams('svrMainMenuName'))
+          useMenuItemButton = decodeURI(this.getParams('useMenuItemButton'))
+
+          window.sessionStorage.setItem('keySvrName', keySvrName)
+          window.sessionStorage.setItem('svrName', svrName)
+          window.sessionStorage.setItem('svrMainMenuName', svrMainMenuName)
+          window.sessionStorage.setItem('useMenuItemButton', useMenuItemButton)
+        }
+        // 存入
+      } else {
+        if (window.sessionStorage.getItem('keySvrName') != 'undefined') {
+          keySvrName = window.sessionStorage.getItem('keySvrName')
+          svrName = window.sessionStorage.getItem('svrName')
+          svrMainMenuName = window.sessionStorage.getItem('svrMainMenuName')
+          useMenuItemButton = window.sessionStorage.getItem('useMenuItemButton')
+        } else {
+          keySvrName = 'SevaluationManagement_TASS'
+          svrName = '密评辅助工具'
+          svrMainMenuName = 'Splenwise密评工具平台主工作界面'
+          useMenuItemButton = '2'
+        }
+      }
+
+      this.loginOther = {
+        keySvrName,
+        svrName,
+        svrMainMenuName,
+        useMenuItemButton
+      }
+    },
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -106,40 +144,14 @@ export default {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.loading = true
-          // console.log('rsaParams:', this.rsaParams)
-          let keySvrName, svrName, svrMainMenuName, useMenuItemButton
-          if (window.sessionStorage.getItem('keySvrName') && window.sessionStorage.getItem('svrMainMenuName')) {
-            keySvrName = window.sessionStorage.getItem('keySvrName')
-            svrName = window.sessionStorage.getItem('svrName')
-            svrMainMenuName = window.sessionStorage.getItem('svrMainMenuName')
-            useMenuItemButton = window.sessionStorage.getItem('useMenuItemButton')
-          } else {
-            if (decodeURI(window.location.href).indexOf('?') > -1) {
-              keySvrName = decodeURI(this.getParams('keySvrName'))
-              svrName = decodeURI(this.getParams('svrName'))
-              svrMainMenuName = decodeURI(this.getParams('svrMainMenuName'))
-              useMenuItemButton = decodeURI(this.getParams('useMenuItemButton'))
-
-              // 存入
-              window.sessionStorage.setItem('keySvrName', keySvrName)
-              window.sessionStorage.setItem('svrName', svrName)
-              window.sessionStorage.setItem('svrMainMenuName', svrMainMenuName)
-              window.sessionStorage.setItem('useMenuItemButton', useMenuItemButton)
-            } else {
-              keySvrName = 'SevaluationManagement_TASS'
-              svrName = '密评辅助工具'
-              svrMainMenuName = 'Splenwise密评工具平台主工作界面'
-              useMenuItemButton = '2'
-            }
+          console.log('window.location.href:', decodeURI(window.location.href).indexOf('keySvrName'))
+          if (decodeURI(window.location.href).indexOf('?') > -1 && decodeURI(window.location.href).indexOf('keySvrName') > -1) {
+            console.log('ff')
+            this.getLoginOther()
           }
+          let loginInfo = { ...this.loginForm, ...this.loginOther }
+          console.log('loginInfo:', loginInfo)
 
-          let loginOther = {
-            keySvrName,
-            svrName,
-            svrMainMenuName,
-            useMenuItemButton
-          }
-          let loginInfo = { ...this.loginForm, ...loginOther }
           this.$store
             .dispatch('user/login', { userInfo: loginInfo, rsaParams: this.rsaParams })
             .then(() => {
