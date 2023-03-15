@@ -43,6 +43,19 @@ service.interceptors.request.use(
       // please modify it according to the actual situation
       config.headers['X-Token'] = getToken()
     }
+
+    // 如果是多项目
+    let hasDataSet = window.sessionStorage.getItem('hasDataSet')
+    if (hasDataSet === 'true' && config.data && config.data.operationID === 51) {
+      let resId
+      if (config.data.resId) {
+        resId = config.data.resId
+      }
+      let projectName = window.sessionStorage.getItem('projectName')
+      let headParameter = 'CURRESID=' + resId + '|CURPRIKEY=projectName=' + projectName + '~|HASDATAQUERYPK=1|'
+      config.headers['headParameter'] = encodeURIComponent(headParameter, 'UTF-8')
+    }
+    
     // 如果是 post 请求,并且请求的数据是对象格式
     if (config.method === 'post' && config.data) {
       if (config.headers['myType']) {

@@ -77,3 +77,12 @@ export function getTreeMenu(data, loadFlag) {
     data
   })
 }
+
+// 获取项目列表
+export function getProjectList(params) {
+  return request({
+    url: '/queryProjectList',
+    method: 'get',
+    params
+  })
+}

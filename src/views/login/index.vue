@@ -94,7 +94,7 @@ export default {
   },
   methods: {
     getLoginOther() {
-      let keySvrName, svrName, svrMainMenuName, useMenuItemButton
+      let keySvrName, svrName, svrMainMenuName, useMenuItemButton, hasDataSet
 
       if (decodeURI(window.location.href).indexOf('?') > -1 && decodeURI(window.location.href).indexOf('keySvrName') > -1) {
         if (decodeURI(this.getParams('keySvrName'))) {
@@ -102,11 +102,13 @@ export default {
           svrName = decodeURI(this.getParams('svrName'))
           svrMainMenuName = decodeURI(this.getParams('svrMainMenuName'))
           useMenuItemButton = decodeURI(this.getParams('useMenuItemButton'))
+          hasDataSet = decodeURI(this.getParams('hasDataSet'))
 
           window.sessionStorage.setItem('keySvrName', keySvrName)
           window.sessionStorage.setItem('svrName', svrName)
           window.sessionStorage.setItem('svrMainMenuName', svrMainMenuName)
           window.sessionStorage.setItem('useMenuItemButton', useMenuItemButton)
+          window.sessionStorage.setItem('hasDataSet', hasDataSet)
         }
         // 存入
       } else {
@@ -115,11 +117,13 @@ export default {
           svrName = window.sessionStorage.getItem('svrName')
           svrMainMenuName = window.sessionStorage.getItem('svrMainMenuName')
           useMenuItemButton = window.sessionStorage.getItem('useMenuItemButton')
+          hasDataSet = window.sessionStorage.getItem('hasDataSet')
         } else {
           keySvrName = 'SevaluationManagement_TASS'
           svrName = '密评辅助工具'
           svrMainMenuName = 'Splenwise密评工具平台主工作界面'
           useMenuItemButton = '2'
+          hasDataSet = ''
         }
       }
 
@@ -127,7 +131,8 @@ export default {
         keySvrName,
         svrName,
         svrMainMenuName,
-        useMenuItemButton
+        useMenuItemButton,
+        hasDataSet
       }
     },
     showPwd() {
@@ -158,7 +163,13 @@ export default {
               // this.$router.push({ path: this.redirect || '/' })
               // this.testPassword()
               // this.init()
-              this.$router.push({ path: '/' })
+              // this.$router.push({ path: '/' })
+              let { hasDataSet } = loginInfo
+              if (hasDataSet === 'true') {
+                this.$router.push({ path: '/home' })
+              } else {
+                this.$router.push({ path: '/' })
+              }
               this.$message({
                 message: '登录成功',
                 type: 'success'

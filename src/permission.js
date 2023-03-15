@@ -27,6 +27,9 @@ router.beforeEach(async (to, from, next) => {
       // if is logged in, redirect to the home page
       next()
       NProgress.done() // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939
+    } else if (to.path === '/home') {
+      next()
+      NProgress.done()
     } else if (to.path === '/') {
       next()
       NProgress.done()
@@ -87,7 +90,10 @@ router.beforeEach(async (to, from, next) => {
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')
           Message.error(error || 'Has Error')
-          next(`/login?redirect=${to.path}`)
+          // next(`/login?redirect=${to.path}`)
+          next(
+            `/login?redirect=&keySvrName=KMS-TENANCY&svrName=M-Smart%E5%AF%86%E7%A0%81%E6%9C%8D%E5%8A%A1%E7%B3%BB%E7%BB%9Fv1.0&svrMainMenuName=Splenwise%E5%AF%86%E7%A0%81%E6%9C%8D%E5%8A%A1%E5%B9%B3%E5%8F%B0%E7%A7%9F%E6%88%B7%E5%B7%A5%E4%BD%9C%E7%AB%99%E4%B8%BB%E8%8F%9C%E5%8D%95&useMenuItemButton=2&hasDataSet=true`
+          )
           NProgress.done()
         }
       }
@@ -103,7 +109,10 @@ router.beforeEach(async (to, from, next) => {
       next()
     } else {
       // other pages that do not have permission to access are redirected to the login page.
-      next(`/login?redirect=${to.path}`)
+      // next(`/login?redirect=${to.path}`)
+      next(
+        `/login?redirect=&keySvrName=KMS-TENANCY&svrName=M-Smart%E5%AF%86%E7%A0%81%E6%9C%8D%E5%8A%A1%E7%B3%BB%E7%BB%9Fv1.0&svrMainMenuName=Splenwise%E5%AF%86%E7%A0%81%E6%9C%8D%E5%8A%A1%E5%B9%B3%E5%8F%B0%E7%A7%9F%E6%88%B7%E5%B7%A5%E4%BD%9C%E7%AB%99%E4%B8%BB%E8%8F%9C%E5%8D%95&useMenuItemButton=2&hasDataSet=true`
+      )
       NProgress.done()
     }
   }
